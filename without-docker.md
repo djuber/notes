@@ -20,6 +20,19 @@ Ideally this resolves the request header did not match site url issue I was seei
 
 I already had postgresql and redis locally, but those need to be started, `systemctl start postgresql` and `systemctl start redis_6379` seem to work for me locally \(if you're using another init system, or have other names for your services that's fine\). It's likely I'll want or need to setup postgres users for the database \(or trust all local connections, I'm not telling you which is better, trusting all local connections disables usually works well for me, but a lot of applications insist on sending passwords so you might want or need to add the user in the database url for the forem development env, I'll see what happens later\).
 
+### Redis
+
+Debian 10 has redis 5.0.3 \(which is what `redis-server --version` printed when I asked and what `apt search redis` suggested was current\), but forem requires redis 6.0 or higher. You could run this in a container or upgrade, I'll check the suggested link at [https://www.digitalocean.com/community/tutorial\_collections/how-to-install-and-secure-redis](https://www.digitalocean.com/community/tutorial_collections/how-to-install-and-secure-redis) since that's where Forem recommends you start. Sadly, this ends up using the obvious apt installable version so it's off to https://redis.io to download it. [https://download.redis.io/releases/redis-6.2.1.tar.gz](https://download.redis.io/releases/redis-6.2.1.tar.gz) is the latest stable version is the first thing I see, 6.2 &gt; 6.0 and we're off to the races.
+
+```text
+wget https://download.redis.io/releases/redis-6.2.1.tar.gz
+tar xf redis-6.2.1.tar.gz
+cd redis-6.2.1
+# no configure script, redis just has a makefile, let's do it
+make
+
+```
+
 ### Elasticsearch
 
 Elasticsearch is something that's a little controversial. Perhaps in response to AWS targetting their business, they recently made some modifications to their licensing terms for self-hosted applications permissible uses, causing community uproar and even more AWS targetting their business. We can focus on the minimum requirements here \(running just es in docker would not be a bad choice, as I already have a docker instance downloaded from the first pass\).
