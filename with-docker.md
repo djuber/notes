@@ -6,6 +6,10 @@ description: How I got started with a local Forem instance for testing as I work
 
 ## Setting up docker for local development
 
+{% hint style="info" %}
+I don't think the local docker-compose development environment is fully functional - sidekiq and the console seem fine - but logging in  as a user \(kind of a core functionality\) was broken for me - I think I followed the right set of instructions and there's something off about the CSRF handling with docker hosted instances. If this is fixed the following should be considered my attempt, in March 2021, to set this up before I reached a breaking point - and continued successfully using the other instructions without docker
+{% endhint %}
+
 I chose to use docker compose \(since that's the most straightforward approach and I didn't want to worry about installing ES\). I will assume you know how to checkout the forem repo and type docker commands, but should cover the rest of it explicitly here.
 
 {% hint style="info" %}
