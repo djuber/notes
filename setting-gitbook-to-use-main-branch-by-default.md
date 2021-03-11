@@ -2,7 +2,7 @@
 
 Gitbook, by default, when you integrate with github, will push to master. 
 
-Github, by default, will set main as the  default branch \(for cloned repos this is the first checked out branch, and for pull requests this is th default merge target\). 
+Github, by default, will set main as the  default branch \(for cloned repos this is the first checked out branch, and for pull requests this is the default merge target\). 
 
 It makes sense to have these speak the same language. One option is to change the default branch \(in github, under repo settings, branches, chose "Default Branch" using the pencil icon next to main\). The other is to point gitbook at main instead of master.
 

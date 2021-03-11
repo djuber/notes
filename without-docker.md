@@ -28,9 +28,10 @@ Debian 10 has redis 5.0.3 \(which is what `redis-server --version` printed when 
 wget https://download.redis.io/releases/redis-6.2.1.tar.gz
 tar xf redis-6.2.1.tar.gz
 cd redis-6.2.1
-# no configure script, redis just has a makefile, let's do it
-make
 
+# no configure script, redis just has a makefile, see Readme for install directions
+# need to install libsystemd-dev to use this option but it looks right
+make USE_SYSTEMD=yes 
 ```
 
 ### Elasticsearch
