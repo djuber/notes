@@ -14,3 +14,9 @@ On the left side where the space name is shown, the default variant \(for me thi
 
 Click on main and select the `...` ellipsis icon
 
+![set as main](.gitbook/assets/set-as-main.png)
+
+I think "title" is what's presented in gitbook, and "slug" is the branch name in github. Save after selecting the star.
+
+If all your content disappears here, it's because gitbook just synced from the empty main variant. Open a PR and merge master into main  and all should be well.
+
