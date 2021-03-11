@@ -48,7 +48,32 @@ Cleanup: may take some time... OK
 Starting test server at port 21079
 [ready]: 15684
 ...
+
+# you might need sudo here to install to /usr/local/bin
+make install
+# you might have another service name
+sudo systemctl restart redis_6379
 ```
+
+Assuming all went well, we'll connect using `redis-cli` and ask [INFO](https://redis.io/commands/info) what the server version is
+
+```text
+djuber@laptop:~$ redis-cli "INFO" | head 
+# Server
+redis_version:6.2.1
+redis_git_sha1:00000000
+redis_git_dirty:0
+redis_build_id:492cccd34166fb82
+redis_mode:standalone
+os:Linux 4.19.0-14-amd64 x86_64
+arch_bits:64
+multiplexing_api:epoll
+atomicvar_api:c11-builtin
+```
+
+6.2.1 is running on port 6379 on localhost and all is well with redis.
+
+
 
 ### Elasticsearch
 
