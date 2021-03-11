@@ -246,3 +246,7 @@ djuber@laptop:~/src/forem$ rbenv which ruby
 /home/djuber/.rbenv/versions/2.7.2/bin/ruby
 ```
 
+## Setup Forem
+
+[https://docs.forem.com/installation/linux/\#installing-forem](https://docs.forem.com/installation/linux/#installing-forem) suggests copy env \(done\) and run bin/setup. At this point I got stung with the build extensions for the wrong linux and nuked the content of vendor and re-ran bundle.
+
