@@ -286,5 +286,21 @@ navigate to [http://localhost:3000/](http://localhost:3000/) \(looks good - diff
 
 Login as admin@forem.local using the password `password` \(from the seed data\) and now I get redirected to "onboarding" - success. I guess that means the problems I had were docker specific \(and possibly docker-compose is not fully working or has gotten out of sync with what the native environment is doing\).
 
-![](.gitbook/assets/success.png)
+![onboarding after successful login for admin user](.gitbook/assets/success.png)
+
+It looks like the banner that used to say "site not configured" now just lets me know I should have used bin/startup instead of rails server to start the site \(since sidekiq background job processing is pretty integral to the system\). Let's take a look at[ Procfile.dev ](https://github.com/forem/forem/blob/master/Procfile.dev)to see what we need - looks like webpack and sidekiq. I could stop the service and restart with start \(I recommend you do this\) or just start the other two processes in a shell. Starting sidekiq gives me back the "Setup is not completed yet" prompt to visit the configuration page \(which is my next step after I start webpack\)
+
+```text
+bundle exec sidekiq
+# lots of chatter as jobs are consumed and processed and some fail
+
+# I almost never trust binstubs, bundle exec may be unneeded here.
+bundle exec bin/webppack-dev-server
+```
+
+## Setup
+
+[http://localhost:3000/admin/config](http://localhost:3000/admin/config) is where I'm directed to go, now that I'm a site admin I think this will work.
+
+![](.gitbook/assets/site-configuration.png)
 
