@@ -89,6 +89,29 @@ OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in ve
 [2021-03-11T10:29:07,469][INFO ][o.e.g.GatewayService     ] [laptop] recovered [0] indices into cluster_state
 ```
 
+Assuming all went well, we can hit the port 9200 with curl and get the expected healthcheck response
+
+```text
+$ curl -H 'Content-type: application/json' http://localhost:9200/
+{
+  "name" : "laptop",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "m2JZ5s0bQ6iHd3kxaEoagg",
+  "version" : {
+    "number" : "7.5.2",
+    "build_flavor" : "oss",
+    "build_type" : "tar",
+    "build_hash" : "8bec50e1e0ad29dad5653712cf3bb580cd1afcdf",
+    "build_date" : "2020-01-15T12:11:52.313576Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.3.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+```
+
 ### Node/nvm/yarn
 
 I think I fall into the "older system node" category here and I also want to install nvm
