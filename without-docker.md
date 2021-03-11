@@ -18,7 +18,7 @@ Ideally this resolves the request header did not match site url issue I was seei
 
 ## Install
 
-I already had postgresql and redis locally, but those need to be started, `systemctl start postgresql` and `systemctl start redis_6379` seem to work for me locally \(if you're using another init system, or have other names for your services that's fine\). It's likely I'll want or need to setup postgres users for the database \(or trust all local connections, I'm not telling you which is better, trusting all local connections disables usually works well for me, but a lot of applications insist on sending passwords so you might want or need to add the user in the database url for the forem development env, I'll see what happens later\).
+I already had postgresql and redis installed locally, but those need to be started, `systemctl start postgresql` and `systemctl start redis_6379` seem to work for me locally \(if you're using another init system, or have other names for your services that's fine\). It's likely I'll want or need to setup postgres users for the database \(or trust all local connections, I'm not telling you which is better, trusting all local connections disables usually works well for me, but a lot of applications insist on sending passwords so you might want or need to add the user in the database url for the forem development env, I'll see what happens later\).
 
 ### Redis
 
@@ -32,6 +32,22 @@ cd redis-6.2.1
 # no configure script, redis just has a makefile, see Readme for install directions
 # need to install libsystemd-dev to use this option but it looks right
 make USE_SYSTEMD=yes 
+
+    CC redis-benchmark.o
+    LINK redis-benchmark
+    INSTALL redis-check-rdb
+    INSTALL redis-check-aof
+
+Hint: It's a good idea to run 'make test' ;)
+
+make[1]: Leaving directory '/data/src/redis-6.2.1/src'
+djuber@laptop:~/src/redis-6.2.1$ make test
+cd src && make test
+make[1]: Entering directory '/data/src/redis-6.2.1/src'
+Cleanup: may take some time... OK
+Starting test server at port 21079
+[ready]: 15684
+...
 ```
 
 ### Elasticsearch
