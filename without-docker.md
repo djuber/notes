@@ -250,3 +250,41 @@ djuber@laptop:~/src/forem$ rbenv which ruby
 
 [https://docs.forem.com/installation/linux/\#installing-forem](https://docs.forem.com/installation/linux/#installing-forem) suggests copy env \(done\) and run bin/setup. At this point I got stung with the build extensions for the wrong linux and nuked the content of vendor and re-ran bundle.
 
+It looks like the setup script did not choke creating a db so my postgresql setup is "permissive" or functional \(which saves a trip to `pg_hba.conf` or a call to `createuser`\)
+
+```text
+bin/setup
+# lots of things, checks bundle, installs foreman, creates and seeds the db
+```
+
+Checking the local postgres instance I can see both the dev and test instances were populated:
+
+```text
+psql (13.2 (Debian 13.2-1.pgdg90+1), server 11.11 (Debian 11.11-1.pgdg90+1))
+Type "help" for help.
+
+djuber=# \l
+                                              List of databases
+            Name            |      Owner      | Encoding |   Collate   |    Ctype    |   Access privileges   
+----------------------------+-----------------+----------+-------------+-------------+-----------------------
+ Forem_development          | djuber          | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ Forem_test                 | djuber          | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+```
+
+## Run it
+
+```text
+djuber@laptop:~/src/forem$ bundle exec rails server
+=> Booting Puma
+=> Rails 6.0.3.5 application starting in development 
+=> Run `rails server --help` for more startup options
+[4260] Puma starting in cluster mode...
+[4260] * Puma version: 5.2.2 (ruby 2.7.2-p137) ("Fettisdagsbulle")
+```
+
+navigate to [http://localhost:3000/](http://localhost:3000/) \(looks good - different lorem  ipsum text articles but still looks like a Forem\)
+
+Login as admin@forem.local using the password `password` \(from the seed data\) and now I get redirected to "onboarding" - success. I guess that means the problems I had were docker specific \(and possibly docker-compose is not fully working or has gotten out of sync with what the native environment is doing\).
+
+![](.gitbook/assets/success.png)
+
