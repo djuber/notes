@@ -4,7 +4,7 @@ description: How I got started with a local Forem instance for testing as I work
 
 # Setting up a local test env with docker
 
-### Setting up docker for local development
+## Setting up docker for local development
 
 I chose to use docker compose \(since that's the most straightforward approach and I didn't want to worry about installing ES\). I will assume you know how to checkout the forem repo and type docker commands, but should cover the rest of it explicitly here.
 
@@ -14,7 +14,7 @@ If you're running postgres or redis already on your host, this won't work out of
 
 You have to copy the .env\_sample in the repo to .env \(it's in the instructions at [https://docs.forem.com/installation/containers/\#setting-up-forem](https://docs.forem.com/installation/containers/#setting-up-forem) but I skipped it the first time around and say an error page about nil protocol when the initial page was loading images\).
 
-at this point `docker-compose up` will suffice to start the service - you should see an indication that http://rails:3000/ was checked as live. You can visit your testing instance at[ http://localhost:3000/](https://localhost:3000/) and should see some lorem ipsum text
+at this point `docker-compose up` will suffice to start the service - you should see an indication that [http://rails:3000/](http://rails:3000/) was checked as live. You can visit your testing instance at[ http://localhost:3000/](https://localhost:3000/) and should see some lorem ipsum text
 
 ![](.gitbook/assets/lorem-forem.png)
 
@@ -26,10 +26,9 @@ This doesn't seem totally wrong \(I'm _not_ logged in and I'm likely _not_ an au
 
 \*\*\*\*
 
-**Weirdness:**   it looks like a sidekiq job runs every few seconds/minutes and chokes, need to look into this - might be an issue with the seed data. I did see some honeycomb or honeybadger warnings \(can't send failure reports to the 3rd party service\), I'll ignore those since I know I don't have an account setup with them \(and the .env file I copied from the sample had bogus keys for external services, see the [Backend Guide](https://docs.forem.com/backend/) discussion about setting up api integrations when you want thos things\).
+**Weirdness:** it looks like a sidekiq job runs every few seconds/minutes and chokes, need to look into this - might be an issue with the seed data. I did see some honeycomb or honeybadger warnings \(can't send failure reports to the 3rd party service\), I'll ignore those since I know I don't have an account setup with them \(and the .env file I copied from the sample had bogus keys for external services, see the [Backend Guide](https://docs.forem.com/backend/) discussion about setting up api integrations when you want thos things\).
 
 ```text
-
 sidekiq_1        | 2021-03-11T00:08:44.716Z pid=18 tid=gvke class=Articles::ScoreCalcWorker jid=182396b04ec9e9012371f259 INFO: start
 sidekiq_1        | 2021-03-11T00:08:44.744Z pid=18 tid=gvke class=Articles::ScoreCalcWorker jid=182396b04ec9e9012371f259 elapsed=0.028 INFO: fail
 sidekiq_1        | 2021-03-11T00:08:44.744Z pid=18 tid=gvke WARN: {"context":"Job raised exception","job":{"retry":true,"queue":"medium_priority","lock":"until_executing","class":"Articles::ScoreCalcWorker","args":[8],"jid":"182396b04ec9e9012371f259","created_at":1615419949.3968022,"enqueued_at":1615421324.7159595,"error_message":"undefined method `<' for nil:NilClass","error_class":"NoMethodError","failed_at":1615419953.8786802,"retry_count":5,"retried_at":1615420610.2145078,"lock_timeout":0,"lock_ttl":null,"lock_prefix":"uniquejobs","lock_args":[8],"lock_digest":"uniquejobs:c378573e4d766e92b66d20e48fa48837"},"jobstr":"{\"retry\":true,\"queue\":\"medium_priority\",\"lock\":\"until_executing\",\"class\":\"Articles::ScoreCalcWorker\",\"args\":[8],\"jid\":\"182396b04ec9e9012371f259\",\"created_at\":1615419949.3968022,\"enqueued_at\":1615421324.7159595,\"error_message\":\"undefined method `<' for nil:NilClass\",\"error_class\":\"NoMethodError\",\"failed_at\":1615419953.8786802,\"retry_count\":5,\"retried_at\":1615420610.2145078}"}
@@ -39,13 +38,13 @@ sidekiq_1        | /opt/apps/forem/app/black_box/black_box.rb:46:in `calculate_s
 sidekiq_1        | /opt/apps/forem/app/models/article.rb:382:in `update_score'
 ```
 
-**Weirdness 2**: Not immediately obvious how to connect to the database \(`bundle exec rails db` raises some errors because files in tmp/ are root owned, docker runs the webpack and rails processes as root inside the container and isn't doing user mode translation back to the user, so if you kept forem's code in ~/src/forem, then files in src/forem/tmp/ would be root owned\). Changing permissions means you just get the next problem, which is that bundled gem's built extensions against the container's ruby \(which appears to be quay.io/forem/forem:development - my local ruby had a slightly different version of glibc so I can't run bundle in the host while the containers are running\). 
+**Weirdness 2**: Not immediately obvious how to connect to the database \(`bundle exec rails db` raises some errors because files in tmp/ are root owned, docker runs the webpack and rails processes as root inside the container and isn't doing user mode translation back to the user, so if you kept forem's code in ~/src/forem, then files in src/forem/tmp/ would be root owned\). Changing permissions means you just get the next problem, which is that bundled gem's built extensions against the container's ruby \(which appears to be quay.io/forem/forem:development - my local ruby had a slightly different version of glibc so I can't run bundle in the host while the containers are running\).
 
 **Weirdness 3**: starting the docker-compose environment seems like it regenerated the db/schema.rb file, which appears to have the same content, but not the same order. I suggest reverting this file post-startup and before beginning work \(especially if that work includes a migration\).
 
 ![schema.rb changes](.gitbook/assets/schema.png)
 
-### Using the console
+## Using the console
 
 As a backend engineer I spend a fair amount of time in the rails console, so getting one up and running makes sense. The docker-compose file sets up the environment for locally testing the web-app or running background jobs, but doesn't provide the interactive environment you get from the repl. In a "normal" or hosted rails environment, I would call `bundle exec rails console` to start pry or irb in the project, but see weirdness 2 above - bundle ran inside the containers and generated extensions for a slightly different linux than the one I'm running \(wrong glibc version was compiled against\). To work around this - I'll start a shell in the rails container and run a console there \(this is a layer of indirection you don't experience with a native execution\)
 
@@ -64,12 +63,10 @@ As a backend engineer I spend a fair amount of time in the rails console, so get
 /usr/share/gems/gems/irb-1.2.6/lib/irb/completion.rb:294: warning: previous definition of Operators was here
 I, [2021-03-11T14:14:30.909342 #160]  INFO -- : Allowing 172.18.0.1 for BetterErrors and Web Console
 Loading development environment (Rails 6.0.3.5)
-[1] pry(main)> 
+[1] pry(main)>
 ```
 
-You can ignore the ansi color codes in the prompt  there, basically as a user I connect to docker, and inside the container I'm root, and once I've connected I run rails console as expected, and this starts a pry console. Since the seeds.rb file creates random users, and out of the box OAuth using github or facebook won't work \(facebook says invalid app id, twitter gives no visible response, github shows a 404 but probably is an invalid app id\) - I'm going to set a password for an existing user \(since I don't know yet how to enable creating users with password logins, this is a shortcut, the login page permits password login but there's no place to sign up with email + password only\). 
-
-
+You can ignore the ansi color codes in the prompt there, basically as a user I connect to docker, and inside the container I'm root, and once I've connected I run rails console as expected, and this starts a pry console. Since the seeds.rb file creates random users, and out of the box OAuth using github or facebook won't work \(facebook says invalid app id, twitter gives no visible response, github shows a 404 but probably is an invalid app id\) - I'm going to set a password for an existing user \(since I don't know yet how to enable creating users with password logins, this is a shortcut, the login page permits password login but there's no place to sign up with email + password only\).
 
 I usually approach this by plucking the first random seed user out of the db, setting a password, and hoping for the best. I set `password=` and ask the record if it's `valid?` which is what it would do during persistence, it responds false so I check errors, and it looks like `password` _and_ `password_confirmation` must be present and matching, I'll send the same string as a `password_confirmation` and save the user.
 
@@ -124,10 +121,10 @@ At this point I have a user, email is shown at the bottom there, password is ava
 ```text
 [17] pry(main)> u2 = User.find_by(email: u.email)
 [18] pry(main)> u2.password
-=> nil    
+=> nil
 ```
 
-### Logging In
+## Logging In
 
 Security fears allayed for the moment, see if we can login to the site. I click the "Log In" link on the page, and I get to a welcome page with non-functioning OAuth buttons and email + password form
 
@@ -140,7 +137,6 @@ So I put in my two magic strings, and I get a blank 200 page \(I would _normally
 Let's pop over to the shell session running docker-compose and see what the logs show - I see the POST with data that looks reasonable, and I see a 200 response \(from the Devise::SessionsController in this case\), followed by a request for serviceworker.js \(which I don't see in the network tab of the browser\) also giving a 200 - it looks like that's also a controller response and not a static asset \(just noting that for future investigation at this point\).
 
 ```text
-
 rails_1          | Started POST "/users/sign_in" for 172.18.0.1 at 2021-03-11 14:45:46 +0000
 rails_1          | Processing by Devise::SessionsController#create as HTML
 rails_1          |   Parameters: {"utf8"=>"✓", "authenticity_token"=>"m8c++PaLNhnjJONKaODxWpK3BITecQQgdbsMlxePBoXEyS+9xAak72VYnn3ZdlncAA5s1PTXTSXmbhJhuUGnqA==", "user"=>{"email"=>"freda+crist@simonis-streich.io", "password"=>"[FILTERED]", "remember_me"=>"1"}, "commit"=>"Continue"}
@@ -159,39 +155,38 @@ rails_1          |   Rendering service_worker/index.js.erb
 rails_1          |   Rendered service_worker/index.js.erb (Duration: 0.1ms | Allocations: 24)
 rails_1          | Completed 200 OK in 6ms (Views: 0.9ms | ActiveRecord: 0.4ms | Allocations: 3109)
 rails_1          | 
-rails_1          | 
+rails_1          |
 ```
 
-#### Hypothesis 1: I did log in just fine, but the redirect is missing
+### Hypothesis 1: I did log in just fine, but the redirect is missing
 
-To contradict that I just have to go back to http://localhost:3000/ and see if I am logged in as the user, or seeing the Log In button, sure enough, the 200 POST response was a "failure" \(login forms are like this, redirect after successful post, redisplay the form when failed\) - I _think_ the issue here is the POST goes to /users/sign\_in but the login form is at /enter so there's no form to redisplay after post gives a 200. I'll consider this a failed login attempt.
+To contradict that I just have to go back to [http://localhost:3000/](http://localhost:3000/) and see if I am logged in as the user, or seeing the Log In button, sure enough, the 200 POST response was a "failure" \(login forms are like this, redirect after successful post, redisplay the form when failed\) - I _think_ the issue here is the POST goes to /users/sign\_in but the login form is at /enter so there's no form to redisplay after post gives a 200. I'll consider this a failed login attempt.
 
-#### Hypothesis 2: Something was wrong with the request.
+### Hypothesis 2: Something was wrong with the request.
 
-I do see a note about 
+I do see a note about
 
 ```text
 app/lib/url.rb:11:in `domain'
 ```
 
-and a warning from the ActionController::RequestForgeryProtection about  the Origin header not matching \(then giving two identical strings that don't match\). 
+and a warning from the ActionController::RequestForgeryProtection about the Origin header not matching \(then giving two identical strings that don't match\).
 
 ![My feelings right now](.gitbook/assets/manshrugging.gif)
 
-#### Hypothesis 3: Password login just isn't what I want
+### Hypothesis 3: Password login just isn't what I want
 
-I guess the step I could follow here is to add a backend integration with twitter or github and use OAuth, but I'm pretty sure this _won't_ work with a localhost service on a private port from my desk with a private IP \(SAML definitely would not, there's no routable url for the callback to receive the response\). I do hear nice things about ngrok \(which exposes local services and ports on internet addresses via a tunnel\). The getting start page on [config-env](https://docs.forem.com/getting-started/config-env/) says: 
+I guess the step I could follow here is to add a backend integration with twitter or github and use OAuth, but I'm pretty sure this _won't_ work with a localhost service on a private port from my desk with a private IP \(SAML definitely would not, there's no routable url for the callback to receive the response\). I do hear nice things about ngrok \(which exposes local services and ports on internet addresses via a tunnel\). The getting start page on [config-env](https://docs.forem.com/getting-started/config-env/) says:
 
-  only certain features require "real" keys, so you may be able to add them as you work
+only certain features require "real" keys, so you may be able to add them as you work
 
 This is not a list of "must haves", might want to revisit that once I get this ironed out.
 
-#### Hypothesis 4: Read the docs
+### Hypothesis 4: Read the docs
 
-As usual, once you find the answer it's both obvious and humiliating, so I found a note [https://docs.forem.com/getting-started/db/\#default-admin-user](https://docs.forem.com/getting-started/db/#default-admin-user) suggesting I log in as admin@forem.local and see what happens. 
+As usual, once you find the answer it's both obvious and humiliating, so I found a note [https://docs.forem.com/getting-started/db/\#default-admin-user](https://docs.forem.com/getting-started/db/#default-admin-user) suggesting I log in as admin@forem.local and see what happens.
 
 ```text
-
 rails_1          | Started POST "/users/sign_in" for 172.18.0.1 at 2021-03-11 15:40:35 +0000
 rails_1          |   ProfileField Load (0.9ms)  SELECT "profile_fields".* FROM "profile_fields" ORDER BY "profile_fields"."id" ASC LIMIT $1  [["LIMIT", 1000]]
 rails_1          |   ↳ app/models/profile.rb:55:in `refresh_attributes!'
@@ -231,7 +226,7 @@ rails_1          |   Rendering service_worker/index.js.erb
 rails_1          |   Rendered service_worker/index.js.erb (Duration: 1.3ms | Allocations: 353)
 rails_1          | Completed 200 OK in 163ms (Views: 6.0ms | ActiveRecord: 0.0ms | Allocations: 224032)              
 rails_1          | 
-rails_1          | 
+rails_1          |
 ```
 
 It looks like I still get the white screen at /users/sign\_in and a 200 response, and I still see the warning about the origin headers not matching the base url. Time to do a little more reading.
@@ -243,7 +238,7 @@ APP_DOMAIN="localhost:3000"
 APP_PROTOCOL="http://"
 ```
 
-#### Hypothesis 5: Docker-compose isn't handling this correctly and local dev would work fine
+### Hypothesis 5: Docker-compose isn't handling this correctly and local dev would work fine
 
 So let's unwind our progress and stop docker, restart redis and postgres, and probably install ES, and chown all of vendor/ and tmp/ back to my user so the docker root owned files don't get in my way \(I may have to clobber vendor/cache if the extensions continue to give errors after bundle install\)
 

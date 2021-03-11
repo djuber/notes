@@ -8,23 +8,23 @@ description: >-
 
 First pass was [here](https://app.gitbook.com/@danuber/s/public-notes/) but hit some snags, this is a "refresh/reset/rest" attempt to login to a local dev instance of forem using the admin password.
 
-#### Recap
+### Recap
 
-Trying to setup a local development environment following [https://docs.forem.com/getting-started/](https://docs.forem.com/getting-started/) 
+Trying to setup a local development environment following [https://docs.forem.com/getting-started/](https://docs.forem.com/getting-started/)
 
 Initial attempt followed [https://docs.forem.com/installation/containers/](https://docs.forem.com/installation/containers/) but this pass will instead focus on [https://docs.forem.com/installation/linux/](https://docs.forem.com/installation/linux/)
 
 Ideally this resolves the request header did not match site url issue I was seeing \(in which case that's an issue with the docker environment and should be fixed\). Worst case is I see the same forgery protection running locally outside of a container and have to resolve that.
 
-### Install
+## Install
 
 I already had postgresql and redis locally, but those need to be started, `systemctl start postgresql` and `systemctl start redis_6379` seem to work for me locally \(if you're using another init system, or have other names for your services that's fine\). It's likely I'll want or need to setup postgres users for the database \(or trust all local connections, I'm not telling you which is better, trusting all local connections disables usually works well for me, but a lot of applications insist on sending passwords so you might want or need to add the user in the database url for the forem development env, I'll see what happens later\).
 
-#### Elasticsearch
+### Elasticsearch
 
 Elasticsearch is something that's a little controversial. Perhaps in response to AWS targetting their business, they recently made some modifications to their licensing terms for self-hosted applications permissible uses, causing community uproar and even more AWS targetting their business. We can focus on the minimum requirements here \(running just es in docker would not be a bad choice, as I already have a docker instance downloaded from the first pass\).
 
-I'll follow the guide at [https://www.elastic.co/guide/en/elasticsearch/reference/7.5/targz.html\#install-linux](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/targz.html#install-linux) but grab the oss version [https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.5.2-linux-x86\_64.tar.gz](https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.5.2-linux-x86_64.tar.gz) since that's what [https://docs.forem.com/installation/linux/](https://docs.forem.com/installation/linux/) points out. 
+I'll follow the guide at [https://www.elastic.co/guide/en/elasticsearch/reference/7.5/targz.html\#install-linux](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/targz.html#install-linux) but grab the oss version [https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.5.2-linux-x86\_64.tar.gz](https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.5.2-linux-x86_64.tar.gz) since that's what [https://docs.forem.com/installation/linux/](https://docs.forem.com/installation/linux/) points out.
 
 This is a long running service, running it in a shell like this might be a bother if you're not in the habit of letting shell sessions accumulate. tmux or screen or some other process manager might make sense, but I'll leave it in a shell session \(in emacs I can just name this `*elasticsearch process*` and leave it alone. For the time being I'll leave the default settings in place \(if java uses too much memory or ES starts to fail because of resource constraints it would be time to adjust that, but I'll hope for the best for now\):
 
@@ -57,10 +57,9 @@ OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in ve
 [2021-03-11T10:29:07,407][INFO ][o.e.h.AbstractHttpServerTransport] [laptop] publish_address {127.0.0.1:9200}, bound_addresses {[::1]:9200}, {127.0.0.1:9200}
 [2021-03-11T10:29:07,408][INFO ][o.e.n.Node               ] [laptop] started
 [2021-03-11T10:29:07,469][INFO ][o.e.g.GatewayService     ] [laptop] recovered [0] indices into cluster_state
-
 ```
 
-#### Node/nvm/yarn
+### Node/nvm/yarn
 
 I think I fall into the "older system node" category here and I also want to install nvm
 
@@ -124,9 +123,9 @@ Downloading and installing node v14.14.0...
 Downloading https://nodejs.org/dist/v14.14.0/node-v14.14.0-linux-x64.tar.xz...
 ```
 
-Yarn is ready to install _after_ nvm builds node 14 for us. The install instructions at [https://classic.yarnpkg.com/en/docs/install\#debian-stable](https://classic.yarnpkg.com/en/docs/install#debian-stable) look a little scary \(there's a note that this is all old and deprecated and the new yarn 2.0 install instructions are elsewhere\). As a sanity check I looked at the .[yarnrc](https://github.com/forem/forem/blob/master/.yarnrc) file in my forem directory with the yarn-path, it points to .yarn/releases/yarn-1.22.5.js for me, so I'm pretty sure  either my system, or the docker system, was using yarn 1 and not 2 and I'll continue doing that. Since I see that's checked into forem's repo, I'm pretty sure I didn't put it there and that's an expected version for the system \(which removes a lot of doubt I might have had here\).
+Yarn is ready to install _after_ nvm builds node 14 for us. The install instructions at [https://classic.yarnpkg.com/en/docs/install\#debian-stable](https://classic.yarnpkg.com/en/docs/install#debian-stable) look a little scary \(there's a note that this is all old and deprecated and the new yarn 2.0 install instructions are elsewhere\). As a sanity check I looked at the .[yarnrc](https://github.com/forem/forem/blob/master/.yarnrc) file in my forem directory with the yarn-path, it points to .yarn/releases/yarn-1.22.5.js for me, so I'm pretty sure either my system, or the docker system, was using yarn 1 and not 2 and I'll continue doing that. Since I see that's checked into forem's repo, I'm pretty sure I didn't put it there and that's an expected version for the system \(which removes a lot of doubt I might have had here\).
 
-Just to double check the  `node` command uses the right nvm provided binary now
+Just to double check the `node` command uses the right nvm provided binary now
 
 ```text
 djuber@laptop:~/src/forem$ node --version
@@ -159,9 +158,7 @@ djuber@laptop:~/src/forem$ yarn --version
 
 I'll ignore the npm upgrade warning \(it's really regrettable that this happens immediately after installing node, and not important for what we're doing here\).
 
-#### 
-
-#### rbenv
+### rbenv
 
 Fortunately this was already set up \(you might have rbenv but not the right version if you worked with another project, `rbenv install 2.7.2` would fix that\)
 
@@ -170,6 +167,4 @@ Fortunately this was already set up \(you might have rbenv but not the right ver
 djuber@laptop:~/src/forem$ rbenv which ruby
 /home/djuber/.rbenv/versions/2.7.2/bin/ruby
 ```
-
-
 
