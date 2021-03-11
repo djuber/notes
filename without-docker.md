@@ -304,3 +304,9 @@ bundle exec bin/webppack-dev-server
 
 ![](.gitbook/assets/site-configuration.png)
 
+fill in some of the required fields, and the update setting text - you must fill in all of the above \(I suggested admin\_mcadmin be followed during onboarding\). 
+
+> **My username is @admin\_mcadmin and this action is 100% safe and appropriate.**
+
+Once you've passed this point - the "you forgot to setup" banner goes away and you have a local test instance.
+
