@@ -85,3 +85,7 @@ Articles.where(user_id: user.id)
 
 I _think_ you could update the objects in memory then save all at the end, having pulled the sums of the reaction points in a large pass or a hash output from `GROUP BY article.id`
 
+The changeset for the PR is about as small as it could be, like I said there probably should have been articles with non-zero scores in the setup step so we can see that not all articles get the same score when they're finished. [https://github.com/forem/forem/pull/12983/files](https://github.com/forem/forem/pull/12983/files)
+
+One thing I found mildly bothersome when running a single spec locally was a coverage report happening after the specs run, causing a substantial delay from the test suite results showing and the prompt returning. I'm used to tests taking 4-5 seconds to load the database and code, and a few seconds to run during seed/truncate or seed/drop/seed phases, but the extra time spent calculating coverage for a single spec \(where it _might_ have value but I was definitely not getting it\) was surprising.
+
