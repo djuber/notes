@@ -22,5 +22,7 @@ I learned a few things, it looks like we also had the update\_score call using a
 
 [https://github.com/forem/forem/pull/13012](https://github.com/forem/forem/pull/13012) addresses the missing ES data \(by calling the existing Article score worker instead of calling Article\#update\_score directly\). 
 
+I guess the key takeway here is that the mechanism by which we moderate users is to apply user level reactions \(like an article level reaction, but all of the users articles factor this in for scoring\) followed by an article rescore for each article. This was unclear when I started on the process \(looking at what appeared to be a one-off database update using a formula to find the right levels\) but is probably the concept I want to internalize.
 
+One shaggy end I'd like to shave some day is right now the Articles::ScoreCalcWorker seems to be the one place that knows about how to perform the sequence of scorings \(update the db and sync to ES\) but there's not an easily testable _function_ to return the new scores, calculation and persistence are mingled in the update\_score method, and scoring the articles seems like business logic that could be pulled out of the article model class into a service, like Articles::Ranking, or at least a function that takes an article or an article and its reactions, and returns the tuple of values from the scoring plus the black box that we'll be persisting. 
 
