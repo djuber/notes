@@ -20,10 +20,6 @@ To clean this up \(make flaky tests solid once again\) would a valid approach be
 I guess I could just isolate the test suite to run the flaky ones with a tag? I'll start there and see what happens.
 
 ```ruby
-djuber@laptop:/data/src/forem$ bundle exec rspec --format=documentation --order=random --tag:flaky spec/                                                                              
-invalid option: --tag:flaky
-
-Please use --help for a listing of valid options
 djuber@laptop:/data/src/forem$ bundle exec rspec --format=documentation --order=random --tag=flaky spec/                                                                              DEPRECATION WARNING: Devise::Models::Authenticatable::BLACKLIST_FOR_SERIALIZATION is deprecated! Use Devise::Models::Authenticatable::UNSAFE_ATTRIBUTES_FOR_SERIALIZATION instead. (called from const_get at /data/src/forem/vendor/cache/devise-0cd72a56f984/lib/devise/models.rb:90)
 WARNING: Shared example group 'UserSubscriptionSourceable' has been previously defined at:
   /data/src/forem/spec/models/shared_examples/user_subscription_sourceable_spec.rb:1
@@ -53,5 +49,31 @@ Randomized with seed 43087
 
 ```
 
-not really what I was expecting to happen \(maybe the whole describe block needs to be tagged and not a context or it block?\)
+I was underwhelmed when I ran this since my first search covered the installed gems in vendor/ as well, I only want to look for _our_ test suite and that lines up with the run above.
+
+```bash
+djuber@laptop:/data/src/forem$ git grep :flaky spec/
+spec/rails_helper.rb:  config.around(:each, :flaky) do |ex|
+spec/services/articles/suggest_spec.rb:  it "returns proper number of articles with post wi
+th the same tags", :flaky do                                                              
+spec/services/articles/suggest_spec.rb:  it "returns proper number of articles with post wi
+th different tags", :flaky do                                                             
+spec/services/articles/suggest_spec.rb:  it "returns the number of articles requested", :fl
+aky do                                                                                    
+spec/system/articles/user_creates_an_article_spec.rb:  it "creates a new article", :flaky, 
+js: true do                                                                               
+spec/system/podcasts/user_visits_podcast_episode_spec.rb:  it "they see the content of the 
+hero", :flaky, js: true do     
+```
+
+To try and simulate the flakiness I'm going to edit the rails helper as follows:
+
+```ruby
+  config.around(:each, :flaky) do |ex|
+    ex.run
+    # ex.run_with_retry retry: 3
+  end
+```
+
+basically - just ignore this by calling the example directly with no retry count if it's tagged flaky, then I can isolate the failures by re-running the tag scoped examples.
 
