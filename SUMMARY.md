@@ -6,5 +6,5 @@
 * [Setting gitbook to use "main" branch by default](setting-gitbook-to-use-main-branch-by-default.md)
 * [User Moderation](user-moderation.md)
 * [User Moderation is really just scoring](user-moderation-is-really-just-scoring.md)
-* [Flaky Specs](flaky-specs.md)
+* [Flaky Specs \#1](flaky-specs.md)
 
