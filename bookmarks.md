@@ -8,5 +8,7 @@ description: Reading list more or  less
 
 [https://buildkite.com/docs/tutorials/elastic-ci-stack-aws](https://buildkite.com/docs/tutorials/elastic-ci-stack-aws) I think this might be what we're targeting?
 
-[https://github.com/buildkite/cli](https://github.com/buildkite/cli) run pipelines locally
+[https://github.com/buildkite/cli](https://github.com/buildkite/cli) run pipelines locally - also [https://buildkite.com/changelog/44-run-pipelines-locally-with-bk-cli](https://buildkite.com/changelog/44-run-pipelines-locally-with-bk-cli)
+
+
 
