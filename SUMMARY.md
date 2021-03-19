@@ -9,4 +9,5 @@
 * [Flaky Specs \#1](flaky-specs.md)
 * [Tracking down spec failures](tracking-down-spec-failures.md)
 * [Flaky Specs](flaky-specs-1.md)
+* [Travis CI Segfaults](travis-ci-segfaults.md)
 
