@@ -263,3 +263,5 @@ this contrasts with the behavior earlier "you should see an indication that [htt
 
 I don't know what or why - I ended up deleting the containers \(I basically removed all containers and all images from my local docker service and re-ran `docker-compose up` and now see rails loads and sidekiq is doing it's thing\).
 
+Next step would be to get the user creation/setup so I can test login.
+
