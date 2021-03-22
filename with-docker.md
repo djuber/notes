@@ -257,5 +257,9 @@ There was an issue in Forem with authentication that occurred about the same tim
 1. Since the issues I saw with extensions \(compiling against fedora's glibc but running on my debian host\) crashing leads me to think you really don't want both of these in the same tree, I'm recloning my repo into ~/src/forem-with-docker from my fork, this should allow the two vendored bundles \(and webpack generated files\) to not conflict, especially when coupled with issues around root owned files breaking local operations. This permits me to test either \(modulo service start/stop since the ports conflict, we probably don't need to expose everything on the default ports here\), and to not have to fight as much.
 2. My initial goal is getting back up to a place where the site loads, and verifying user login. 
 
+![500 error on /](.gitbook/assets/undefined-method-protocol.png)
 
+this contrasts with the behavior earlier "you should see an indication that [http://rails:3000/](http://rails:3000/) was checked as live" since I'm consistently getting a 500 - rechecking the setup instructions in case I skipped a step \(I copied .env\_sample to .env\)
+
+I don't know what or why - I ended up deleting the containers \(I basically removed all containers and all images from my local docker service and re-ran `docker-compose up` and now see rails loads and sidekiq is doing it's thing\).
 
