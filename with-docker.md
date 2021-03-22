@@ -248,3 +248,14 @@ So let's unwind our progress and stop docker, restart redis and postgres, and pr
 
 This page is already long so I'm going to move to [another one](https://app.gitbook.com/@danuber/s/public-notes/without-docker) for setting up a native local test env \(non-docker\).
 
+
+
+## Getting back to this 
+
+There was an issue in Forem with authentication that occurred about the same time as when I tried to get this running. So I'm taking a second pass at this \(since it dovetails nicely with work I'm about to do with CI, which expects containers anyway and may leverage the docker-compose configuration\). 
+
+1. Since the issues I saw with extensions \(compiling against fedora's glibc but running on my debian host\) crashing leads me to think you really don't want both of these in the same tree, I'm recloning my repo into ~/src/forem-with-docker from my fork, this should allow the two vendored bundles \(and webpack generated files\) to not conflict, especially when coupled with issues around root owned files breaking local operations. This permits me to test either \(modulo service start/stop since the ports conflict, we probably don't need to expose everything on the default ports here\), and to not have to fight as much.
+2. My initial goal is getting back up to a place where the site loads, and verifying user login. 
+
+
+
