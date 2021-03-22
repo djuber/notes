@@ -11,4 +11,5 @@
 * [Flaky Specs](flaky-specs-1.md)
 * [Travis CI Segfaults](travis-ci-segfaults.md)
 * [Bookmarks](bookmarks.md)
+* [User Setup in development](user-setup-in-development.md)
 
