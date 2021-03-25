@@ -11,7 +11,24 @@ docker-compose run rspec bundle exec rspec spec/.../file_spec.rb
 
 This seems like it works, _except_ carrierwave uploads in the factories \(on any object with an associated image, like a user or a badge or an organization\). I'm focusing on the behavior of the badge factory as a specific concrete example but this is presenting more generally for all carrierwave uploaders, in  the docker hosted spec executions.
 
-I can replicate the same steps in rspec running locally \(on the host, not in docker\) and see the following:
+In all cases the setup includes this breakpoint added to spec/factories/badges.rb
+
+```ruby
+FactoryBot.define do
+  image_path = Rails.root.join("spec/support/fixtures/images/image1.jpeg")
+
+  factory :badge do
+    # stopping here to inspect behavior
+    binding.pry
+    sequence(:title) { |n| "#{Faker::Book.title}-#{n}" }
+    description { Faker::Lorem.sentence }
+    badge_image { Rack::Test::UploadedFile.new(image_path, "image/jpeg") }
+  end
+end
+
+```
+
+I can replicate the same steps in rspec running locally \(on the host, not in docker\) and see the following \(correct\) behavior, yielding a passing test:
 
 ```ruby
 
@@ -164,7 +181,7 @@ djuber@forem:~/src/forem$ bundle exec rspec spec/uploaders/badge_uploader_spec.r
 
 ```
 
-Notably - the badge\_image is only present on the model after save \(it's added in memory to the object when I save\) - but the uploader is created.
+Notably - the badge\_image is only present on the model after save \(it's added in memory to the object when I save\) - but the uploader is created with a file object that's a carrier wave sanitized file.
 
 
 
@@ -233,5 +250,5 @@ In docker prompts 1, 2, 4 \(I removed 3 which was a typo and error response\) ar
 
 the tempfile exists. The badge\_image is a badge uploader. In test, carrierwave disables processing \(is that the problem? why didn't that also happen in local testing\). 
 
-Confused a litte here.
+Confused a litte here. Carrierwave mounted uploaders don't provide a lot of good surface area on the model classes to track this down.
 
