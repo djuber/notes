@@ -187,7 +187,7 @@ Notably - the badge\_image is only present on the model after save \(it's added 
 
 In docker prompts 1, 2, 4 \(I removed 3 which was a typo and error response\) are the same, but valid? returns false, errors points out the image is blank, calling that "unsupported type".
 
-```text
+```ruby
 
 [1] pry(#<FactoryBot::Declaration::Implicit>)> image_path = Rails.root.join("spec/support/fixtures/images/image1.jpeg")                                                              
 => #<Pathname:/opt/apps/forem/spec/support/fixtures/images/image1.jpeg>
