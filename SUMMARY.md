@@ -12,4 +12,5 @@
 * [Travis CI Segfaults](travis-ci-segfaults.md)
 * [Bookmarks](bookmarks.md)
 * [User Setup in development](user-setup-in-development.md)
+* [Testing in Docker locally](testing-in-docker-locally.md)
 
