@@ -252,3 +252,13 @@ the tempfile exists. The badge\_image is a badge uploader. In test, carrierwave 
 
 Confused a litte here. Carrierwave mounted uploaders don't provide a lot of good surface area on the model classes to track this down.
 
+
+
+### Part 2 - after lunch
+
+So I decided to watch what carrier wave was doing \(on the file system at least\). I noticed the BaseUploader contains an upload directory in "uploads/{model.class.to\_s.underscore}/{mounted\_as}/{model.id}" - i.e. I would expect this to show as
+
+`uploads/badge/badge_image/?` where the example has what looks like an object\_id but might not work as well when id is nil \(because the model has yet to be persisted?\). I did not see this \(I see it write to /tmp and unlink the written file, which might be the same problem under a different guise\). I'm not seeing stat or the like trying to find a directory like that.
+
+
+
