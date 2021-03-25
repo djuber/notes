@@ -9,7 +9,7 @@ docker-compose run rspec bundle exec rspec spec/.../file_spec.rb
 
 ```
 
-This seems like it works, _except_ carrierwave uploads in the factories \(on any object with an associated image, like a user or a badge or an organization\). I'm focusing on the behavior of the badge factory as a specific concrete example but this is presenting more generally for all carrierwave uploaders for me in  the docker hosted specs.
+This seems like it works, _except_ carrierwave uploads in the factories \(on any object with an associated image, like a user or a badge or an organization\). I'm focusing on the behavior of the badge factory as a specific concrete example but this is presenting more generally for all carrierwave uploaders, in  the docker hosted spec executions.
 
 I can replicate the same steps in rspec running locally \(on the host, not in docker\) and see the following:
 
