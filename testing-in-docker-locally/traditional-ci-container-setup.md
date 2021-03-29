@@ -51,7 +51,8 @@ oh, I guess I had a typo - we're good - we're good! wow! whoa. this was stupid \
 
 
 ```text
-djuber@forem:~/src/forem-for-docker$ docker-compose --file=docker-compose-test.yml run -e RAILS_ENV=test -e DATABASE_URL_TEST="postgresql://forem:forem@db:5432/PracticalDeveloper_test"  rails bundle exec rspec spec/models/user_spec.rb                                       WARNING: The KNAPSACK_PRO_TEST_SUITE_TOKEN_RSPEC variable is not set. Defaulting to a blank string.
+djuber@forem:~/src/forem-for-docker$ docker-compose --file=docker-compose-test.yml run -e RAILS_ENV=test -e DATABASE_URL_TEST="postgresql://forem:forem@db:5432/PracticalDeveloper_test"  rails bundle exec rspec spec/models/user_spec.rb   
+WARNING: The KNAPSACK_PRO_TEST_SUITE_TOKEN_RSPEC variable is not set. Defaulting to a blank string.
 WARNING: Found orphan containers (forem_bundle) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
 Starting forem_yarn                  ... done
 Starting forem-for-docker_selenium_1 ... done
