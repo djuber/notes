@@ -91,5 +91,5 @@ Finished in 34.94 seconds (files took 5.73 seconds to load)
 * seems like redis url is localhost:6379 and should not be \(a few tests use rpush or put feature flags in redis\)
 * admin should show last commit "some date" \(might be tied to the entrypoint.sh not finding git?\) - this looks like a one-off build process or execution order issue, rather than a problem with the container orchestration.
 
-
+Next step was "add chrome to the build" since that seems like the biggest improvement if it works correctly. 
 
