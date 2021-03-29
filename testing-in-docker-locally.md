@@ -260,5 +260,7 @@ So I decided to watch what carrier wave was doing \(on the file system at least\
 
 `uploads/badge/badge_image/?` where the example has what looks like an object\_id but might not work as well when id is nil \(because the model has yet to be persisted?\). I did not see this \(I see it write to /tmp and unlink the written file, which might be the same problem under a different guise\). I'm not seeing stat or the like trying to find a directory like that.
 
+### Next day
 
+Could a read-only volume do this \(can write to /tmp successfully and read from /opt/ but not write? That's a simple test at least.
 
