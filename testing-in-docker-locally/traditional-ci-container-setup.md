@@ -37,6 +37,10 @@ djuber@forem:~/src/forem-for-docker$ ls -l .ruby-version
 -rw-r--r-- 1 djuber djuber 6 Mar 23 11:01 .ruby-version
 djuber@forem:~/src/forem-for-docker$ cat .ruby-version 
 2.7.2
+
+# I think I needed instead 
+$ docker build --file .buildkite/Dockerfile .
+
 ```
 
 
