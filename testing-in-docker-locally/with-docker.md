@@ -20,11 +20,11 @@ You have to copy the .env\_sample in the repo to .env \(it's in the instructions
 
 at this point `docker-compose up` will suffice to start the service - you should see an indication that [http://rails:3000/](http://rails:3000/) was checked as live. You can visit your testing instance at[ http://localhost:3000/](https://localhost:3000/) and should see some lorem ipsum text
 
-![](.gitbook/assets/lorem-forem.png)
+![](../.gitbook/assets/lorem-forem.png)
 
 There's a handy banner saying I need to configure the site, linking to [http://localhost:3000/admin/config](http://localhost:3000/admin/config) but when I visit that, I get a rails error page:
 
-![Pundit error](.gitbook/assets/pundit-error.png)
+![Pundit error](../.gitbook/assets/pundit-error.png)
 
 This doesn't seem totally wrong \(I'm _not_ logged in and I'm likely _not_ an authorized admin\) - we'll setup a user to login, and make them an admin, in the next steps.
 
@@ -46,7 +46,7 @@ sidekiq_1        | /opt/apps/forem/app/models/article.rb:382:in `update_score'
 
 **Weirdness 3**: starting the docker-compose environment seems like it regenerated the db/schema.rb file, which appears to have the same content, but not the same order. I suggest reverting this file post-startup and before beginning work \(especially if that work includes a migration\).
 
-![schema.rb changes](.gitbook/assets/schema.png)
+![schema.rb changes](../.gitbook/assets/schema.png)
 
 ## Using the console
 
@@ -132,11 +132,11 @@ At this point I have a user, email is shown at the bottom there, password is ava
 
 Security fears allayed for the moment, see if we can login to the site. I click the "Log In" link on the page, and I get to a welcome page with non-functioning OAuth buttons and email + password form
 
-![Login Page](.gitbook/assets/login.png)
+![Login Page](../.gitbook/assets/login.png)
 
 So I put in my two magic strings, and I get a blank 200 page \(I would _normally_ have expected 302 redirect after post, this is unexpected, and presents as a blank page to me on what I assume was a successful login\)
 
-![](.gitbook/assets/form-submission.png)
+![](../.gitbook/assets/form-submission.png)
 
 Let's pop over to the shell session running docker-compose and see what the logs show - I see the POST with data that looks reasonable, and I see a 200 response \(from the Devise::SessionsController in this case\), followed by a request for serviceworker.js \(which I don't see in the network tab of the browser\) also giving a 200 - it looks like that's also a controller response and not a static asset \(just noting that for future investigation at this point\).
 
@@ -176,7 +176,7 @@ app/lib/url.rb:11:in `domain'
 
 and a warning from the ActionController::RequestForgeryProtection about the Origin header not matching \(then giving two identical strings that don't match\).
 
-![My feelings right now](.gitbook/assets/manshrugging.gif)
+![My feelings right now](../.gitbook/assets/manshrugging.gif)
 
 ### Hypothesis 3: Password login just isn't what I want
 
@@ -257,7 +257,7 @@ There was an issue in Forem with authentication that occurred about the same tim
 1. Since the issues I saw with extensions \(compiling against fedora's glibc but running on my debian host\) crashing leads me to think you really don't want both of these in the same tree, I'm recloning my repo into ~/src/forem-with-docker from my fork, this should allow the two vendored bundles \(and webpack generated files\) to not conflict, especially when coupled with issues around root owned files breaking local operations. This permits me to test either \(modulo service start/stop since the ports conflict, we probably don't need to expose everything on the default ports here\), and to not have to fight as much.
 2. My initial goal is getting back up to a place where the site loads, and verifying user login. 
 
-![500 error on /](.gitbook/assets/undefined-method-protocol.png)
+![500 error on /](../.gitbook/assets/undefined-method-protocol.png)
 
 this contrasts with the behavior earlier "you should see an indication that [http://rails:3000/](http://rails:3000/) was checked as live" since I'm consistently getting a 500 - rechecking the setup instructions in case I skipped a step \(I copied .env\_sample to .env\)
 
