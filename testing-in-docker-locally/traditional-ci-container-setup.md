@@ -39,9 +39,10 @@ djuber@forem:~/src/forem-for-docker$ cat .ruby-version
 2.7.2
 
 # I think I needed instead 
-$ docker build --file .buildkite/Dockerfile .
-
+$ docker build --file .buildkite/Dockerfile . -t testcontainer
 ```
+
+That worked \(with the file option building from `.`\) - it looks like the coordination for this container requires postgresql up and running \(which docker-compose would have done for you\).
 
 
 
