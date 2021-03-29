@@ -91,5 +91,11 @@ Finished in 34.94 seconds (files took 5.73 seconds to load)
 * seems like redis url is localhost:6379 and should not be \(a few tests use rpush or put feature flags in redis\) - might be a missing RPUSH\_URL env var that has been set to redis://redis:6379 in a subsequent commit
 * admin should show last commit "some date" \(might be tied to the entrypoint.sh not finding git?\) - this looks like a one-off build process or execution order issue, rather than a problem with the container orchestration.
 
-Next step was "add chrome to the build" since that seems like the biggest improvement if it works correctly. 
+Next step was "add chrome to the build" since that seems like the biggest improvement if it works correctly.  Not sure if the build process was off \(at least the first time I confused the image tag and built a bogus name not referenced\) - I only shaved one failed spec.
+
+[https://github.com/forem/forem/compare/master...djuber:djuber/spike-running-tests-in-docker](https://github.com/forem/forem/compare/master...djuber:djuber/spike-running-tests-in-docker) is the current progress as I get closer to clean. 
+
+Note to self - adding rspec to entrypoint.sh for test makes running this easier but makes the output happen all at once \(less useful for watching impatiently\). `--format=documentation` might help \(the issue is the console width tracking that the pretty rspec binary tries to use to know how to fill the screen with green during progress formatting is nil for me in the container when writing to logs, so nothing is sent to output until a WARNING gets triggered \(then all pending results are flushed out\).
+
+
 
