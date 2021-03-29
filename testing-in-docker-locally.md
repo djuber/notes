@@ -4,7 +4,7 @@ I'm trying to use the container images in docker-compose.yml to run rspec.
 
 I modified the docker-compose file to include a container named "rspec" and can run specs via the following
 
-```text
+```bash
 docker-compose run rspec bundle exec rspec spec/.../file_spec.rb
 
 ```
