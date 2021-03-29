@@ -264,3 +264,21 @@ So I decided to watch what carrier wave was doing \(on the file system at least\
 
 Could a read-only volume do this \(can write to /tmp successfully and read from /opt/ but not write? That's a simple test at least.
 
+```text
+$ cat scripts/write_file.sh 
+#!/usr/bin/env bash
+
+set -e
+
+echo "foo" > file
+
+$ docker-compose run rspec scripts/write_file.sh 
+...
+2021/03/29 13:53:19 Command finished successfully.
+
+$ cat file
+foo
+```
+
+Okay - so the source is mounted read/write and that's obviously not the problem, it seems more likely this is something related to carrierwave's configuration \(and I would bet that the config files are only expected/tested to work in local dev environments for test\). My next step is to compare what the setup looks like for development \(where I think this works running in docker?\) I guess I can try uploading an image to confirm before I chase down the configs.
+
