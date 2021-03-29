@@ -362,3 +362,5 @@ locals: _  __  _dir_  _ex_  _file_  _in_  _out_  pry_instance
 
 BaseUploader defines `store_dir` as `uploads/model/mounted_as/model.id` which appears to be happening fine here... 
 
+One thing that's not being set in the initializer is `enable_processing` \(false in test\) and `asset_host` \(nil in test because neither production? nor imgproxy\_enabled? are true\)
+
