@@ -282,3 +282,26 @@ foo
 
 Okay - so the source is mounted read/write and that's obviously not the problem, it seems more likely this is something related to carrierwave's configuration \(and I would bet that the config files are only expected/tested to work in local dev environments for test\). My next step is to compare what the setup looks like for development \(where I think this works running in docker?\) I guess I can try uploading an image to confirm before I chase down the configs.
 
+
+
+Yes, that works - files are created in public/uploads/user/profile\_image/NN/XXXXXXXXXXXX.png, for example public/uploads/user/profile\_image/11/a5ee6ced-0dce-4ab3-9da6-09ea1b1f8265.png
+
+This is in dev mode, and works correctly.
+
+What's happening in test that's different \(I see a lot of organization uploads in this directory that _could_ have been tied to uploading files?, the timestamps are consistent with hammering the test suite\).
+
+There sure are a lot of android-icon-36x36.png files in public/uploads/tmp which are all the same file \(distinct paths, look like epoch time prefixed paths, and all the DEV icon file \(they hash the same\). Something drops lots of garbage in here. All the organization/profile\_image/ files are similarly identical \(which makes sense if they're coming from a test case reading the same file repeatedly\).
+
+#### Clean everything up
+
+I removed everything except the public/uploads/ directory \(all children have been cleaned\) - need to sudo since this is a root created upload \(thanks again, docker\).
+
+```text
+$ find public/uploads/
+public/uploads/
+$ docker-compose run rspec
+
+```
+
+
+
