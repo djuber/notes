@@ -360,5 +360,5 @@ locals: _  __  _dir_  _ex_  _file_  _in_  _out_  pry_instance
 => "/opt/apps/forem/public"  
 ```
 
-
+BaseUploader defines `store_dir` as `uploads/model/mounted_as/model.id` which appears to be happening fine here... 
 
