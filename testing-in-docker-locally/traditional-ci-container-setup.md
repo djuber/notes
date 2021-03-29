@@ -82,3 +82,13 @@ Finished in 34.94 seconds (files took 5.73 seconds to load)
 
 [https://github.com/forem/forem/commit/2dd87a52b1235bcdea78caefd6a680fc637c59e7](https://github.com/forem/forem/commit/2dd87a52b1235bcdea78caefd6a680fc637c59e7) running all of spec/ shows a _few_ failures - these might be systems tests - will let it finish before I decide what to do.
 
+
+
+[https://gist.github.com/djuber/607f96332f7dc3ff7de8cf05301a1708](https://gist.github.com/djuber/607f96332f7dc3ff7de8cf05301a1708) okay - summary of issues
+
+* can't find chrome \(all system/front-end tests require this for selenium\)
+* seems like redis url is localhost:6379 and should not be \(a few tests use rpush or put feature flags in redis\)
+* admin should show last commit "some date" \(might be tied to the entrypoint.sh not finding git?\) - this looks like a one-off build process or execution order issue, rather than a problem with the container orchestration.
+
+
+

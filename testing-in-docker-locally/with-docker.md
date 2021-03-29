@@ -50,7 +50,7 @@ sidekiq_1        | /opt/apps/forem/app/models/article.rb:382:in `update_score'
 
 ## Using the console
 
-As a backed engineer I spend a fair amount of time in the rails console, so getting one up and running makes sense. The docker-compose file sets up the environment for locally testing the web-app or running background jobs, but doesn't provide the interactive environment you get from the repl. In a "normal" or hosted rails environment, I would call `bundle exec rails console` to start pry or irb in the project, but see weirdness 2 above - bundle ran inside the containers and generated extensions for a slightly different linux than the one I'm running \(wrong glibc version was compiled against\). To work around this - I'll start a shell in the rails container and run a console there \(this is a layer of indirection you don't experience with a native execution\)
+As a backend engineer I spend a fair amount of time in the rails console, so getting one up and running makes sense. The docker-compose file sets up the environment for locally testing the web-app or running background jobs, but doesn't provide the interactive environment you get from the repl. In a "normal" or hosted rails environment, I would call `bundle exec rails console` to start pry or irb in the project, but see weirdness 2 above - bundle ran inside the containers and generated extensions for a slightly different linux than the one I'm running \(wrong glibc version was compiled against\). To work around this - I'll start a shell in the rails container and run a console there \(this is a layer of indirection you don't experience with a native execution\)
 
 ```text
  $ docker container exec -it forem_rails /bin/bash  
