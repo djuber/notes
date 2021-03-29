@@ -364,3 +364,7 @@ BaseUploader defines `store_dir` as `uploads/model/mounted_as/model.id` which ap
 
 One thing that's not being set in the initializer is `enable_processing` \(false in test\) and `asset_host` \(nil in test because neither production? nor imgproxy\_enabled? are true\)
 
+All of this works fine in travis which should be the same environment more or less - except rails server container is not being started... and this was _not_ the hangup in the prior tests to get buildkite integrated by molly. I'm going to back off this direction \(using the docker-compose file and forem images as a base case\) and approach this from a more typical direction - which is a ruby:2.7.2 image, a postgres and redis and es images, and run rspec like we do locally. Testing forem in forem's containers is a goal - it might not be the right one for right now.
+
+
+
