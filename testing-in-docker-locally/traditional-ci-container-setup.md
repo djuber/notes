@@ -88,7 +88,7 @@ Finished in 34.94 seconds (files took 5.73 seconds to load)
 [https://gist.github.com/djuber/607f96332f7dc3ff7de8cf05301a1708](https://gist.github.com/djuber/607f96332f7dc3ff7de8cf05301a1708) okay - summary of issues
 
 * can't find chrome \(all system/front-end tests require this for selenium\)
-* seems like redis url is localhost:6379 and should not be \(a few tests use rpush or put feature flags in redis\)
+* seems like redis url is localhost:6379 and should not be \(a few tests use rpush or put feature flags in redis\) - might be a missing RPUSH\_URL env var that has been set to redis://redis:6379 in a subsequent commit
 * admin should show last commit "some date" \(might be tied to the entrypoint.sh not finding git?\) - this looks like a one-off build process or execution order issue, rather than a problem with the container orchestration.
 
 Next step was "add chrome to the build" since that seems like the biggest improvement if it works correctly. 
