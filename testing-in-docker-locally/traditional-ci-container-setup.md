@@ -44,5 +44,5 @@ $ docker build --file .buildkite/Dockerfile . -t testcontainer
 
 That worked \(with the file option building from `.`\) - it looks like the coordination for this container requires postgresql up and running \(which docker-compose would have done for you\).
 
-
+I'm still getting the carrierwave issue - and still not having this problem locally. Since molly wasn't crying about this 5 months ago, did something change with the carrierwave setup since then?
 
