@@ -97,5 +97,15 @@ Next step was "add chrome to the build" since that seems like the biggest improv
 
 Note to self - adding rspec to entrypoint.sh for test makes running this easier but makes the output happen all at once \(less useful for watching impatiently\). `--format=documentation` might help \(the issue is the console width tracking that the pretty rspec binary tries to use to know how to fill the screen with green during progress formatting is nil for me in the container when writing to logs, so nothing is sent to output until a WARNING gets triggered \(then all pending results are flushed out\).
 
+Okay - chrome is found \(chrome-headless was not enough\) but failures on the same tests because vcr/webmock doesn't know to permit through posts to selenium host
 
+```text
+       156.2) Failure/Error: VCR.turned_off { ex.run }
+              
+              WebMock::NetConnectNotAllowedError:
+                Real HTTP connections are disabled. Unregistered request: POST http://selenium:4444/wd/hub/session with body '{"desiredCapabilities":{"browserName":"chrome","version":"","platform":"ANY","javascriptEnabled":true,"cssSelectorsEnabled":true,"takesScreenshot":false,"nativeEvents":false,"rotatable":false},"capabilities":{"firstMatch":[{"browserName":"chrome"}]}}' with headers {'Accept'=>'application/json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Length'=>'250', 'Content-Type'=>'application/json; charset=UTF-8', 'User-Agent'=>'selenium/3.142.7 (ruby linux)'}
+
+```
+
+90% sure I saw an "allowed hosts" commit that molly made in another branch that I need to bring in.
 
