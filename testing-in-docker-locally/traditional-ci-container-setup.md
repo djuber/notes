@@ -46,3 +46,39 @@ That worked \(with the file option building from `.`\) - it looks like the coord
 
 I'm still getting the carrierwave issue - and still not having this problem locally. Since molly wasn't crying about this 5 months ago, did something change with the carrierwave setup since then?
 
+oh, I guess I had a typo - we're good - we're good! wow! whoa. this was stupid \(and I still don't know what happened to make this work correctly\).
+
+
+
+```text
+djuber@forem:~/src/forem-for-docker$ docker-compose --file=docker-compose-test.yml run -e RAILS_ENV=test -e DATABASE_URL_TEST="postgresql://forem:forem@db:5432/PracticalDeveloper_test"  rails bundle exec rspec spec/models/user_spec.rb                                       WARNING: The KNAPSACK_PRO_TEST_SUITE_TOKEN_RSPEC variable is not set. Defaulting to a blank string.
+WARNING: Found orphan containers (forem_bundle) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+Starting forem_yarn                  ... done
+Starting forem-for-docker_selenium_1 ... done
+Starting forem_redis                 ... done
+Starting forem_postgresql            ... done
+Starting forem_elasticsearch         ... done
+2021/03/29 20:44:11 Waiting for: http://selenium:4444
+2021/03/29 20:44:11 Waiting for: tcp://db:5432
+2021/03/29 20:44:11 Waiting for: http://elasticsearch:9200
+2021/03/29 20:44:11 Waiting for: tcp://redis:6379
+2021/03/29 20:44:11 Connected to tcp://db:5432
+2021/03/29 20:44:11 Connected to tcp://redis:6379
+2021/03/29 20:44:11 Received 200 from http://elasticsearch:9200
+2021/03/29 20:44:11 Received 200 from http://selenium:4444
+Running command:
+bundle exec rspec spec/models/user_spec.rb
+DEPRECATION WARNING: Devise::Models::Authenticatable::BLACKLIST_FOR_SERIALIZATION is deprecated! Use Devise::Models::Authenticatable::UNSAFE_ATTRIBUTES_FOR_SERIALIZATION instead. (called from const_get at /opt/apps/forem/vendor/cache/devise-0cd72a56f984/lib/devise/models.rb:90)
+[Zonebie] Setting timezone: ZONEBIE_TZ="Chihuahua"
+..........................................................................................
+..........................................................................................
+...................................
+
+Finished in 34.94 seconds (files took 5.73 seconds to load)
+217 examples, 0 failures
+
+2021/03/29 20:44:52 Command finished successfully.
+```
+
+[https://github.com/forem/forem/commit/2dd87a52b1235bcdea78caefd6a680fc637c59e7](https://github.com/forem/forem/commit/2dd87a52b1235bcdea78caefd6a680fc637c59e7) running all of spec/ shows a _few_ failures - these might be systems tests - will let it finish before I decide what to do.
+
