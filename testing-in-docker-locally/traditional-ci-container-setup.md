@@ -109,3 +109,16 @@ Okay - chrome is found \(chrome-headless was not enough\) but failures on the sa
 
 90% sure I saw an "allowed hosts" commit that molly made in another branch that I need to bring in.
 
+Indeed - in `spec/rails_helper.rb` there is an allow list, I added selenium:4444 to this \(which appears to have fixed a bulk of the system test failures\) - I'm still getting some issues with file uploads \(remote chrome and selenium &lt; 3.14 - might need to update the container in the docker compose\).
+
+Not sure I understand the error - the container appears to be running 3.141.59 and should be "&gt; 3.14". Maybe the webdriver code is stale?
+
+```text
+/opt/selenium $java -jar selenium-server-standalone.jar 
+14:00:25.954 INFO [GridLauncherV3.parse] - Selenium server version: 3.141.59, revision: e82be7d358
+14:00:26.015 INFO [GridLauncherV3.lambda$buildLaunchers$3] - Launching a standalone Selenium Server on port 4444
+2021-03-30 14:00:26.053:INFO::main: Logging initialized @256ms to org.seleniumhq.jetty9.util.log.StdErrLog
+14:00:26.234 INFO [WebDriverServlet.<init>] - Initialising WebDriverServlet
+14:00:26.306 INFO [SeleniumServer.boot] - Selenium Server is up and running on port 4444
+```
+
