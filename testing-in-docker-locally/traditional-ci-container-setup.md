@@ -122,3 +122,15 @@ Not sure I understand the error - the container appears to be running 3.141.59 a
 14:00:26.306 INFO [SeleniumServer.boot] - Selenium Server is up and running on port 4444
 ```
 
+Gemfile.lock shows selenium-webdriver is 3.142.7 - seems like also "&gt; 3.14" but I might be missing something...
+
+```text
+    selenium-webdriver (3.142.7)
+      childprocess (>= 0.5, < 4.0)
+      rubyzip (>= 1.2.2)
+    webdrivers (4.6.0)
+      nokogiri (~> 1.6)
+      rubyzip (>= 1.3.0)
+      selenium-webdriver (>= 3.0, < 4.0)
+```
+
