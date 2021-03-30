@@ -136,3 +136,9 @@ Gemfile.lock shows selenium-webdriver is 3.142.7 - seems like also "&gt; 3.14" b
 
 Time to re-read that Avdi  Grimm article on "end to end tests" [https://avdi.codes/rails-6-system-tests-from-top-to-bottom/](https://avdi.codes/rails-6-system-tests-from-top-to-bottom/) since I think I'm missing some piece of the action. Toss in [https://avdi.codes/run-rails-6-system-tests-in-docker-using-a-host-browser/](https://avdi.codes/run-rails-6-system-tests-in-docker-using-a-host-browser/) for extra credit and come back in 30 minutes after thinking for a bit.
 
+
+
+![Still a few failures but this is excellent progress from last week](../.gitbook/assets/i-will-win.png)
+
+
+
