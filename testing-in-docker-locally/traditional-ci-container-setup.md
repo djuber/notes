@@ -175,3 +175,7 @@ One thing in our code that popped out is a guard for HEADLESS=false as an env va
 
 Just gotta say using containerized selenium, docker, chrome and rspec all together seems like a pretty confusing configuration \(there are a lot of parts, they all have to know a little  about at least one of the others, and they may or may not work the way you expected\).
 
+One thing I did as an experiment to squelch a warning I _thought_ I saw was to send the option to disable sandboxing, thinking chrome was running in the rails container as root, however, it's running as user 1200 inside the selenium/standalone-chrome container \(`docker container top` showed this\).
+
+My morning of experimentation gets me from "under 20 failures" yesterday to 86 failures mostly tied to invalid session ids now. I'm tempted to reverse direction on what I've done at this point and go back to "close but not yet right" for the time being.
+
