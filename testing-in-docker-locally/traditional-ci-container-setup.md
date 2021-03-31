@@ -181,3 +181,9 @@ My morning of experimentation gets me from "under 20 failures" yesterday to 86 f
 
 Although, I wonder if the problem is that I am running system tests in isolation \(why should that matter\)? One continuing pain point about this setup is that the code is `COPY` into the container, rather than mounted as a volume, meaning a container rebuild is needed between test runs if anything in the spec or code changes.
 
+
+
+### Session handling
+
+VCR raises an error after the end of the test suite where it looks like we're trying to send `DELETE session/:session_id` to the webdriver port. Since this is not recognized the request fails. This has a knock off effect that running the test suite twice without stopping and restarting the selenium container \(I just docker-compose down and back up\) causes connection failures \(can't bind on interface is the error selenium gives but it feels like the competing sessions cause issues\).
+
