@@ -173,5 +173,5 @@ Okay -  reading assignment part two was [https://avdi.codes/run-rails-6-system-t
 
 One thing in our code that popped out is a guard for HEADLESS=false as an env variable \(suggesting chrome should be attempting to use the headless version, further frustrating my need to have installed chrome for gui plus the required gui libs to support that\). 
 
-
+Just gotta say using containerized selenium, docker, chrome and rspec all together seems like a pretty confusing configuration \(there are a lot of parts, they all have to know a little  about at least one of the others, and they may or may not work the way you expected\).
 
