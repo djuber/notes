@@ -171,7 +171,7 @@ I did check to make sure I wasn't accidentally running chrome locally \(which se
 
 Okay -  reading assignment part two was [https://avdi.codes/run-rails-6-system-tests-in-docker-using-a-host-browser/](https://avdi.codes/run-rails-6-system-tests-in-docker-using-a-host-browser/) and discusses the issue I had earlier \(can't find chrome\) suggesting disabling the webdrivers gem \(which manages the driver but not the download of the browser\) was part of the issue?
 
-
+One thing in our code that popped out is a guard for HEADLESS=false as an env variable \(suggesting chrome should be attempting to use the headless version, further frustrating my need to have installed chrome for gui plus the required gui libs to support that\). 
 
 
 
