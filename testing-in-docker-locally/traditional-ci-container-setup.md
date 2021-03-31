@@ -140,5 +140,32 @@ Time to re-read that Avdi  Grimm article on "end to end tests" [https://avdi.cod
 
 ![Still a few failures but this is excellent progress from last week](../.gitbook/assets/i-will-win.png)
 
+### Slog continues
 
+So I have a few questions hanging in the air
+
+* why is selenium saying it is using an older version than the one in the container I've used? Is that just inconsistent error reporting based on the weird "lets make digits of pi because we're having so much fun" versioning scheme picked by the selenium maintainers?
+
+```text
+docker-compose --file=docker-compose-test.yml run -e RAILS_ENV=test -e DATABASE_URL_TEST="postgresql://forem:forem@db:5432/PracticalDeveloper_test"  rails bundle exec rake webdrivers:chromedriver:version 
+WARNING: The KNAPSACK_PRO_TEST_SUITE_TOKEN_RSPEC variable is not set. Defaulting to a blank string.
+Starting forem_yarn ... 
+Starting forem_redis ... 
+Starting forem_postgresql            ... 
+Starting forem_elasticsearch         ... 
+Starting forem-for-docker_selenium_1 ... 
+2021/03/31 14:25:32 Waiting for: http://selenium:4444
+2021/03/31 14:25:32 Waiting for: tcp://db:5432
+2021/03/31 14:25:32 Waiting for: http://elasticsearch:9200
+2021/03/31 14:25:32 Waiting for: tcp://redis:6379
+2021/03/31 14:25:32 Connected to tcp://db:5432
+2021/03/31 14:25:32 Connected to tcp://redis:6379
+2021/03/31 14:25:32 Received 200 from http://elasticsearch:9200
+2021/03/31 14:25:32 Received 200 from http://selenium:4444
+DEPRECATION WARNING: Devise::Models::Authenticatable::BLACKLIST_FOR_SERIALIZATION is deprecated! Use Devise::Models::Authenticatable::UNSAFE_ATTRIBUTES_FOR_SERIALIZATION instead. (called from const_get at /opt/apps/forem/vendor/cache/devise-0cd72a56f984/lib/devise/models.rb:90)
+2021-03-31 14:25:43 WARN Webdrivers No existing chromedriver found.
+2021/03/31 14:25:43 Command finished successfully.
+```
+
+I did check to make sure I wasn't accidentally running chrome locally \(which seems specially weird since I had to _install_ chrome to get system tests to run\) - is the current setup "chromium browser in the ruby container, chrome driver in the selenium container, webdriver sends traffic over port 4444 to ask remote selenium to drive local chromium"? Does that make sense \(and why would we go through all of that setup pain?\).
 
