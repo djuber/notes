@@ -177,7 +177,7 @@ Just gotta say using containerized selenium, docker, chrome and rspec all togeth
 
 One thing I did as an experiment to squelch a warning I _thought_ I saw was to send the option to disable sandboxing, thinking chrome was running in the rails container as root, however, it's running as user 1200 inside the selenium/standalone-chrome container \(`docker container top` showed this\).
 
-My morning of experimentation gets me from "under 20 failures" yesterday to 86 failures mostly tied to invalid session ids now. I'm tempted to reverse direction on what I've done at this point and go back to "close but not yet right" for the time being.
+My morning of experimentation gets me from "under 20 failures" yesterday to 86 failures mostly tied to invalid session ids now. I'm tempted to reverse direction on what I've done at this point and go back to "close but not yet right" for the time being. In fact - all of the tests now seem to be giving "invalid session" and I think something has changed without my wanting it.
 
 Although, I wonder if the problem is that I am running system tests in isolation \(why should that matter\)? One continuing pain point about this setup is that the code is `COPY` into the container, rather than mounted as a volume, meaning a container rebuild is needed between test runs if anything in the spec or code changes.
 
