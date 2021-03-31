@@ -14,4 +14,5 @@
 * [Testing in Docker locally](testing-in-docker-locally/README.md)
   * [Setting up a local test env with docker](testing-in-docker-locally/with-docker.md)
   * [Traditional CI container setup](testing-in-docker-locally/traditional-ci-container-setup.md)
+* [Webdriver and chrome headless](webdriver-and-chrome-headless.md)
 
