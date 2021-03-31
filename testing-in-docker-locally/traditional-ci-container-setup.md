@@ -169,3 +169,7 @@ DEPRECATION WARNING: Devise::Models::Authenticatable::BLACKLIST_FOR_SERIALIZATIO
 
 I did check to make sure I wasn't accidentally running chrome locally \(which seems specially weird since I had to _install_ chrome to get system tests to run\) - is the current setup "chromium browser in the ruby container, chrome driver in the selenium container, webdriver sends traffic over port 4444 to ask remote selenium to drive local chromium"? Does that make sense \(and why would we go through all of that setup pain?\).
 
+
+
+
+
