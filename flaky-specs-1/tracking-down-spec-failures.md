@@ -12,7 +12,7 @@ I scrolled further up into the batch executions to [https://travis-ci.com/github
 
 I copied _that_ list to a local console and tried to reproduce \(but this did not fail reliably for me\), it's possible the underlying condition has since been fixed 
 
-![](.gitbook/assets/image.png)
+![](../.gitbook/assets/image.png)
 
 ```text
 
