@@ -187,3 +187,11 @@ Although, I wonder if the problem is that I am running system tests in isolation
 
 VCR raises an error after the end of the test suite where it looks like we're trying to send `DELETE session/:session_id` to the webdriver port. Since this is not recognized the request fails. This has a knock off effect that running the test suite twice without stopping and restarting the selenium container \(I just docker-compose down and back up\) causes connection failures \(can't bind on interface is the error selenium gives but it feels like the competing sessions cause issues\).
 
+```text
+selenium_1       | [1617287501.364][SEVERE]: bind() failed: Cannot assign requested address (99)
+```
+
+This `Cannot assign requested address (99)` error basically signs a death-sentence for Chrome headless capybara tests. 
+
+I might have missed one or two orphaned containers - it's useful to add `--remove-orphans` to docker-compose down. This is getting to the point that a makefile would be my next step under normal conditions. 
+
