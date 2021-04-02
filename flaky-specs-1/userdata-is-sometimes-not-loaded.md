@@ -273,9 +273,9 @@ So _now_ I think we can start at initializePage and make some decisions about wh
 
 ### Draw it out when it's complicated
 
-![Humans have limits](../.gitbook/assets/image%20%281%29.png)
+![](../.gitbook/assets/brain.jpg)
 
-
+In an office environment this would be the time I move from my notes to a whiteboard/chalkboard. I'm going to just grab pen and paper instead.
 
 
 
