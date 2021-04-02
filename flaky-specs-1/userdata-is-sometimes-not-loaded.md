@@ -269,6 +269,14 @@ function browserStoreCache(action, userData) {
 }
 ```
 
+So _now_ I think we can start at initializePage and make some decisions about what happens when a user signs in on the first page load, and how async update via ajax violates some assumptions we have in test, and why that causes a fresh sign in, followed by an immediate page view, to cause the issue we were seeing.
+
+### Draw it out when it's complicated
+
+![Humans have limits](../.gitbook/assets/image%20%281%29.png)
+
+
+
 
 
 
