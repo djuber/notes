@@ -90,7 +90,7 @@ Notes on this file \(might be obvious to someone more conversant in javascript t
 * If that's not present \(no user\) also exit early
 * Otherwise, load the dataset from the `flagButton` to find the user id \(of the button, basically who would be flagged\) and whether they've already been flagged. The user name is also loaded to handle adapting the text later after actions \(when we send flag and unflag, what should the text show\).
 * Check to  see if this user is trusted \(there are two keys checked, `user.trusted` and `user.admin`, either permits flagging other users\)
-* If the user is not trusted, `remove()` the flag button - it should only be visible for trusted users.
+* If the user is not trusted, or if the flagButton is for the logged in user \(you would be flagging yourself, which doesn't make sense, or unflagging yourself, which is even worse\) -  `remove()` the flag button - it should only be visible for trusted users looking at other user's pages.
 
 A little sleuthing confirmed that initFlag was being called but that user was not present \(`userData()` was null when initFlag was called\). By the time I had the inspector/console open on the page, `userData()` returned a nice hash of the user - with trusted false and admin false and all of the expected conditions in the proper states - such that calling initFlag\(\) at this point would have removed the item from the dropdown - but I think this is only invoked once and apparently it was invoked too early.
 
