@@ -220,6 +220,8 @@ function initializePage() {
 
 a little weird - but initializeLocalStorageRender is called twice if we call initializePage \(once right away, second during callInitializers as the first thing we do\) - I can't see that being useful unless callInitializers is exported and called outside of initializePage - I'm beginning to  remember some "last method defined in a module is public" js hint I might have picked up a few years back.
 
+In any case - it looks like "we setup local storage render" which removes browserStoreCache if it's not present, we do it again immediately after just in case, and then we call initializeBodyData which calls fetchBaseData which makes the ajax request and sets browserStoreCache when it's ready \(after the fetch\). I think I'm inches away from the race condition here.
+
 
 
 
