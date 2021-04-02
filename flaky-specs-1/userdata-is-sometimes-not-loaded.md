@@ -170,5 +170,41 @@ Obvious take away is that _something else_ must be storing the `browserStoreCach
 
 At this point in my thinking - the next steps could be to observe the race condition \(put a console.log with function name and timestamps in userData and in initFlag\) or keep digging around. I learned a few new words in the last snippet searches - namely `browserStoreCache` - and I'd like to exhaustively find out the places we're manipulating that \(while 'get' is interesting, 'set' and 'remove' seem critical\). From what I can see - the browserStoreCache always stores user data \(as a json string\) since there are no key names - only verbs - it's a singleton.
 
+`initializeBaseData` sets the local store and probably has fewer callers, so I check for that first \(I don't use git grep like this - the command line is an artifact of calling from emacs using projectile-grep\):
+
+```text
+git --no-pager grep -n --color=auto -e initializeBaseUserData -- 
+app/assets/javascripts/.eslintrc.js:25:    initializeBaseUserData: false,
+app/assets/javascripts/initializePage.js:26:        initializeBaseUserData();
+app/assets/javascripts/initializers/initializeBaseUserData.js:91:function initializeBaseUserData() {
+app/assets/javascripts/initializers/initializeLocalStorageRender.js:8:      initializeBaseUserData();
+
+```
+
+The eslintrc is a static check config file and not code, it looks like [initializePage.js](https://github.com/forem/forem/blob/master/app/assets/javascripts/initializePage.js#L18-L39) was something I had not looked at yet and it calls on line 26 inside `callInitializers`, and also calls `initializeLocalStorageRender` first at line 88 [https://github.com/forem/forem/blob/master/app/assets/javascripts/initializePage.js\#L86-L90](https://github.com/forem/forem/blob/master/app/assets/javascripts/initializePage.js#L86-L90)
+
+{% code title="initializePage.js" %}
+```javascript
+    if (document.body.getAttribute('data-loaded') === 'true') {
+      clearInterval(waitingForDataLoad);
+      if (document.body.getAttribute('data-user-status') === 'logged-in') {
+        initializeBaseUserData();
+        initializeAllChatButtons();
+        initializeAllTagEditButtons();
+      }
+```
+{% endcode %}
+
+```javascript
+function initializePage() {
+  initializeLocalStorageRender();
+  callInitializers();
+}
+```
+
+
+
+
+
 
 
