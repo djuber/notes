@@ -226,6 +226,49 @@ a little weird - but initializeLocalStorageRender is called twice if we call ini
 
 In any case - it looks like "we setup local storage render" which removes browserStoreCache if it's not present, we do it again immediately after just in case, and then we call initializeBodyData which calls fetchBaseData which makes the ajax request and sets browserStoreCache when it's ready \(after the fetch\). I think I'm inches away from the race condition here. Might be time to switch to pen and paper, but before that - grep for browserStoreCache to see what/when that's called for update \(ignore get, find set and remove calls\).
 
+```text
+
+git --no-pager grep -n --color=auto -e browserStoreCache -- 
+app/assets/javascripts/.eslintrc.js:24:    browserStoreCache: false,
+app/assets/javascripts/initializers/initializeBodyData.js:44:        browserStoreCache('set', json.user);
+app/assets/javascripts/initializers/initializeBodyData.js:53:        browserStoreCache('remove');
+app/assets/javascripts/initializers/initializeLocalStorageRender.js:5:    var userData = browserStoreCache('get');
+app/assets/javascripts/initializers/initializeLocalStorageRender.js:15:    browserStoreCache('remove');
+app/assets/javascripts/utilities/browserStoreCache.js:3:function browserStoreCache(action, userData) {
+app/assets/javascripts/utilities/browserStoreCache.js:21:      browserStoreCache('remove');
+
+```
+
+Fortunately - apart from the implementation and an eslintrc line, it sure looks like we've seen all that's going on here \(there isn't some hidden "other" action happening outside of the initializeLocalStorageRender and initializeBodyData that modifies this storage\).
+
+The implementation \(not relevant\) just creates the action dispatch table and delegates behavior to localStorage in the browser:
+
+```javascript
+function browserStoreCache(action, userData) {
+  try {
+    switch (action) {
+      case 'set':
+        localStorage.setItem('current_user', userData);
+        localStorage.setItem(
+          'config_body_class',
+          JSON.parse(userData).config_body_class,
+        );
+        break;
+      case 'remove':
+        localStorage.removeItem('current_user');
+        break;
+      default:
+        return localStorage.getItem('current_user');
+    }
+  } catch (err) {
+    if (navigator.cookieEnabled) {
+      browserStoreCache('remove');
+    }
+  }
+  return undefined;
+}
+```
+
 
 
 
