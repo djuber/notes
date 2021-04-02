@@ -271,6 +271,10 @@ function browserStoreCache(action, userData) {
 
 So _now_ I think we can start at initializePage and make some decisions about what happens when a user signs in on the first page load, and how async update via ajax violates some assumptions we have in test, and why that causes a fresh sign in, followed by an immediate page view, to cause the issue we were seeing.
 
+
+
+Last note - [https://docs.forem.com/frontend/plain-js/](https://docs.forem.com/frontend/plain-js/) describes the structure of the js in this project \(files in assets/javascript are served as scripts, plain, as-is, by sprockets, files in app/javascript/ are managed by webpack and bundled in application.js\) - worth a read if you are unfamiliar with it. It calls out initializePage as the main point of action driving loading.
+
 ### Draw it out when it's complicated
 
 ![](../.gitbook/assets/brain.jpg)
