@@ -1,3 +1,7 @@
+---
+description: diagnosing a flaky spec based on front end timing
+---
+
 # userData is sometimes not loaded
 
 Noticed this after [https://github.com/forem/forem/pull/12862/](https://github.com/forem/forem/pull/12862/files) was merged - and developers started reporting failures that they were sometimes able to replicate in isolation, sometimes not. Julianna was able to work around the failures she was seeing by adding a second page load in [https://github.com/forem/forem/pull/13224](https://github.com/forem/forem/pull/13224)
