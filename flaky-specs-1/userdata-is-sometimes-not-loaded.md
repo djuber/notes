@@ -127,5 +127,44 @@ Possible fixes
 
 [https://github.com/forem/forem/blob/master/app/javascript/onboarding/utilities.js\#L22-L32](https://github.com/forem/forem/blob/master/app/javascript/onboarding/utilities.js#L22-L32) defines this method, which looks for document.body.dataset. Since that's sometimes not available, it must be delivered from someplace other than the rendered page \(we don't seem to be injecting the dataset onto the body during page generation time for users, and must be accomplishing this through a mix of other methods during page rendering\) - that's an open item in my mind right now.
 
+dataset.user is created during `initializeBodyData` which calls `fetchBaseData` [https://github.com/forem/forem/blob/master/app/assets/javascripts/initializers/initializeBodyData.js\#L11-L64](https://github.com/forem/forem/blob/master/app/assets/javascripts/initializers/initializeBodyData.js#L11-L64) Again with the "how to javascript" comments - the xmlhttp request \(configured based on browser capabilities\) object has an onreadystatechange property set to a lambda that fetches the `/async_info/base_data` url and parses to `json` - some csrf dance is done \(not relevant here\) and `document.body.dataset.loaded` is set to 'true' \(unconditionally, when we load the base data, we say  we have loaded it\). A check for broadcast \(not relevant\) is made and stored, and the user is checked.
 
+If the user is present as a key in the json response, then the user key is added to the body's database \(we just copy whole from the json response onto the document\) - and set/stored in `browserStoreCache`
+
+There's a setTimeout \(not sure  what's going on there, there's a `ga` call that looks unfamiliar/unclear to me right now\) that passes `'set', 'userId', a number parsed from json` to  `ga` - with 400ms timeout. 
+
+If the user is not present as a key in the json response, the we clear user from the body.dataset if present, and call browserStoreCache with 'remove'. 
+
+browserStoreCache is a function that takes args \( `'set', json.user` or `'remove'`\) so that's worth remembering.
+
+
+
+Open questions: when is `initFlag` called, when is `body.dataset` populated, when is this async, and when is it automatic?
+
+There's a second piece of the puzzle, called `initializeLocalStorageRender` that might be the key here, especially given that the test failure was order dependent.
+
+```javascript
+/* global initializeUserFollowButts */
+
+function initializeLocalStorageRender() {
+  try {
+    var userData = browserStoreCache('get');
+    if (userData) {
+      document.body.dataset.user = userData;
+      initializeBaseUserData();
+      initializeReadingListIcons();
+      initializeAllFollowButts();
+      initializeUserFollowButts();
+      initializeSponsorshipVisibility();
+    }
+  } catch (err) {
+    browserStoreCache('remove');
+  }
+}
+
+```
+
+notable here - we ask if there is a `browserStoreCache`, call it `userData` and if it's loaded we inject user to `dataset.user` \(sounds like the thing I'm looking for\) and _also_ initialize base user data \(which loads more data from ajax and then overwrites the store cache with updated info, that's kind of a sync to local storage option?\) and update things based on things \(reading list, follows, etc\) but if it's not there \(local storage was null or failed?\) we remove the store cache \(why? what was in there?\). Importantly \(from my reading\) is that we're not attempting to load async the user data if it's not in storage, only to update the cached copy if it was. 
+
+Obvious take away is that _something else_ must be storing the browserStoreCache \(calling 'set'\) and that might be slower for the first time a user logs in?
 
