@@ -281,7 +281,10 @@ Last note - [https://docs.forem.com/frontend/plain-js/](https://docs.forem.com/f
 
 In an office environment this would be the time I move from my notes to a whiteboard/chalkboard. I'm going to just grab pen and paper instead.
 
+![how my mind sees this problem](../.gitbook/assets/drawing.png)
 
+What I think is happening
 
-
-
+* no user was logged in - LSO is empty \(we ensure it's emptied during page setup\)
+* user logs in but capybara immediately takes us to the new page \(bypassing normal redirect to /\)?
+* 
