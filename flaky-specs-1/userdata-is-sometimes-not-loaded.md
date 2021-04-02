@@ -185,6 +185,11 @@ The eslintrc is a static check config file and not code, it looks like [initiali
 
 {% code title="initializePage.js" %}
 ```javascript
+function callInitializers() {
+  initializeLocalStorageRender();
+  initializeBodyData();
+
+  var waitingForDataLoad = setInterval(function wait() {
     if (document.body.getAttribute('data-loaded') === 'true') {
       clearInterval(waitingForDataLoad);
       if (document.body.getAttribute('data-user-status') === 'logged-in') {
@@ -192,6 +197,17 @@ The eslintrc is a static check config file and not code, it looks like [initiali
         initializeAllChatButtons();
         initializeAllTagEditButtons();
       }
+      initializeBroadcast();
+      initializeAllFollowButts();
+      initializeUserFollowButts();
+      initializeReadingListIcons();
+      initializeSponsorshipVisibility();
+      if (document.getElementById('sidebar-additional')) {
+        document.getElementById('sidebar-additional').classList.add('showing');
+      }
+    }
+  }, 1);
+
 ```
 {% endcode %}
 
@@ -202,7 +218,7 @@ function initializePage() {
 }
 ```
 
-
+a little weird - but initializeLocalStorageRender is called twice if we call initializePage \(once right away, second during callInitializers as the first thing we do\) - I can't see that being useful unless callInitializers is exported and called outside of initializePage - I'm beginning to  remember some "last method defined in a module is public" js hint I might have picked up a few years back.
 
 
 
