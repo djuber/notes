@@ -1,3 +1,7 @@
+---
+description: 'https://github.com/forem/forem/issues/13226 captures the follow up to this.'
+---
+
 # Travis CI Segfaults
 
 We've been seeing a large number of segmentation faults in travis CI when running the test suite.
@@ -92,4 +96,10 @@ Finished in 2 minutes 7.3 seconds (files took 3.59 seconds to load)
 Perfect! 293 gets me to the _end_ of the feeds import spec, or the first test in the `user_fills_out_comment_spec.rb`
 
 This means the first time this instance runs a system test \(using the full stack, puma http server and chrome headless browser\) we hit this error. Sadly I don't expect to be able to reproduce this locally...
+
+
+
+
+
+
 
