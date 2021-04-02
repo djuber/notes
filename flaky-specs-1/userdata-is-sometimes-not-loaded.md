@@ -94,7 +94,38 @@ Notes on this file \(might be obvious to someone more conversant in javascript t
 
 A little sleuthing confirmed that initFlag was being called but that user was not present \(`userData()` was null when initFlag was called\). By the time I had the inspector/console open on the page, `userData()` returned a nice hash of the user - with trusted false and admin false and all of the expected conditions in the proper states - such that calling initFlag\(\) at this point would have removed the item from the dropdown - but I think this is only invoked once and apparently it was invoked too early.
 
-![](../.gitbook/assets/should-have-called-remove.png)
+![My clumsy attempts to explore the problem in the console](../.gitbook/assets/should-have-called-remove.png)
+
+Mac added a \(new to me\) `debugger` statement to the function when he was testing
+
+```javascript
+
+
+  const user = userData();
+  if (!user) {
+    debugger
+    return;
+  }
+
+```
+
+I'm less clever, so instead added `console.log("User was null")` which might have been less useful but fit with my existing knowledge \(and TIL `debugger` in js does something useful\). In either case I was also getting the same result - initFlag is being called, userData return null. When \(above\) I tried to check userData interactively, I get a response back.
+
+
+
+### Where am I now
+
+1. I know initFlag is called
+2. Sometimes userData is not ready and the flag is still shown
+3. Refreshing the page \(or loading it a second time\) seems to fix this completely.
+
+Possible fixes
+
+* if user is not trusted, don't include the flag user button in the view \(move the logic server side into the view\)
+* if user is null, they're probably not trusted, remove the flagButton \(add `flagButton.remove()` where the debugger statement is in the last snippet\).
+* find out why userData is null when this is run but non-null \(valueful?\) later
+
+[https://github.com/forem/forem/blob/master/app/javascript/onboarding/utilities.js\#L22-L32](https://github.com/forem/forem/blob/master/app/javascript/onboarding/utilities.js#L22-L32) defines this method, which looks for document.body.dataset. Since that's sometimes not available, it must be delivered from someplace other than the rendered page \(we don't seem to be injecting the dataset onto the body during page generation time for users, and must be accomplishing this through a mix of other methods during page rendering\) - that's an open item in my mind right now.
 
 
 
