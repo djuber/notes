@@ -283,8 +283,13 @@ In an office environment this would be the time I move from my notes to a whiteb
 
 ![how my mind sees this problem](../.gitbook/assets/drawing.png)
 
+My simplest description of the picture is there are three sources of data about users. The fastest is in the DOM \(right bubble\) but it's empty initially. The next fastest is LSO \(fast enough to be synchronous\) and it's used during page initialization to populate the DOM copy if present. The third, slowest, and necessarily asynchronous source is the Forem api via `/async_info/base_data`  but that doesn't set the DOM until it responds \(tens of milliseconds later\) and may be too late. However, as long as LSO is working \(which is normally true for logged in users\) this is a one-time cost on initial login.
+
+
+
 What I think is happening
 
 * no user was logged in - LSO is empty \(we ensure it's emptied during page setup\)
-* user logs in but capybara immediately takes us to the new page \(bypassing normal redirect to /\)?
-* 
+* user logs in but capybara immediately takes us to the new page \(bypassing normal redirect to / and subsequent JS execution that _would_ populate LSO so it's available early\)?
+* When we view the next page, not having loaded /, we have an empty LSO - so browserStoreCache is clear\(ed\), so initializeBodyData starts an async network call \(returning early before the callback fires, and document.body.dataset.user is null, so userData is null\), and the page renders as though no user were logged in, and then the callback on base\_data's request fires, populating the dataset field, causing what I captured in the screenshot earlier \(all of the required variables that should have hidden the flag user item in the dropdown are present, but the flag user dropdown item was not hidden, and a reload of the page does work\).
+
