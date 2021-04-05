@@ -115,8 +115,6 @@ Mac added a \(new to me\) `debugger` statement to the function when he was testi
 
 I'm less clever, so instead added `console.log("User was null")` which might have been less useful but fit with my existing knowledge \(and TIL `debugger` in js does something useful\). In either case I was also getting the same result - initFlag is being called, userData return null. When \(above\) I tried to check userData interactively, I get a response back.
 
-
-
 ### Where am I now
 
 1. I know initFlag is called
@@ -300,4 +298,6 @@ So how do we improve this?
 * add user information to the dom during page render \(basically inline the parts of the async call that are fast enough to be available, put them in the navbar when we render the user's icon link\) - this might be a performance issue but could provide more robust availability \(the backend knew the user was logged in\)
 * Follow Nick's advice in the issue comment and wrap the logic to remove the dropdown in a wait for user ready \(currently in the chat utils so might need to be extracted/generalized\). 
 * Change the test setup so that signin populates the LSO.
+
+
 
