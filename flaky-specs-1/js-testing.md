@@ -45,6 +45,29 @@ initializeBaseApp calls `initializePage` \(or passes that to `InstantClick`, whi
     });
     InstantClick.init();
   }
+  
+  
+  
+var instantClick
+  , InstantClick = instantClick = function(document, location, $userAgent) {
+//  ... SNIP ...
+  
+    function on(eventType, callback) {
+      $eventsCallbacks[eventType].push(callback)
+    }
+}
+
+
+// Start BaseApp for Page
+  initializeBaseApp()
+```
+
+In my "I don't understand javascript" confusion - I wondered why "call function initializePage by name" was something that needed a closure - but I believe, if I understand it correctly, the closure exists to provide access to a named function that's not exported/public/global - or might not be?
+
+I personally, maybe it's schemelang leaking through, would assume this were expressed better as a simply function arg:
+
+```javascript
+InstantClick.on('change', initializePage);
 ```
 
 
