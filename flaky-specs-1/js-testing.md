@@ -33,7 +33,7 @@ interestingly, `initializeBaseApp` is the function that's awaited \(or waited to
 
 
 
-initializeBaseApp calls `initializePage` \(or passes that to `InstantClick`, which I assume calls it on ready state?\)
+initializeBaseApp calls `initializePage` \(or passes that to `InstantClick`, which I assume calls it on ready state?\) - and we call initializeBaseApp at the end of that file:
 
 ```javascript
 
