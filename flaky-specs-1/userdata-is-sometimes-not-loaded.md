@@ -293,3 +293,11 @@ What I think is happening
 * user logs in but capybara immediately takes us to the new page \(bypassing normal redirect to / and subsequent JS execution that _would_ populate LSO so it's available early\)?
 * When we view the next page, not having loaded /, we have an empty LSO - so browserStoreCache is clear\(ed\), so initializeBodyData starts an async network call \(returning early before the callback fires, and document.body.dataset.user is null, so userData is null\), and the page renders as though no user were logged in, and then the callback on base\_data's request fires, populating the dataset field, causing what I captured in the screenshot earlier \(all of the required variables that should have hidden the flag user item in the dropdown are present, but the flag user dropdown item was not hidden, and a reload of the page does work\).
 
+### What next
+
+So how do we improve this?
+
+* add user information to the dom during page render \(basically inline the parts of the async call that are fast enough to be available, put them in the navbar when we render the user's icon link\) - this might be a performance issue but could provide more robust availability \(the backend knew the user was logged in\)
+* Follow Nick's advice in the issue comment and wrap the logic to remove the dropdown in a wait for user ready \(currently in the chat utils so might need to be extracted/generalized\). 
+* Change the test setup so that signin populates the LSO.
+
