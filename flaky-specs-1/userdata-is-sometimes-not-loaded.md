@@ -299,7 +299,7 @@ So how do we improve this?
 * Follow Nick's advice in the issue comment and wrap the logic to remove the dropdown in a wait for user ready \(currently in the chat utils so might need to be extracted/generalized\). 
 * Change the test setup so that signin populates the LSO.
 
-Opened a branch for this - djuber/ensure-user-for-flag-button and pushed it up \(currently only the "fix" Julianna added removed so I can confirm I have a failing test.\)
+Opened a branch for this - [djuber/ensure-user-for-flag-button](https://github.com/forem/forem/tree/djuber/ensure-user-for-flag-button) and pushed it up \(currently only the "fix" Julianna added removed so I can confirm I have a failing test.\)
 
 
 
@@ -321,4 +321,8 @@ modified   app/javascript/profileDropdown/flagButton.js
 Basically, this would fix the example that's failing, but changes the accidental pass when a user is logged in and trusted \(but that's the first exectued test, so LSO is cleared, or the order includes logged out, logged in as a trusted user expecting to see flag\). So let's revert this change and look for something "better" \(more reliable, and correct\).
 
 I had expected this to be broken this way so didn't even list it.
+
+
+
+
 
