@@ -324,5 +324,5 @@ I had expected this to be broken this way so didn't even list it.
 
 
 
-
+[https://github.com/forem/forem/pull/13279](https://github.com/forem/forem/pull/13279) attempted to implement the solution Nick suggested \(wait for user data to be loaded before proceeeding\) - he gave very useful and detailed suggestions - and I stumbled through to a green build after some futzing around lint rules.
 
