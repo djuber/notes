@@ -303,7 +303,7 @@ Opened a branch for this - djuber/ensure-user-for-flag-button and pushed it up \
 
 
 
-Easy fix one \(doesn't work, because now it breaks a different test\):
+**Easy fix one** \(doesn't work, because now it breaks a different test\):
 
 ```javascript
 
@@ -319,4 +319,6 @@ modified   app/javascript/profileDropdown/flagButton.js
 ```
 
 Basically, this would fix the example that's failing, but changes the accidental pass when a user is logged in and trusted \(but that's the first exectued test, so LSO is cleared, or the order includes logged out, logged in as a trusted user expecting to see flag\). So let's revert this change and look for something "better" \(more reliable, and correct\).
+
+I had expected this to be broken this way so didn't even list it.
 
