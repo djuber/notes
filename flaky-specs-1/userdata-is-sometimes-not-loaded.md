@@ -301,3 +301,22 @@ So how do we improve this?
 
 Opened a branch for this - djuber/ensure-user-for-flag-button and pushed it up \(currently only the "fix" Julianna added removed so I can confirm I have a failing test.\)
 
+
+
+Easy fix one \(doesn't work, because now it breaks a different test\):
+
+```javascript
+
+modified   app/javascript/profileDropdown/flagButton.js
+@@ -17,6 +17,7 @@ export function initFlag() {
+ 
+   const user = userData();
+   if (!user) {
++    flagButton.remove();
+     return;
+   }
+ 
+```
+
+Basically, this would fix the example that's failing, but changes the accidental pass when a user is logged in and trusted \(but that's the first exectued test, so LSO is cleared, or the order includes logged out, logged in as a trusted user expecting to see flag\). So let's revert this change and look for something "better" \(more reliable, and correct\).
+
