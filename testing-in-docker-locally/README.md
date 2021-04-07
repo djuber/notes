@@ -366,5 +366,7 @@ One thing that's not being set in the initializer is `enable_processing` \(false
 
 All of this works fine in travis which should be the same environment more or less - except rails server container is not being started... and this was _not_ the hangup in the prior tests to get buildkite integrated by molly. I'm going to back off this direction \(using the docker-compose file and forem images as a base case\) and approach this from a more typical direction - which is a ruby:2.7.2 image, a postgres and redis and es images, and run rspec like we do locally. Testing forem in forem's containers is a goal - it might not be the right one for right now.
 
+### Follow up some time later
 
+Great news - it looks like this _also_ impacted the systems team trying to run docker in digital ocean at [https://community.forem.wtf/](https://community.forem.wtf/) as a test case - initial user setup fails because of image attachments - I don't have a ton of additional information about this but it means it's not something I did \(and I might be able to sit it out until it's fixed\).
 
