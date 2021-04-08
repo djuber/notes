@@ -1215,3 +1215,47 @@ Works.
 
 Can I introduce the issue by including imgproxy and omniauth-twitter in listener?
 
+
+
+```text
+
+# copied from forem's gemfile:
+gem 'buffer', '~> 0.1'
+gem 'omniauth'
+gem 'omniauth-google'
+gem 'omniauth-facebook'
+gem 'omniauth-twitter'
+gem 'omniauth-oauth', '1.2.0'
+gem 'imgproxy', '2.0.0'
+
+
+djuber@forem:~/src/listener$ bin/setup
+== Installing dependencies ==
+Bundler can't satisfy your Gemfile's dependencies.
+Install missing gems with `bundle install`.
+Fetching gem metadata from https://rubygems.org/..........
+Resolving dependencies...
+Bundler could not find compatible versions for gem "omniauth":
+  In snapshot (Gemfile.lock):
+    omniauth (= 2.0.4)
+
+  In Gemfile:
+    omniauth
+
+    omniauth-google was resolved to 1.0.1, which depends on
+      omniauth (~> 1.0.0)
+
+    omniauth-oauth (= 1.2.0) was resolved to 1.2.0, which depends on
+      omniauth (>= 1.0, < 3)
+
+Running `bundle update` will rebuild your snapshot from scratch, using only
+the gems in your Gemfile, which may resolve the conflict.
+
+== Command ["bundle install"] failed ==
+djuber@forem:~/src/listener$ rm Gemfile.lock 
+djuber@forem:~/src/listener$ bin/setup== Installing dependencies ==
+Bundler can't satisfy your Gemfile's dependencies.
+Install missing gems with `bundle install`.
+
+```
+
