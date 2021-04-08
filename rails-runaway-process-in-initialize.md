@@ -745,3 +745,66 @@ Bundled gems are installed into `.
 
 This still includes the gems labeled production \(including the nakayoshi fork\) and listen, and rails and its dependencies.
 
+
+
+```text
+djuber@forem:~/src/testcase38666$ bin/setup     
+== Installing dependencies ==
+The Gemfile's dependencies are satisfied
+ yarn install v1.22.10
+ [1/4] Resolving packages...
+ success Already up-to-date.
+ Done in 0.36s.
+
+== Preparing database ==
+
+== Removing old logs and tempfiles ==
+
+== Restarting application server ==
+```
+
+Okay, this is helpful - somewhere between 200 gems and 55 gems is our problem.
+
+Bisection search to the rescue! Uncomment down to fastly - 108 gems now installed - all is well - rails db:prepare works fine.
+
+Uncomment down to jsonapi-serializer. bundle. 145 gems now installed. rails db:prepare still works.
+
+Uncomment down to redis-actionpack, bundle, 187 gems now installed - freezes
+
+Between jsonapi-serializer and redis-actionpack is an issue.
+
+This included these \(except pg, puma, and rails, which were not skipped initially\) - one of these, especially if one of them is injecting itself into action dispatch, is a problem.
+
+```ruby
+gem "kaminari", "~> 1.2" # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator
+gem "katex", "~> 0.6.1" # This rubygem enables you to render TeX math to HTML using KaTeX. It uses ExecJS under the hood
+gem "liquid", "~> 5.0" # A secure, non-evaling end user template engine with aesthetic markup
+gem "nokogiri", "~> 1.11" # HTML, XML, SAX, and Reader parser
+gem "octokit", "~> 4.20" # Simple wrapper for the GitHub API
+gem "oj", "~> 3.11" # JSON parser and object serializer
+gem "omniauth", "~> 2.0" # A generalized Rack framework for multiple-provider authentication
+gem "omniauth-apple", "~> 1.0" # OmniAuth strategy for Sign In with Apple
+gem "omniauth-facebook", "~> 8.0" # OmniAuth strategy for Facebook
+gem "omniauth-github", "~> 2.0" # OmniAuth strategy for GitHub
+gem "omniauth-rails_csrf_protection", "~> 1.0" # Provides CSRF protection on OmniAuth request endpoint on Rails application.
+gem "omniauth-twitter", "~> 1.4" # OmniAuth strategy for Twitter
+gem "parallel", "~> 1.20" # Run any kind of code in parallel processes
+gem "patron", "~> 0.13.3" # HTTP client library based on libcurl, used with Elasticsearch to support http keep-alive connections
+gem "pg", "~> 1.2" # Pg is the Ruby interface to the PostgreSQL RDBMS
+gem "pg_search", "~> 2.3.5" # PgSearch builds Active Record named scopes that take advantage of PostgreSQL's full text search
+gem "puma", "~> 5.2.2" # Puma is a simple, fast, threaded, and highly concurrent HTTP 1.1 server
+gem "pundit", "~> 2.1" # Object oriented authorization for Rails applications
+gem "pusher", "~> 2.0" # Ruby library for Pusher Channels HTTP API
+gem "pusher-push-notifications", "~> 2.0" # Pusher Push Notifications Ruby server SDK
+gem "rack-attack", "~> 6.5.0" # Used to throttle requests to prevent brute force attacks
+gem "rack-cors", "~> 1.1" # Middleware that will make Rack-based apps CORS compatible
+gem "rack-timeout", "~> 0.6" # Rack middleware which aborts requests that have been running for longer than a specified timeout
+gem "rails", "~> 6.1" # Ruby on Rails
+gem "rails-settings-cached", ">= 2.1.1" # Settings plugin for Rails that makes managing a table of global key, value pairs easy.
+gem "ransack", "~> 2.4" # Searching and sorting
+gem "recaptcha", "~> 5.7", require: "recaptcha/rails" # Helpers for the reCAPTCHA API
+gem "redcarpet", "~> 3.5" # A fast, safe and extensible Markdown to (X)HTML parser
+gem "redis", "~> 4.2.5" # Redis ruby client
+gem "redis-actionpack", "5.1.0" # Redis session store for ActionPack. Used for storing the Rails session in Redis.
+```
+
