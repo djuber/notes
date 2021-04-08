@@ -808,3 +808,7 @@ gem "redis", "~> 4.2.5" # Redis ruby client
 gem "redis-actionpack", "5.1.0" # Redis session store for ActionPack. Used for storing the Rails session in Redis.
 ```
 
+Recomment down to pg \(so kaminari through patron\). bundle - 164 gems installed. setup: Success
+
+Uncomment omniauth to patron \(leaving kaminari through oj commented\). bundle. 177 gems now installed. stup hangs
+
