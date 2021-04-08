@@ -810,5 +810,37 @@ gem "redis-actionpack", "5.1.0" # Redis session store for ActionPack. Used for s
 
 Recomment down to pg \(so kaminari through patron\). bundle - 164 gems installed. setup: Success
 
-Uncomment omniauth to patron \(leaving kaminari through oj commented\). bundle. 177 gems now installed. stup hangs
+Uncomment omniauth to patron \(leaving kaminari through oj commented\). bundle. 177 gems now installed. setup hangs
+
+Comment omniauth\* gems \(omniauth through omniauth-twitter, 6 gems total\). 166 gems now installed. Setup succeeds.
+
+Uncomment _only_ omniauth. brings in hashie as a dependency. Works.
+
+Uncomment the four providers \(apple, facebook, github, twitter\) leaving the csrf protection gem commented.
+
+```text
+Updating files in vendor/cache
+  * omniauth-apple-1.0.1.gem
+  * omniauth-facebook-8.0.0.gem
+  * omniauth-github-2.0.0.gem
+  * omniauth-twitter-1.4.0.gem
+  * omniauth-oauth-1.2.0.gem
+  * omniauth-oauth2-1.7.1.gem
+  * oauth2-1.4.7.gem
+  * oauth-0.5.6.gem
+Bundle complete! 70 Gemfile dependencies, 176 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+djuber@forem:~/src/testcase38666$ bin/setup
+== Installing dependencies ==
+The Gemfile's dependencies are satisfied
+ yarn install v1.22.10
+ [1/4] Resolving packages...
+ success Already up-to-date.
+ Done in 0.35s.
+
+== Preparing database ==
+
+```
+
+This froze as well during loading. So it's one of those four I guess. This is really good stuff.
 
