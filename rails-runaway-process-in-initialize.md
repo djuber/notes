@@ -959,9 +959,230 @@ def DelegateClass(superclass, &block)
 
 Fairly sure this call to `protected_instance_methods`  is part of the problem \(or definitely the thing going wrong\) - is there something with a Hash causing issues? Did more than one thing define a DelegateClass in some cyclical way? Why would that break Rails?
 
-
-
 {% hint style="info" %}
 Hashie defines a Hash class - we want to make sure that's not what Rails is trying to wrap the response headers in. Hashie also doesn't have a test suite against ruby 3 yet? [https://github.com/hashie/hashie/releases/tag/v4.1.0](https://github.com/hashie/hashie/releases/tag/v4.1.0) is what we have in the gemset.
 {% endhint %}
+
+Omniauth includes Hashie as a dependency.
+
+Buffer _also_ includes Hashie as a dependency  through faraday\_middleware:
+
+```text
+
+Installing yajl-ruby 1.4.1 with native extensions
+Installing faraday_middleware 1.0.0
+Fetching buffer 0.1.3
+Installing buffer 0.1.3
+Updating files in vendor/cache
+Fetching buffer 0.1.3
+  * buffer-0.1.3.gem
+Fetching environs 1.1.0
+  * environs-1.1.0.gem
+Fetching faraday_middleware 1.0.0
+  * faraday_middleware-1.0.0.gem
+  * hashie-4.1.0.gem
+Fetching yajl-ruby 1.4.1
+  * yajl-ruby-1.4.1.gem
+Bundle complete! 145 Gemfile dependencies, 333 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+
+
+djuber@forem:~/src/testcase38666$ diff Gemfile ../forem/Gemfile
+22d21
+< gem "buffer", "~> 0.1"
+61,66c60,65
+< # gem "omniauth", "~> 2.0" # A generalized Rack framework for multiple-provider authentication
+< # gem "omniauth-apple", "~> 1.0" # OmniAuth strategy for Sign In with Apple
+< # gem "omniauth-facebook", "~> 8.0" # OmniAuth strategy for Facebook
+< # gem "omniauth-github", "~> 2.0" # OmniAuth strategy for GitHub
+< # gem "omniauth-rails_csrf_protection", "~> 1.0" # Provides CSRF protection on OmniAuth request endpoint on Rails application.
+< # gem "omniauth-twitter", "~> 1.4" # OmniAuth strategy for Twitter
+---
+> gem "omniauth", "~> 2.0" # A generalized Rack framework for multiple-provider authentication
+> gem "omniauth-apple", "~> 1.0" # OmniAuth strategy for Sign In with Apple
+> gem "omniauth-facebook", "~> 8.0" # OmniAuth strategy for Facebook
+> gem "omniauth-github", "~> 2.0" # OmniAuth strategy for GitHub
+> gem "omniauth-rails_csrf_protection", "~> 1.0" # Provides CSRF protection on OmniAuth request endpoint on Rails application.
+> gem "omniauth-twitter", "~> 1.4" # OmniAuth strategy for Twitter
+```
+
+however - bin/setup worked here \(leaving omniauth commented-  including buffer which was removed in the last commit\).
+
+```text
+djuber@forem:~/src/testcase38666$ diff Gemfile.lock ../forem/Gemfile.lock -u
+--- Gemfile.lock        2021-04-08 11:01:55.454230874 -0500
++++ ../forem/Gemfile.lock       2021-04-08 08:43:48.731973037 -0500
+@@ -86,7 +86,7 @@
+       activerecord (>= 5.0, < 6.2)
+     addressable (2.7.0)
+       public_suffix (>= 2.0.2, < 5.0)
+-    ahoy_email (2.0.3)
++    ahoy_email (2.0.2)
+       actionmailer (>= 5)
+       addressable (>= 2.3.2)
+       nokogiri
+@@ -137,15 +137,6 @@
+     brpoplpush-redis_script (0.1.2)
+       concurrent-ruby (~> 1.0, >= 1.0.5)
+       redis (>= 1.0, <= 5.0)
+-    buffer (0.1.3)
+-      addressable
+-      environs
+-      faraday
+-      faraday_middleware
+-      hashie
+-      multi_json
+-      rake
+-      yajl-ruby
+     buftok (0.2.0)
+     builder (3.2.4)
+     bullet (6.1.4)
+@@ -175,7 +166,7 @@
+       activesupport (>= 3.2.0)
+       carrierwave
+       fastimage
+-    chartkick (4.0.2)
++    chartkick (3.4.2)
+     childprocess (3.0.0)
+     cloudinary (1.20.0)
+       aws_cf_signer
+@@ -249,7 +240,6 @@
+     email_validator (2.2.3)
+       activemodel
+     emoji_regex (3.2.2)
+-    environs (1.1.0)
+     equalizer (0.0.11)
+     erb_lint (0.0.37)
+       activesupport
+@@ -279,8 +269,6 @@
+       multipart-post (>= 1.2, < 3)
+       ruby2_keywords
+     faraday-net_http (1.0.1)
+-    faraday_middleware (1.0.0)
+-      faraday (~> 1.0)
+     fastimage (2.2.3)
+     fastly (3.0.1)
+     feedjira (3.1.2)
+@@ -433,13 +421,13 @@
+     listen (3.5.1)
+       rb-fsevent (~> 0.10, >= 0.10.3)
+       rb-inotify (~> 0.9, >= 0.9.10)
+-    loofah (2.9.1)
++    loofah (2.9.0)
+       crass (~> 1.0.2)
+       nokogiri (>= 1.5.9)
+     lumberjack (1.2.8)
+     mail (2.7.1)
+       mini_mime (>= 0.1.1)
+-    marcel (1.0.1)
++    marcel (1.0.0)
+     memoizable (0.4.2)
+       thread_safe (~> 0.3, >= 0.3.1)
+     memory_profiler (1.0.0)
+@@ -471,18 +459,53 @@
+       http-2 (~> 0.11)
+     netrc (0.11.0)
+     nio4r (2.5.7)
+-    nokogiri (1.11.3-x86_64-linux)
++    nokogiri (1.11.2-arm64-darwin)
++      racc (~> 1.4)
++    nokogiri (1.11.2-x86_64-darwin)
++      racc (~> 1.4)
++    nokogiri (1.11.2-x86_64-linux)
+       racc (~> 1.4)
+     notiffany (0.1.3)
+       nenv (~> 0.1)
+       shellany (~> 0.0)
++    oauth (0.5.5)
++    oauth2 (1.4.7)
++      faraday (>= 0.8, < 2.0)
++      jwt (>= 1.0, < 3.0)
++      multi_json (~> 1.3)
++      multi_xml (~> 0.5)
++      rack (>= 1.2, < 3)
+     octokit (4.20.0)
+       faraday (>= 0.9)
+       sawyer (~> 0.8.0, >= 0.5.3)
+     oj (3.11.3)
++    omniauth (2.0.3)
++      hashie (>= 3.4.6)
++      rack (>= 1.6.2, < 3)
++      rack-protection
++    omniauth-apple (1.0.1)
++      jwt
++      omniauth-oauth2
++    omniauth-facebook (8.0.0)
++      omniauth-oauth2 (~> 1.2)
++    omniauth-github (2.0.0)
++      omniauth (~> 2.0)
++      omniauth-oauth2 (~> 1.7.1)
++    omniauth-oauth (1.2.0)
++      oauth
++      omniauth (>= 1.0, < 3)
++    omniauth-oauth2 (1.7.1)
++      oauth2 (~> 1.4)
++      omniauth (>= 1.9, < 3)
++    omniauth-rails_csrf_protection (1.0.0)
++      actionpack (>= 4.2)
++      omniauth (~> 2.0)
++    omniauth-twitter (1.4.0)
++      omniauth-oauth (~> 1.1)
++      rack
+     orm_adapter (0.5.0)
+     parallel (1.20.1)
+-    parser (3.0.1.0)
++    parser (3.0.0.0)
+       ast (~> 2.4.1)
+     patron (0.13.3)
+     pg (1.2.3)
+@@ -696,7 +719,7 @@
+     shellany (0.0.1)
+     shoulda-matchers (4.5.1)
+       activesupport (>= 4.2.0)
+-    sidekiq (6.2.1)
++    sidekiq (6.2.0)
+       connection_pool (>= 2.2.2)
+       rack (~> 2.0)
+       redis (>= 4.2.0)
+@@ -810,7 +833,6 @@
+     websocket-extensions (0.1.5)
+     xpath (3.2.0)
+       nokogiri (~> 1.8)
+-    yajl-ruby (1.4.1)
+     yard (0.9.26)
+     yard-activerecord (0.0.16)
+       yard (>= 0.8.3)
+@@ -820,6 +842,10 @@
+     zonebie (0.6.1)
+ 
+ PLATFORMS
++  arm64-darwin-20
++  x86_64-darwin
++  x86_64-darwin-19
++  x86_64-darwin-20
+   x86_64-linux
+ 
+ DEPENDENCIES
+@@ -835,7 +861,6 @@
+   blazer (~> 2.4.2)
+   bootsnap (>= 1.1.0)
+   brakeman (~> 5.0)
+-  buffer (~> 0.1)
+   bullet (~> 6.1)
+   bundler-audit (~> 0.8)
+   capybara (~> 3.35.3)
+@@ -892,6 +917,12 @@
+   nokogiri (~> 1.11)
+   octokit (~> 4.20)
+   oj (~> 3.11)
++  omniauth (~> 2.0)
++  omniauth-apple (~> 1.0)
++  omniauth-facebook (~> 8.0)
++  omniauth-github (~> 2.0)
++  omniauth-rails_csrf_protection (~> 1.0)
++  omniauth-twitter (~> 1.4)
+   parallel (~> 1.20)
+   patron (~> 0.13.3)
+   pg (~> 1.2)
+```
 
