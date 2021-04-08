@@ -844,3 +844,20 @@ The Gemfile's dependencies are satisfied
 
 This froze as well during loading. So it's one of those four I guess. This is really good stuff.
 
+```text
+Removing outdated .gem files from vendor/cache
+  * oauth-0.5.6.gem
+  * oauth2-1.4.7.gem
+  * omniauth-apple-1.0.1.gem
+  * omniauth-facebook-8.0.0.gem
+  * omniauth-github-2.0.0.gem
+  * omniauth-oauth-1.2.0.gem
+  * omniauth-oauth2-1.7.1.gem
+  * omniauth-twitter-1.4.0.gem
+Bundle complete! 66 Gemfile dependencies, 168 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+djuber@forem:~/src/testcase38666$ 
+```
+
+Just backing up to the last known safe point to confirm we're okay \(we are\). I'm going to uncomment everything except these four gems before I go any closer \(I want to ensure this isn't one of many problems, that it's the one and only problem, before I go too much farther\).
+
