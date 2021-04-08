@@ -892,3 +892,39 @@ Bundled gems are installed into `./vendor/cache`
 
 Freezes. `rbspy snapshot` shows the same location - `protected_instance_methods [c function]`
 
+Switching to my "mostly clean" gemfile in listener and adding that single gem to the default install brings in these gems \(but does not introduce the problem\):
+
+```text
+Fetching hashie 4.1.0
+Fetching rack-protection 2.1.0
+Fetching oauth 0.5.6
+Installing rack-protection 2.1.0
+Installing oauth 0.5.6
+Installing hashie 4.1.0
+Fetching omniauth 2.0.4
+Installing omniauth 2.0.4
+Fetching omniauth-oauth 1.2.0
+Installing omniauth-oauth 1.2.0
+Bundle complete! 18 Gemfile dependencies, 78 gems now installed.
+Use `bundle info [gemname]` to see where a bundled gem is installed.
+
+djuber@forem:~/src/listener$ bin/setup
+== Installing dependencies ==
+The Gemfile's dependencies are satisfied
+yarn install v1.22.10
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.38s.
+
+== Preparing database ==
+Created database 'listener_development'
+Created database 'listener_test'
+
+== Removing old logs and tempfiles ==
+
+== Restarting application server ==
+
+```
+
+So it looks like it's not _only_ this omniauth-oauth gem but some interaction between something else \(which is frustrating, but fine.\)
+
