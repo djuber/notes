@@ -21,44 +21,8 @@ At this point rails freezes up - the cpu goes to 100% - strace records no activi
 
 ```text
 djuber@forem:~$ rbspy snapshot -p 3803
-<main> - /home/djuber/.rbenv/versions/3.0.0/bin/bundle:26
-load [c function] - (unknown):0
-<top (required)> - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/exe/bundle:37
-with_friendly_errors - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/friendly_errors.rb:138
-block in <top (required)> - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/exe/bundle:50
-start - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/cli.rb:27
-start - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/vendor/thor/lib/thor/base.rb:495
-dispatch - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/cli.rb:34
-dispatch - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/vendor/thor/lib/thor.rb:393
-invoke_command - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/vendor/thor/lib/thor/invocation.rb:129
-run - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/vendor/thor/lib/thor/command.rb:37
-exec - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/cli.rb:495
-run - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/cli/exec.rb:35
-kernel_load - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/gems/3.0.0/gems/bundler-2.2.15/lib/bundler/cli/exec.rb:70
-load [c function] - (unknown):0
-<top (required)> - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/bin/pry:26
-load [c function] - (unknown):0
-<top (required)> - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/bin/pry:13
-start - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/cli.rb:120
-start_with_pry_byebug - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-byebug-3.9.0/lib/pry-byebug/pry_ext.rb:15
-start - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/pry_class.rb:195
-start - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/repl.rb:16
-start - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/repl.rb:41
-with_ownership - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/input_lock.rb:79
-__with_ownership - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/input_lock.rb:73
-block in start - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/repl.rb:38
-repl - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/repl.rb:80
-loop [c function] - (unknown):0
-block in repl - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/repl.rb:79
-eval - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/pry_instance.rb:277
-catch [c function] - (unknown):0
-block in eval - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/pry_instance.rb:268
-catch [c function] - (unknown):0
-block (2 levels) in eval - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/pry_instance.rb:266
-handle_line - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/pry_instance.rb:677
-evaluate_ruby - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/pry-0.13.1/lib/pry/pry_instance.rb:295
-eval [c function] - (unknown):0
-__pry__ - (pry):3
+# SNIPPED all the code running pry - initialize! is the message I sent last
+
 initialize! - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/application.rb:387
 run_initializers - /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:64
 tsort_each - /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:206
