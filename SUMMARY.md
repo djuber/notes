@@ -19,5 +19,6 @@
   * [Setting up a local test env with docker](testing-in-docker-locally/with-docker.md)
   * [Traditional CI container setup](testing-in-docker-locally/traditional-ci-container-setup.md)
 * [Peer Review](peer-review.md)
-* [Rails runaway process in initialize!](rails-runaway-process-in-initialize.md)
+* [Rails runaway process in initialize!](rails-runaway-process-in-initialize/README.md)
+  * [fix it?](rails-runaway-process-in-initialize/fix-it.md)
 
