@@ -1259,3 +1259,27 @@ Install missing gems with `bundle install`.
 
 ```
 
+Rewinding the state - checking against current master for differences in the Gemfile \(aggravatingly I got this working with a slightly different Gemfile.lock\)
+
+
+
+```text
+# question my life choices about removing the line numbers 
+djuber@forem:~/src/testcase38666$ diff ../testcase38666/Gemfile ../forem-for-docker/Gemfile -u
+--- ../testcase38666/Gemfile    2021-04-08 11:15:50.980514232 -0500
++++ ../forem-for-docker/Gemfile 2021-04-08 11:18:07.826752864 -0500
+
+-gem "buffer", "~> 0.1"
+-gem "rss", "~> 0.2" # Ruby's offical RSS parser
+-gem "sidekiq", "~> 6.2.0" # Sidekiq is used to process background jobs with the help of Redis
++gem "sidekiq", "~> 6.2.1" # Sidekiq is used to process background jobs with the help of Redis
+ 
++
++  # NOTE: [@rhymes] binding_of_caller 1.0 breaks Docker Compose, see <https://github.com/forem/forem/issues/12068>
++  gem "binding_of_caller", "~> 0.8" # Retrieve the binding of a method's caller
+
+-  gem "pry-byebug", "~> 3.9" # Combine 'pry' with 'byebug'. Adds 'step', 'next', 'finish', 'continue' and 'break' commands to control execution
++  gem "pry-byebug", "~> 3.8" # Combine 'pry' with 'byebug'. Adds 'step', 'next', 'finish', 'continue' and 'break' commands to control execution
+
+```
+
