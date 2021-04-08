@@ -103,3 +103,13 @@ Record suggests `protected_instance_methods`  is the hotspot \(not sure if somet
 
 If you comment out bootsnap - remove from config/boot.rb as well.
 
+
+
+
+
+At this point I reverted all of my changes \(disabling gems and configurations\) and am going to do two things
+
+* work inside out to get as close to the issue as possible
+* start with a new rails app, using postgres, and not non-rails gems, to see if I can capture the same behavior and feed that back to Eilleen in [https://github.com/rails/rails/issues/38666](https://github.com/rails/rails/issues/38666)
+* if I can't replicate this in a dummy app - how does our app differ from the dummy \(initializers, etc\). Feed this back to _our_ issue [https://github.com/forem/forem/pull/12103](https://github.com/forem/forem/pull/12103)
+
