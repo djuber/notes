@@ -153,12 +153,31 @@ I noticed there was no bundle config in the test project, so I copied forem's
 
 ```text
 djuber@forem:~/src/testcase38666$ mkdir -p .bundle; cp -av ../forem/.bundle/config .bundle/
+djuber@forem:~/src/testcase38666$ bundle
 djuber@forem:~/src/testcase38666$ bin/setup
 # again all is well
 
+
+djuber@forem:~/src/testcase38666$ cp -av ../forem/Gemfile .
+djuber@forem:~/src/testcase38666$ bundle
+djuber@forem:~/src/testcase38666$ bin/setup
+== Installing dependencies ==
+The Gemfile's dependencies are satisfied
+ yarn install v1.22.10
+ [1/4] Resolving packages...
+ success Already up-to-date.
+ Done in 0.36s.
+
+== Preparing database ==
+
+BINGO!!! This freezes - it's 100% one of our gems.
 ```
 
 The existence of the test elasticsearch doesn't seem related - it's definitely hanging in initialize! and the fact that some particular rails command is getting called is not the issue. Booting the app is the problem here, and a loop or infinite loop is happening within.
 
-Will attempt to close in on the problem using pry instead.
+Next refinement - comment out all group :development or group :test blocks - leaving only prod and the core app - rerun bundle - rerun setup. Effectively - everything after line 116 in the Gemfile is removed from bundle.
+
+```text
+
+```
 
