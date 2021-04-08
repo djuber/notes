@@ -466,3 +466,7 @@ end
 
 Listen is there by default in a vanilla rails program \(which  does _not_ exhibit this problem\).
 
+Also, it's important to clarify what we've seen - the app won't boot without listen \(since that's configured in the dev env\) but freezes when listen _is_ put back, rather than pointing to listen being the problem, it only points to listen being required at dev time. I don't think this means what I wanted it to - only that _something_ in the gemset is a problem, and you have to keep listen installed to make that possible.
+
+
+
