@@ -1186,3 +1186,32 @@ djuber@forem:~/src/testcase38666$ diff Gemfile.lock ../forem/Gemfile.lock -u
    pg (~> 1.2)
 ```
 
+Remove imgproxy, leave buffer, uncomment omniauth.
+
+```text
+Updating files in vendor/cache
+  * omniauth-2.0.4.gem
+  * omniauth-apple-1.0.1.gem
+  * omniauth-facebook-8.0.0.gem
+  * omniauth-github-2.0.0.gem
+  * omniauth-rails_csrf_protection-1.0.0.gem
+  * omniauth-twitter-1.4.0.gem
+  * omniauth-oauth-1.2.0.gem
+  * omniauth-oauth2-1.7.1.gem
+  * oauth2-1.4.7.gem
+  * oauth-0.5.6.gem
+Removing outdated .gem files from vendor/cache
+  * anyway_config-2.1.0.gem
+  * imgproxy-2.0.0.gem
+  * ruby-next-core-0.12.0.gem
+Bundle complete! 150 Gemfile dependencies, 340 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+djuber@forem:~/src/testcase38666$ ruby --version
+ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x86_64-linux]
+djuber@forem:~/src/testcase38666$ 
+```
+
+Works.
+
+Can I introduce the issue by including imgproxy and omniauth-twitter in listener?
+
