@@ -178,6 +178,218 @@ The existence of the test elasticsearch doesn't seem related - it's definitely h
 Next refinement - comment out all group :development or group :test blocks - leaving only prod and the core app - rerun bundle - rerun setup. Effectively - everything after line 116 in the Gemfile is removed from bundle.
 
 ```text
+Fetching gem metadata from https://rubygems.org/.......
+Removing outdated .gem files from vendor/cache
+  * amazing_print-1.3.0.gem
+  * ast-2.4.2.gem
+  * benchmark-ips-2.8.4.gem
+  * better_errors-2.9.1.gem
+  * better_html-1.0.16.gem
+  * bindex-0.8.1.gem
+  * brakeman-5.0.0.gem
+  * bullet-6.1.4.gem
+  * bundler-audit-0.8.0.gem
+  * byebug-11.1.3.gem
+  * capybara-3.35.3.gem
+  * childprocess-3.0.0.gem
+  * coderay-1.1.3.gem
+  * crack-0.4.5.gem
+  * cypress-rails-0.5.0.gem
+  * dante-0.2.0.gem
+  * dead_end-1.1.6.gem
+  * derailed_benchmarks-2.0.1.gem
+  * diff-lcs-1.4.4.gem
+  * docile-1.3.5.gem
+  * dotenv-2.7.6.gem
+  * dotenv-rails-2.7.6.gem
+  * em-websocket-0.5.2.gem
+  * erb_lint-0.0.37.gem
+  * eventmachine-1.2.7.gem
+  * exifr-1.3.9.gem
+  * factory_bot-6.1.0.gem
+  * factory_bot_rails-6.1.0.gem
+  * faker-2.17.0.gem
+  * get_process_mem-0.2.7.gem
+  * guard-2.16.2.gem
+  * guard-compat-1.2.1.gem
+  * guard-livereload-2.5.2.gem
+  * hashdiff-1.0.1.gem
+  * heapy-0.2.0.gem
+  * html_tokenizer-0.0.7.gem
+  * knapsack_pro-2.11.0.gem
+  * launchy-2.5.0.gem
+  * listen-3.5.1.gem
+  * lumberjack-1.2.8.gem
+  * memory_profiler-1.0.0.gem
+  * mini_histogram-0.3.1.gem
+  * nenv-0.3.0.gem
+  * notiffany-0.1.3.gem
+  * parser-3.0.1.0.gem
+  * pry-0.13.1.gem
+  * pry-byebug-3.9.0.gem
+  * pry-rails-0.3.9.gem
+  * pundit-matchers-1.6.0.gem
+  * regexp_parser-2.1.1.gem
+  * rspec-core-3.10.1.gem
+  * rspec-expectations-3.10.1.gem
+  * rspec-mocks-3.10.2.gem
+  * rspec-rails-5.0.1.gem
+  * rspec-retry-0.6.2.gem
+  * rspec-support-3.10.2.gem
+  * rubocop-1.12.1.gem
+  * rubocop-ast-1.4.1.gem
+  * rubocop-performance-1.10.2.gem
+  * rubocop-rails-2.9.1.gem
+  * rubocop-rspec-2.2.0.gem
+  * ruby-prof-1.4.3.gem
+  * ruby-progressbar-1.11.0.gem
+  * ruby-statistics-2.1.3.gem
+  * selenium-webdriver-3.142.7.gem
+  * shellany-0.0.1.gem
+  * shoulda-matchers-4.5.1.gem
+  * simplecov-0.21.2.gem
+  * simplecov-html-0.12.3.gem
+  * simplecov_json_formatter-0.1.2.gem
+  * smart_properties-1.15.0.gem
+  * spring-2.1.1.gem
+  * spring-commands-rspec-1.0.4.gem
+  * stackprof-0.2.16.gem
+  * stripe-ruby-mock-3.1.0.rc2.gem
+  * test-prof-1.0.2.gem
+  * timecop-0.9.4.gem
+  * unicode-display_width-2.0.0.gem
+  * uniform_notifier-1.14.2.gem
+  * vcr-6.0.0.gem
+  * web-console-4.1.0.gem
+  * webdrivers-4.6.0.gem
+  * webmock-3.12.2.gem
+  * xpath-3.2.0.gem
+  * yard-0.9.26.gem
+  * yard-activerecord-0.0.16.gem
+  * yard-activesupport-concern-0.0.1.gem
+  * zonebie-0.6.1.gem
+Bundle complete! 103 Gemfile dependencies, 251 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+djuber@forem:~/src/testcase38666$ 
+```
 
+So this fails because listen is expected in development but not available \(at least it fails\):
+
+```text
+djuber@forem:~/src/testcase38666$ bin/setup     
+== Installing dependencies ==
+The Gemfile's dependencies are satisfied
+ yarn install v1.22.10
+ [1/4] Resolving packages...
+ success Already up-to-date.
+ Done in 0.36s.
+
+== Preparing database ==
+rails aborted!
+LoadError: cannot load such file -- listen
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:89:in `register'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:44:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/zeitwerk-2.4.2/lib/zeitwerk/kernel.rb:34:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `block in require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:299:in `load_dependency'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/evented_file_update_checker.rb:6:in `<main>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/zeitwerk-2.4.2/lib/zeitwerk/kernel.rb:34:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `block in require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:299:in `load_dependency'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `require'
+/home/djuber/src/testcase38666/config/environments/development.rb:72:in `block in <main>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/railtie.rb:234:in `instance_eval'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/railtie.rb:234:in `configure'
+/home/djuber/src/testcase38666/config/environments/development.rb:3:in `<main>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/zeitwerk-2.4.2/lib/zeitwerk/kernel.rb:34:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `block in require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:299:in `load_dependency'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/engine.rb:571:in `block (2 levels) in <class:Engine>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/engine.rb:570:in `each'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/engine.rb:570:in `block in <class:Engine>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:32:in `instance_exec'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:32:in `run'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:61:in `block in run_initializers'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:50:in `each'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:50:in `tsort_each_child'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:60:in `run_initializers'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/application.rb:384:in `initialize!'
+/home/djuber/src/testcase38666/config/environment.rb:5:in `<main>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/zeitwerk-2.4.2/lib/zeitwerk/kernel.rb:34:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `block in require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:299:in `load_dependency'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/application.rb:360:in `require_environment!'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/application.rb:526:in `block in run_tasks_blocks'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:281:in `block in execute'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:281:in `each'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:281:in `execute'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/honeycomb-beeline-2.4.0/lib/honeycomb/integrations/rake.rb:14:in `execute'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:219:in `block in invoke_with_call_chain'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:199:in `synchronize'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:199:in `invoke_with_call_chain'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:243:in `block in invoke_prerequisites'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:241:in `each'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:241:in `invoke_prerequisites'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:218:in `block in invoke_with_call_chain'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:199:in `synchronize'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:199:in `invoke_with_call_chain'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:243:in `block in invoke_prerequisites'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:241:in `each'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:241:in `invoke_prerequisites'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:218:in `block in invoke_with_call_chain'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:199:in `synchronize'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:199:in `invoke_with_call_chain'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/task.rb:188:in `invoke'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:160:in `invoke_task'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:116:in `block (2 levels) in top_level'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:116:in `each'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:116:in `block in top_level'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:125:in `run_with_threads'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:110:in `top_level'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/commands/rake/rake_command.rb:24:in `block (2 levels) in perform'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/application.rb:186:in `standard_exception_handling'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/commands/rake/rake_command.rb:24:in `block in perform'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/rake-13.0.3/lib/rake/rake_module.rb:59:in `with_application'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/commands/rake/rake_command.rb:18:in `perform'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/command.rb:52:in `invoke'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/commands.rb:18:in `<main>'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `require'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23:in `block in require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:92:in `register'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22:in `require_with_bootsnap_lfi'
+/home/djuber/src/testcase38666/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31:in `require'
+Tasks: TOP => db:prepare => db:load_config => environment
+(See full trace by running task with --trace)
+
+== Command ["bin/rails db:prepare"] failed ==
+```
+
+Let's _only_ add listen back, with no version restriction:
+
+```ruby
+group :development do
+  gem "listen"
+end
 ```
 
