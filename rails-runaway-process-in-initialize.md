@@ -926,5 +926,42 @@ Created database 'listener_test'
 
 ```
 
-So it looks like it's not _only_ this omniauth-oauth gem but some interaction between something else \(which is frustrating, but fine.\)
+So it looks like it's not _only_ this omniauth-oauth gem but some interaction between something else \(which is frustrating, but fine.\) Before I go any farther, I'm going to relax any version constraints on the omniauth-oauth gem, and call update \(\`bundler attempted to update omniauth-oauth, but its version stayed the same\). Well that's too bad, there's not some silver bullet laying around uninstalled.
+
+
+
+Remove omniauth-oauth gem, add omniauth-oauth2, leave oauth installed since that didn't seem to be the problem.
+
+```text
+
+Updating files in vendor/cache
+  * omniauth-oauth2-1.7.1.gem
+  * oauth2-1.4.7.gem
+Removing outdated .gem files from vendor/cache
+  * omniauth-oauth-1.2.0.gem
+Bundle complete! 101 Gemfile dependencies, 246 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+djuber@forem:~/src/testcase38666$ 
+```
+
+Reading the code that _looks_ like it's related to where things are going awry - we have `class Response` which has a Header which is a `DelegateClass(Hash)`  which appears to be the next thing called
+
+```ruby
+def DelegateClass(superclass, &block)
+  klass = Class.new(Delegator)
+  ignores = [*::Delegator.public_api, :to_s, :inspect, :=~, :!~, :===]
+  protected_instance_methods = superclass.protected_instance_methods
+  protected_instance_methods -= ignores
+  public_instance_methods = superclass.public_instance_methods
+  public_instance_methods -= ignores
+  klass.module_eval do
+```
+
+Fairly sure this call to `protected_instance_methods`  is part of the problem \(or definitely the thing going wrong\) - is there something with a Hash causing issues? Did more than one thing define a DelegateClass in some cyclical way? Why would that break Rails?
+
+
+
+{% hint style="info" %}
+Hashie defines a Hash class - we want to make sure that's not what Rails is trying to wrap the response headers in. Hashie also doesn't have a test suite against ruby 3 yet? [https://github.com/hashie/hashie/releases/tag/v4.1.0](https://github.com/hashie/hashie/releases/tag/v4.1.0) is what we have in the gemset.
+{% endhint %}
 
