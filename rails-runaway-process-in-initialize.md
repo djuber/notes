@@ -113,3 +113,52 @@ At this point I reverted all of my changes \(disabling gems and configurations\)
 * start with a new rails app, using postgres, and not non-rails gems, to see if I can capture the same behavior and feed that back to Eilleen in [https://github.com/rails/rails/issues/38666](https://github.com/rails/rails/issues/38666)
 * if I can't replicate this in a dummy app - how does our app differ from the dummy \(initializers, etc\). Feed this back to _our_ issue [https://github.com/forem/forem/pull/12103](https://github.com/forem/forem/pull/12103)
 
+### Considerations
+
+There doesn't seem to be any link between the reported yarn issue and the rails isse
+
+Test case setup - nothing bad happened here:
+
+```text
+cd ~/src
+rbenv local 3.0.0
+gem install rails
+# Successfully installed rails-6.1.3.1
+
+# start a new project, using all defaults except psql:
+rails new --database=postgresql testcase38666
+... bundle bundle yarn yarn ... 
+Webpacker successfully installed 🎉 🍰
+
+djuber@forem:~/src$ cd testcase38666/
+djuber@forem:~/src/testcase38666$ bin/setup 
+== Installing dependencies ==
+The Gemfile's dependencies are satisfied
+ yarn install v1.22.10
+ [1/4] Resolving packages...
+ success Already up-to-date.
+ Done in 0.36s.
+
+== Preparing database ==
+Created database 'testcase38666_development'
+Created database 'testcase38666_test'
+
+== Removing old logs and tempfiles ==
+
+== Restarting application server ==
+djuber@forem:~/src/testcase38666$ 
+```
+
+I noticed there was no bundle config in the test project, so I copied forem's
+
+```text
+djuber@forem:~/src/testcase38666$ mkdir -p .bundle; cp -av ../forem/.bundle/config .bundle/
+djuber@forem:~/src/testcase38666$ bin/setup
+# again all is well
+
+```
+
+The existence of the test elasticsearch doesn't seem related - it's definitely hanging in initialize! and the fact that some particular rails command is getting called is not the issue. Booting the app is the problem here, and a loop or infinite loop is happening within.
+
+Will attempt to close in on the problem using pry instead.
+
