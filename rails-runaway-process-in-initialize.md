@@ -859,5 +859,36 @@ Bundled gems are installed into `./vendor/cache`
 djuber@forem:~/src/testcase38666$ 
 ```
 
-Just backing up to the last known safe point to confirm we're okay \(we are\). I'm going to uncomment everything except these four gems before I go any closer \(I want to ensure this isn't one of many problems, that it's the one and only problem, before I go too much farther\).
+Just backing up to the last known safe point to confirm we're okay \(we are\). I'm going to uncomment everything except these four gems before I go any closer \(I want to ensure this isn't one of many problems, that it's the one and only problem, before I go too much farther\). I hit a snag running bundle when I added redis-rack back - it looks like without the explicit versioning it floated up to 2.1.3 - deleting the Gemfile.lock and bundling fresh works.
+
+Restating the situation:
+
+all the test/development convenience gems are commented out - listen is installed in development as a dependency \(installed by vanilla rails\) - all "normal" or top level gems, except the four omniauth providers, are enabled.
+
+```text
+Removing outdated .gem files from vendor/cache
+  * redis-rack-2.1.3.gem
+Bundle complete! 99 Gemfile dependencies, 243 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+djuber@forem:~/src/testcase38666$ 
+```
+
+Setup works - so it's \(definitely?\) one of the gems - or one of it's dependencies.
+
+Let's install the dependencies first \(oauth2 and oauth\) one by one to control for effects, before we enable the  omniauth providers.
+
+
+
+```text
+gem "omniauth-oauth", "1.2.0"
+
+
+Updating files in vendor/cache
+  * omniauth-oauth-1.2.0.gem
+  * oauth-0.5.6.gem
+Bundle complete! 100 Gemfile dependencies, 245 gems now installed.
+Bundled gems are installed into `./vendor/cache`
+```
+
+Freezes. `rbspy snapshot` shows the same location - `protected_instance_methods [c function]`
 
