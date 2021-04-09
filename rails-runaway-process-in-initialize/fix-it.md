@@ -225,7 +225,7 @@ $5 = {
 
 Here `me` is a method entry or `rb_method_entry_t`
 
-{% code title="method.h" %}
+{% code title="include/ruby/method.h" %}
 ```c
 
 /* method data type */
@@ -240,5 +240,22 @@ typedef struct rb_method_entry_struct {
 ```
 {% endcode %}
 
+One hint if you're trying this again - pointers are hex values and VALUE's \(which I assume are lookup table keys?\) are integer types.
 
+{% code title="include/ruby/internal/value.h" %}
+```c
+
+
+#if defined HAVE_UINTPTR_T && 0
+typedef uintptr_t VALUE;
+typedef uintptr_t ID;
+# define SIGNED_VALUE intptr_t
+# define SIZEOF_VALUE SIZEOF_UINTPTR_T
+# undef PRI_VALUE_PREFIX
+# define RBIMPL_VALUE_NULL UINTPTR_C(0)
+# define RBIMPL_VALUE_ONE  UINTPTR_C(1)
+# define RBIMPL_VALUE_FULL UINTPTR_MAX
+
+```
+{% endcode %}
 
