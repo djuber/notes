@@ -514,5 +514,12 @@ $23 = 140079
 $24 = 8754
 ```
 
+This is notop id is a macro \(so gdb doesn't understand it\) but we can add the original definition:
 
+```text
+#define is_notop_id(id) ((id)>tLAST_OP_ID)
+ tLAST_OP_ID = tPRESERVED_ID_END-1,
+```
+
+it looks like those are just the "real real constant ruby method ids" defined in id.h \(there's an enum, with `t preserved id begin = 150` and `t preserved id end` followed by `tToken local begin` = end - 1. All of this is generated during build from the template, which in turn looks like it's tied to parse.y/parse.c where TOKEN2ID is defined - basically these are the "operator tokens" and our method is not one of them.
 
