@@ -523,3 +523,17 @@ This is notop id is a macro \(so gdb doesn't understand it\) but we can add the 
 
 it looks like those are just the "real real constant ruby method ids" defined in id.h \(there's an enum, with `t preserved id begin = 150` and `t preserved id end` followed by `tToken local begin` = end - 1. All of this is generated during build from the template, which in turn looks like it's tied to parse.y/parse.c where TOKEN2ID is defined - basically these are the "operator tokens" and our method is not one of them.
 
+```text
+(gdb) s
+lookup_method_table (id=140079, klass=93964050204920) at vm_method.c:691
+691		return (rb_method_entry_t *) body;
+(gdb) p body
+$41 = 93964103382440
+(gdb) p *body
+$42 = 90234
+(gdb) p (rb_method_entry_t *)body
+$43 = (rb_method_entry_t *) 0x5575b900f5a8
+(gdb) p *(rb_method_entry_t *)body
+$44 = {flags = 90234, defined_class = 93964026872880, def = 0x5575b73117b0, called_id = 140079, owner = 93964026872880}
+```
+
