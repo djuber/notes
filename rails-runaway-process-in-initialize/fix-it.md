@@ -184,5 +184,61 @@ me_arg=0x7ffc8f658560, mod=94240738526240) at class.c:1386
 #4  class_instance_method_list (argc=<optimized out>, argv=<optimized out>, mod=94240738526240, obj=<optimized out>, func=0x7f11d355bd80 <ins_methods_pub_i>) at class.c:1422
 #5  0x00007f11d37a66c6 in vm_call0_cfunc_with_frame (argv=0x7f11d2cd8328, calling=0x7ffc8f6585d0, ec=0x55b621b48810) at vm_eval.c:95
 #6  vm_call0_cfunc (argv=0x7f11d2cd8328, calling=0x7ffc8f6585d0, ec=0x55b621b48810) at vm_eval.c:109
+
+
+(gdb) print me->def->type
+$1 = VM_METHOD_TYPE_REFINED
+(gdb) print me->def
+$2 = (struct rb_method_definition_struct * const) 0x55b625207470
+(gdb) print *me->def
+$3 = {type = VM_METHOD_TYPE_REFINED, 
+      alias_count = 1, 
+      complemented_count = 0, 
+      body = {
+        iseq = {
+          iseqptr = 0x0, 
+          cref = 0x0}, 
+        cfunc = {
+          func = 0x0, 
+          invoker = 0x0, 
+          argc = 0}, 
+        attr = {id = 0, location = 0}, 
+        alias = {original_me = 0x0}, 
+        refined = {orig_me = 0x0, owner = 0}, 
+        bmethod = {proc = 0, hooks = 0x0, defined_ractor = 0}, 
+        optimize_type = OPTIMIZED_METHOD_TYPE_SEND}, 
+        original_id = 140079, 
+        method_serial = 34747
+      }
+(gdb) print me
+$4 = (const rb_method_entry_t *) 0x55b6264afec0     
+
+(gdb) print *me
+$5 = {
+      flags = 90234, 
+      defined_class = 94240738526240, 
+      def = 0x55b625207470, 
+      called_id = 140079, 
+      owner = 94240738526240
+      }
 ```
+
+Here `me` is a method entry or `rb_method_entry_t`
+
+{% code title="method.h" %}
+```c
+
+/* method data type */
+
+typedef struct rb_method_entry_struct {
+    VALUE flags;
+    VALUE defined_class;
+    struct rb_method_definition_struct * const def;
+    ID called_id;
+    VALUE owner;
+} rb_method_entry_t;
+```
+{% endcode %}
+
+
 
