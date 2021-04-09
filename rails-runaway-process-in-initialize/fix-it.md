@@ -259,3 +259,19 @@ typedef uintptr_t ID;
 ```
 {% endcode %}
 
+```text
+(gdb) p me->def->body
+$17 = {iseq = {iseqptr = 0x0, cref = 0x0}, cfunc = {func = 0x0, invoker = 0x0, argc = 0}, attr = {id = 0, location = 0}, alias = {original_me = 0x0}, refined = {orig_me = 0x0, owner = 0}, bmethod = {proc = 0, hooks = 0x0, defined_ractor = 0}, optimize_type = OPTIMIZED_METHOD_TYPE_SEND}
+(gdb) p me->def->body->refined
+$18 = {orig_me = 0x0, owner = 0}
+
+(gdb) print rb_class_superclass(me->owner)
+$19 = 94240738666680
+(gdb) print me
+$20 = (const rb_method_entry_t *) 0x55b6264afec0
+(gdb) print *me
+$21 = {flags = 90234, defined_class = 94240738526240, def = 0x55b625207470, called_id = 140079, owner = 94240738526240}
+```
+
+This is looking at the class's methods \(we were passed in a method entry for a defined class value pointer\) super class, if there is no super we return 0 - if there is we call `search_method_protect`
+
