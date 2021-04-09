@@ -77,3 +77,112 @@ The critical path that's causing the issue is this for loop in search\_method
 
 The debug counters are in debug\_counter.h \(and are guarded by a compile time define so might just be a cast to void\(0\); 
 
+
+
+### Meanwhile in ruby
+
+I added a pry breakpoint to the define\_method for AmazingPrint::Class core extension
+
+```text
+[1] pry(Hash)> backtrace
+--> #0  block (2 levels) in Class.block (2 levels) in <class:Class>(*args#Array) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/amazing_print-1.3.0/lib/amazing_print/core_ext/class.rb:20
+    #1  Object.DelegateClass(superclass#Class, &block#NilClass) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/delegate.rb:397
+    #2  <class:Response> at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/actionpack-6.1.3.1/lib/action_dispatch/http/response.rb:38
+    #3  <module:ActionDispatch> at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/actionpack-6.1.3.1/lib/action_dispatch/http/response.rb:37
+    #4  <main> at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/actionpack-6.1.3.1/lib/action_dispatch/http/response.rb:8
+    ͱ-- #5  Kernel.require at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23
+    #6  block in Kernel.block in require_with_bootsnap_lfi(path#String, resolved#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23
+    #7  Bootsnap::LoadPathCache::LoadedFeaturesIndex.register(short#String, long#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:92
+    #8  Kernel.require_with_bootsnap_lfi(path#String, resolved#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22
+    #9  Kernel.require(path#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31
+    #10 Kernel.require(path#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/zeitwerk-2.4.2/lib/zeitwerk/kernel.rb:34
+    #11 block in ActiveSupport::Dependencies::Loadable.block in require(file#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332
+    #12 ActiveSupport::Dependencies::Loadable.load_dependency(file#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:299
+    #13 ActiveSupport::Dependencies::Loadable.require(file#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332
+    #14 <main> at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/actionpack-6.1.3.1/lib/action_controller/metal.rb:6
+    ͱ-- #15 Kernel.require at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23
+    #16 block in Kernel.block in require_with_bootsnap_lfi(path#String, resolved#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:23
+    #17 Bootsnap::LoadPathCache::LoadedFeaturesIndex.register(short#String, long#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/loaded_features_index.rb:92
+    #18 Kernel.require_with_bootsnap_lfi(path#String, resolved#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:22
+    #19 Kernel.require(path#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/bootsnap-1.7.3/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:31
+    #20 Kernel.require(path#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/zeitwerk-2.4.2/lib/zeitwerk/kernel.rb:34
+    #21 block in ActiveSupport::Dependencies::Loadable.block in require(file#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332
+    #22 ActiveSupport::Dependencies::Loadable.load_dependency(file#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:299
+    #23 ActiveSupport::Dependencies::Loadable.require(file#String) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/dependencies.rb:332
+    #24 #<Class:Datadog::Contrib::ActionPack::ActionController::Patcher>.patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/action_pack/action_controller/patcher.rb:19
+    #25 block in Datadog::Contrib::Patcher::CommonMethods.block in patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/patcher.rb:27
+    #26 block in Datadog::Utils::OnlyOnce.block in run at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:25
+    ͱ-- #27 Thread::Mutex.synchronize at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:20
+    #28 Datadog::Utils::OnlyOnce.run at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:20
+    #29 Datadog::Contrib::Patcher::CommonMethods.patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/patcher.rb:25
+    #30 #<Class:Datadog::Contrib::ActionPack::Patcher>.patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/action_pack/patcher.rb:18
+    #31 block in Datadog::Contrib::Patcher::CommonMethods.block in patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/patcher.rb:27
+    #32 block in Datadog::Utils::OnlyOnce.block in run at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:25
+    ͱ-- #33 Thread::Mutex.synchronize at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:20
+    #34 Datadog::Utils::OnlyOnce.run at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:20
+    #35 Datadog::Contrib::Patcher::CommonMethods.patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/patcher.rb:25
+    #36 Datadog::Contrib::Patchable::InstanceMethods.patch at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/patchable.rb:54
+    #37 block in Datadog::Contrib::Extensions::Configuration.block in configure(target#Datadog::Configuration::Settings, opts#Hash) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/extensions.rb:35
+    ͱ-- #38 Hash.each_key at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/set.rb:344
+    #39 Set.each(&block#Proc) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/set.rb:344
+    #40 Datadog::Contrib::Extensions::Configuration.configure(target#Datadog::Configuration::Settings, opts#Hash) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/extensions.rb:31
+    #41 #<Class:Datadog::Contrib::Rails::Framework>.setup at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/rails/framework.rb:35
+    #42 #<Class:Datadog::Contrib::Rails::Patcher>.setup_tracer at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/rails/patcher.rb:102
+    #43 block in #<Class:Datadog::Contrib::Rails::Patcher>.block in after_intialize(app#PracticalDeveloper::Application) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/rails/patcher.rb:96
+    #44 block in Datadog::Utils::OnlyOnce.block in run at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:25
+    ͱ-- #45 Thread::Mutex.synchronize at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:20
+    #46 Datadog::Utils::OnlyOnce.run at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/utils/only_once.rb:20
+    #47 #<Class:Datadog::Contrib::Rails::Patcher>.after_intialize(app#PracticalDeveloper::Application) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/rails/patcher.rb:93                                                         
+    #48 block in #<Class:Datadog::Contrib::Rails::Patcher>.block in patch_after_intialize at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/ddtrace-0.47.0/lib/ddtrace/contrib/rails/patcher.rb:88
+    ͱ-- #49 BasicObject.instance_eval(*args) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:73
+    #50 block in ActiveSupport::LazyLoadHooks.block in execute_hook(name#Symbol, base#PracticalDeveloper::Application, options#Hash, block#Proc) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:73
+    #51 ActiveSupport::LazyLoadHooks.with_execution_control(name#Symbol, block#Proc, once#NilClass) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:61
+    #52 ActiveSupport::LazyLoadHooks.execute_hook(name#Symbol, base#PracticalDeveloper::Application, options#Hash, block#Proc) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:66
+    #53 block in ActiveSupport::LazyLoadHooks.block in run_load_hooks(name#Symbol, base#PracticalDeveloper::Application) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:52
+    ͱ-- #54 Array.each at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:51
+    #55 ActiveSupport::LazyLoadHooks.run_load_hooks(name#Symbol, base#PracticalDeveloper::Application) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activesupport-6.1.3.1/lib/active_support/lazy_load_hooks.rb:51
+    #56 block in block in <module:Finisher> at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/application/finisher.rb:140
+    ͱ-- #57 BasicObject.instance_exec(*args) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:32
+    #58 Rails::Initializable::Initializer.run(*args#Array) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:32
+    #59 block in Rails::Initializable.block in run_initializers(group#Symbol, *args#Array) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:61
+    #60 block in #<Class:TSort>.block in tsort_each(each_node#Method, each_child#Method) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:228
+    #61 block (2 levels) in #<Class:TSort>.block (2 levels) in each_strongly_connected_component(each_node#Method, each_child#Method) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:350
+    #62 #<Class:TSort>.each_strongly_connected_component_from(node#Rails::Initializable::Initializer, each_child#Method, id_map#Hash, stack#Array) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:431
+    #63 block in #<Class:TSort>.block in each_strongly_connected_component(each_node#Method, each_child#Method) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:349
+    ͱ-- #64 Rails::Initializable::Collection.each at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:347
+    ͱ-- #65 Method.call(*args) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:347
+    #66 #<Class:TSort>.each_strongly_connected_component(each_node#Method, each_child#Method) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:347
+    #67 #<Class:TSort>.tsort_each(each_node#Method, each_child#Method) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:226
+    #68 TSort.tsort_each(&block#Proc) at /home/djuber/.rbenv/versions/3.0.0/lib/ruby/3.0.0/tsort.rb:205
+    #69 Rails::Initializable.run_initializers(group#Symbol, *args#Array) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/initializable.rb:60
+    #70 Rails::Application.initialize!(group#Symbol) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/railties-6.1.3.1/lib/rails/application.rb:384
+    #71 <main> at /home/djuber/src/forem/testcase.rb:10
+
+From: /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/amazing_print-1.3.0/lib/amazing_print/core_ext/class.rb:20 Class#protected_instance_methods:
+
+    18: define_method name do |*args|
+    19:   binding.pry
+ => 20:   methods = original_method.bind(self).call(*args)
+    21:   methods.instance_variable_set(:@__awesome_methods__, self)
+    22:   methods.extend(AwesomeMethodArray)
+    23:   methods
+    24: end
+
+```
+
+Inside `protected_instance_methods`here - and even show-method Hash was sufficient to get the system locked in a loop \(the backtrace points to `public_instance_methods`   but that's not any different.\) Will kill and get back here in a second and be _very_ gentle.
+
+So much for gentle - cd Hash worked - but pry's `ls` command calls `public_instance_methods`   as part of the introspection. Re-attach and find the problem I guess - time to learn  about inspecting stack frames.
+
+```text
+    (gdb) backtrace
+#0  resolve_refined_method (refinements=8, me=0x55b6264afec0, defined_class_ptr=0x0) at vm_method.c:1231
+#1  0x00007f11d355bc6e in method_entry_i (key=140079, value=94240807412640, data=0x7ffc8f658560) at class.c:1365
+#2  0x00007f11d3751630 in rb_id_table_foreach (tbl=0x55b622e87cb0, func=func@entry=0x7f11d355bc20 <method_entry_i>, data=data@entry=0x7ffc8f658560) at id_table.c:299
+#3  0x00007f11d355c677 in add_instance_method_list (Reading in symbols for proc.c...
+me_arg=0x7ffc8f658560, mod=94240738526240) at class.c:1386
+#4  class_instance_method_list (argc=<optimized out>, argv=<optimized out>, mod=94240738526240, obj=<optimized out>, func=0x7f11d355bd80 <ins_methods_pub_i>) at class.c:1422
+#5  0x00007f11d37a66c6 in vm_call0_cfunc_with_frame (argv=0x7f11d2cd8328, calling=0x7ffc8f6585d0, ec=0x55b621b48810) at vm_eval.c:95
+#6  vm_call0_cfunc (argv=0x7f11d2cd8328, calling=0x7ffc8f6585d0, ec=0x55b621b48810) at vm_eval.c:109
+```
+
