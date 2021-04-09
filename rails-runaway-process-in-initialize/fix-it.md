@@ -537,3 +537,136 @@ $43 = (rb_method_entry_t *) 0x5575b900f5a8
 $44 = {flags = 90234, defined_class = 93964026872880, def = 0x5575b73117b0, called_id = 140079, owner = 93964026872880}
 ```
 
+Loading the ruby macros defined in [https://github.com/ruby/ruby/blob/master/.gdbinit](https://github.com/ruby/ruby/blob/master/.gdbinit) helps a lot here
+
+```text
+(gdb) s
+search_method_protect (defined_class_ptr=0x0, id=140079, klass=93964050204920)
+    at vm_method.c:986
+986	    rb_method_entry_t *me = search_method(klass, id, defined_class_ptr);
+(gdb) p klass
+$2 = 93964050204920
+(gdb) rp klass
+[PROMOTED] T_ICLASS: (struct RClass *) 0x5575b5d588f8
+anonymous class/module
+$3 = {basic = {flags = 0x2007c, klass = 0x5575b4718430}, super = 0x5575b5893778, 
+  ptr = 0x5575b5bdaa10, class_serial = 0xb55}
+$4 = {iv_index_tbl = 0x0, iv_tbl = 0x0, m_tbl = 0x5575b470e8c0, const_tbl = 0x0, 
+  callable_m_tbl = 0x0, cc_tbl = 0x0, subclasses = 0x5575b46ad2b0, 
+  parent_subclasses = 0x5575b55e9bc0, module_subclasses = 0x0, 
+  origin_ = 93964050204920, refined_class = 8, allocator = 0x0, includer = 0}
+
+(gdb) s
+resolve_refined_method (refinements=8, me=0x5575b900f5a8, defined_class_ptr=0x0)
+    at vm_method.c:1231
+1231	    while (me && me->def->type == VM_METHOD_TYPE_REFINED) {
+(gdb) rp me->defined_class
+[PROMOTED] T_CLASS: (struct RClass *) 0x5575b4718430 -> 0x5575b5d588f8
+[PROMOTED] T_STRING: "Hash" bytesize:4 (embed) encoding:2 coderange:7bit 
+$7 = (struct RString *) 0x5575b4739860
+$8 = {basic = {flags = 0x262, klass = 0x5575b4718408}, super = 0x5575b5d588d0, 
+  ptr = 0x5575b470e850, class_serial = 0x171}
+$9 = {iv_index_tbl = 0x0, iv_tbl = 0x5575b470ea60, m_tbl = 0x5575b5ac3670, 
+  const_tbl = 0x0, callable_m_tbl = 0x0, cc_tbl = 0x5575bc76ee50, 
+  subclasses = 0x5575bb8c4380, parent_subclasses = 0x5575b5a39c40, 
+  module_subclasses = 0x0, origin_ = 93964050204920, refined_class = 8, 
+  allocator = 0x7fe27493a140 <empty_hash_alloc>, includer = 0}
+
+
+Thread 1 "ruby" hit Breakpoint 3, lookup_method_table (id=140079, 
+    klass=93964050204880) at vm_method.c:690
+690	    if (rb_id_table_lookup(m_tbl, id, &body)) {
+(gdb) rp klass
+[PROMOTED] T_ICLASS: (struct RClass *) 0x5575b5d588d0
+[PROMOTED] T_STRING: "ActiveSupport::ToJsonWithActiveSupportEncoder" bytesize:45 
+encoding:2 coderange:7bit $22 = (struct RString *) 0x5575b5d58bc8
+$23 = {basic = {flags = 0x7c, klass = 0x5575b5d58bf0}, super = 0x5575b5d588f8, 
+  ptr = 0x5575b5a39c10, class_serial = 0xb56}
+$24 = {iv_index_tbl = 0x0, iv_tbl = 0x5575b5a35280, m_tbl = 0x5575b5ac5e90, 
+  const_tbl = 0x5575b5a31320, callable_m_tbl = 0x0, cc_tbl = 0x5575ba926220, 
+  subclasses = 0x5575b471cd70, parent_subclasses = 0x5575b5bdaa40, 
+  module_subclasses = 0x5575b5ad6ba8, origin_ = 93964050204880, 
+  refined_class = 8, allocator = 0x0, includer = 93964026872880}
+
+(gdb) s
+search_method (defined_class_ptr=0x0, id=140079, klass=93964050204920)
+    at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+(gdb) p rb_class_superclass(klass)
+$33 = 93964027013280
+(gdb) rp rb_class_superclass(klass)
+[PROMOTED] T_CLASS: (struct RClass *) 0x5575b473a8a0 -> 0x5575b5d58718
+[PROMOTED] T_STRING: "Object" bytesize:6 (embed) encoding:2 coderange:7bit 
+$34 = (struct RString *) 0x5575b473a878
+$35 = {basic = {flags = 0x262, klass = 0x5575b4739720}, super = 0x5575bb4fccd0, 
+  ptr = 0x5575b46ff870, class_serial = 0x3}
+$36 = {iv_index_tbl = 0x5575bcfdd810, iv_tbl = 0x5575b46ff9b0, 
+  m_tbl = 0x5575b5a2da20, const_tbl = 0x5575b46ff920, callable_m_tbl = 0x0, 
+  cc_tbl = 0x5575ba3f0590, subclasses = 0x5575bd848c50, 
+  parent_subclasses = 0x5575b8030060, module_subclasses = 0x0, 
+  origin_ = 93964050204440, refined_class = 8, allocator = 0x0, includer = 0}
+(gdb) rp klass
+[PROMOTED] T_ICLASS: (struct RClass *) 0x5575b5d588f8
+anonymous class/module
+$37 = {basic = {flags = 0x2007c, klass = 0x5575b4718430}, 
+  super = 0x5575b5893778, ptr = 0x5575b5bdaa10, class_serial = 0xb55}
+$38 = {iv_index_tbl = 0x0, iv_tbl = 0x0, m_tbl = 0x5575b470e8c0, 
+  const_tbl = 0x0, callable_m_tbl = 0x0, cc_tbl = 0x0, 
+  subclasses = 0x5575b46ad2b0, parent_subclasses = 0x5575b55e9bc0, 
+  module_subclasses = 0x0, origin_ = 93964050204920, refined_class = 8, 
+  allocator = 0x0, includer = 0}
+
+Thread 1 "ruby" hit Breakpoint 2, resolve_refined_method (refinements=8, 
+    me=0x5575b900f5a8, defined_class_ptr=0x0) at vm_method.c:1256
+1256	        me = search_method_protect(super, me->called_id, defined_class_ptr);
+(gdb) rp me
+[PROMOTED] T_IMEMO(imemo_ment): (rb_method_entry_t *) 0x5575b900f5a8
+$46 = {flags = 90234, defined_class = 93964026872880, def = 0x5575b73117b0, 
+  called_id = 140079, owner = 93964026872880}
+(gdb) rp me->owner
+[PROMOTED] T_CLASS: (struct RClass *) 0x5575b4718430 -> 0x5575b5d588f8
+[PROMOTED] T_STRING: "Hash" bytesize:4 (embed) encoding:2 coderange:7bit 
+$47 = (struct RString *) 0x5575b4739860
+$48 = {basic = {flags = 0x262, klass = 0x5575b4718408}, super = 0x5575b5d588d0, 
+  ptr = 0x5575b470e850, class_serial = 0x171}
+$49 = {iv_index_tbl = 0x0, iv_tbl = 0x5575b470ea60, m_tbl = 0x5575b5ac3670, 
+  const_tbl = 0x0, callable_m_tbl = 0x0, cc_tbl = 0x5575bc76ee50, 
+  subclasses = 0x5575bb8c4380, parent_subclasses = 0x5575b5a39c40, 
+  module_subclasses = 0x0, origin_ = 93964050204920, refined_class = 8, 
+  allocator = 0x7fe27493a140 <empty_hash_alloc>, includer = 0}
+
+(gdb) rp me->defined_class
+[PROMOTED] T_CLASS: (struct RClass *) 0x5575b4718430 -> 0x5575b5d588f8
+[PROMOTED] T_STRING: "Hash" bytesize:4 (embed) encoding:2 coderange:7bit 
+$67 = (struct RString *) 0x5575b4739860
+$68 = {basic = {flags = 0x262, klass = 0x5575b4718408}, super = 0x5575b5d588d0, 
+  ptr = 0x5575b470e850, class_serial = 0x171}
+$69 = {iv_index_tbl = 0x0, iv_tbl = 0x5575b470ea60, m_tbl = 0x5575b5ac3670, 
+  const_tbl = 0x0, callable_m_tbl = 0x0, cc_tbl = 0x5575bc76ee50, 
+  subclasses = 0x5575bb8c4380, parent_subclasses = 0x5575b5a39c40, 
+  module_subclasses = 0x0, origin_ = 93964050204920, refined_class = 8, 
+  allocator = 0x7fe27493a140 <empty_hash_alloc>, includer = 0}
+(gdb) rp me->def
+T_NODE(NODE_SCOPE): $70 = {flags = 27, u1 = {node = 0x0, id = 0, value = 0, 
+    tbl = 0x0}, u2 = {node = 0x0, id = 0, argc = 0, value = 0}, u3 = {
+    node = 0x0, id = 0, state = 0, args = 0x0, apinfo = 0x0, fpinfo = 0x0, 
+    value = 0}, nd_loc = {beg_pos = {lineno = 140079, column = 0}, end_pos = {
+      lineno = 34747, column = 0}}, node_id = 0}
+(gdb) rp me->called_id
+FIXNUM: 70039
+(gdb) rp me->owner
+[PROMOTED] T_CLASS: (struct RClass *) 0x5575b4718430 -> 0x5575b5d588f8
+[PROMOTED] T_STRING: "Hash" bytesize:4 (embed) encoding:2 coderange:7bit 
+$71 = (struct RString *) 0x5575b4739860
+$72 = {basic = {flags = 0x262, klass = 0x5575b4718408}, super = 0x5575b5d588d0, 
+  ptr = 0x5575b470e850, class_serial = 0x171}
+$73 = {iv_index_tbl = 0x0, iv_tbl = 0x5575b470ea60, m_tbl = 0x5575b5ac3670, 
+  const_tbl = 0x0, callable_m_tbl = 0x0, cc_tbl = 0x5575bc76ee50, 
+  subclasses = 0x5575bb8c4380, parent_subclasses = 0x5575b5a39c40, 
+  module_subclasses = 0x0, origin_ = 93964050204920, refined_class = 8, 
+  allocator = 0x7fe27493a140 <empty_hash_alloc>, includer = 0}
+
+```
+
+so we have Hash, Object, "ActiveSupport::ToJsonWithActiveSupportEncoder" all in play here. The 70039 called\_id is a fixnum \(it's `140079 >> 1`\)
+
