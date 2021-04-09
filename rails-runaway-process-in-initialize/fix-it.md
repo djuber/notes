@@ -275,3 +275,244 @@ $21 = {flags = 90234, defined_class = 94240738526240, def = 0x55b625207470, call
 
 This is looking at the class's methods \(we were passed in a method entry for a defined class value pointer\) super class, if there is no super we return 0 - if there is we call `search_method_protect`
 
+I set a breakpoint on search method protect - the first call passed null defined class, id = 140079, and klass = 94240761825200
+
+We were in `resolve_refined_method (refinements=8, me=0x55b6264afec0, defined_class_ptr=0x0)` so this makes sense \(null was forwarded to the next method\).
+
+```text
+(gdb) backtrace
+#0  search_method_protect (defined_class_ptr=0x0, id=140079, klass=94240761825200) at vm_method.c:986
+#1  resolve_refined_method (refinements=8, me=<optimized out>, defined_class_ptr=0x0) at vm_method.c:1256
+#2  0x00007f11d355bc6e in method_entry_i (key=140079, value=94240807412640, data=0x7ffc8f658560) at class.c:1365
+#3  0x00007f11d3751630 in rb_id_table_foreach (tbl=0x55b622e87cb0, func=func@entry=0x7f11d355bc20 <method_entry_i>, data=data@entry=0x7ffc8f658560) at id_table.c:299
+#4  0x00007f11d355c677 in add_instance_method_list (me_arg=0x7ffc8f658560, mod=94240738526240) at class.c:1386
+#5  class_instance_method_list (argc=<optimized out>, argv=<optimized out>, mod=94240738526240, obj=<optimized out>, func=0x7f11d355bd80 <ins_methods_pub_i>) at class.c:1422
+```
+
+We can _see_ the loop happening :
+
+```text
+
+Thread 1 "ruby" hit Breakpoint 3, search_method (defined_class_ptr=0x0, id=140079, klass=94240761825200) at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+(gdb) c
+Continuing.
+
+Thread 1 "ruby" hit Breakpoint 1, resolve_refined_method (refinements=8, me=0x55b6264afec0, defined_class_ptr=0x0) at vm_method.c:1245
+1245	        tmp_me = me->def->body.refined.orig_me;
+(gdb) c
+Continuing.
+
+Thread 1 "ruby" hit Breakpoint 3, search_method (defined_class_ptr=0x0, id=140079, klass=94240761825200) at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+(gdb) c
+Continuing.
+
+Thread 1 "ruby" hit Breakpoint 1, resolve_refined_method (refinements=8, me=0x55b6264afec0, defined_class_ptr=0x0) at vm_method.c:1245
+1245	        tmp_me = me->def->body.refined.orig_me;
+(gdb) c
+Continuing.
+
+Thread 1 "ruby" hit Breakpoint 3, search_method (defined_class_ptr=0x0, id=140079, klass=94240761825200) at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+
+
+
+Thread 1 "ruby" hit Breakpoint 1, resolve_refined_method (refinements=8, me=0x55b6264afec0, defined_class_ptr=0x0) at vm_method.c:1245
+1245	        tmp_me = me->def->body.refined.orig_me;
+(gdb) s
+1246	        if (tmp_me) {
+(gdb) s
+1251	        super = RCLASS_SUPER(me->owner);
+(gdb) 
+RCLASS_SUPER (klass=94240738526240) at ./internal/class.h:160
+160	    return RCLASS(klass)->super;
+(gdb) 
+resolve_refined_method (refinements=8, me=0x55b6264afec0, defined_class_ptr=0x0) at vm_method.c:1252
+1252	        if (!super) {
+(gdb) 
+1256	        me = search_method_protect(super, me->called_id, defined_class_ptr);
+(gdb) 
+search_method (defined_class_ptr=0x0, id=140079, klass=94240761825200) at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+(gdb) 
+970	        if ((me = lookup_method_table(klass, id)) != 0) {
+(gdb) 
+lookup_method_table (id=140079, klass=94240761825200) at vm_method.c:690
+690	    if (rb_id_table_lookup(m_tbl, id, &body)) {
+(gdb) 
+rb_id_table_lookup (tbl=0x55b62312f9a0, id=id@entry=140079, valp=valp@entry=0x7ffc8f6584a0) at symbol.h:71
+71	    if (is_notop_id(id)) {
+(gdb) 
+230	    int index = hash_table_index(tbl, key);
+(gdb) 
+0x00007f11d3751146 in hash_table_index (key=<optimized out>, tbl=<optimized out>) at id_table.c:132
+132	    if (tbl->capa > 0) {
+(gdb) 
+0x00007f11d375114c in rb_id_to_serial (id=id@entry=140079) at symbol.h:72
+72		return (rb_id_serial_t)(id >> ID_SCOPE_SHIFT);
+(gdb) 
+229	    id_key_t key = id2key(id);
+(gdb) 
+id2key (id=id@entry=140079) at id_table.c:26
+26	    return rb_id_to_serial(id);
+(gdb) 
+0x00007f11d3751155 in rb_id_to_serial (id=id@entry=140079) at symbol.h:72
+72		return (rb_id_serial_t)(id >> ID_SCOPE_SHIFT);
+(gdb) 
+rb_id_table_lookup (tbl=0x55b62312f9a0, id=id@entry=140079, valp=valp@entry=0x7ffc8f6584a0) at id_table.c:230
+230	    int index = hash_table_index(tbl, key);
+(gdb) 
+hash_table_index (key=8754, tbl=<optimized out>) at id_table.c:132
+132	    if (tbl->capa > 0) {
+(gdb) 
+133		int mask = tbl->capa - 1;
+(gdb) 
+134		int ix = key & mask;
+(gdb) 
+136		while (key != ITEM_GET_KEY(tbl, ix)) {
+(gdb) 
+137		    if (!ITEM_COLLIDED(tbl, ix))
+(gdb) 
+search_method (defined_class_ptr=0x0, id=140079, klass=94240761825240) at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+(gdb) 
+RCLASS_SUPER (klass=94240761825240) at ./internal/class.h:160
+160	    return RCLASS(klass)->super;
+(gdb) 
+search_method (defined_class_ptr=0x0, id=140079, klass=94240761825240) at vm_method.c:968
+968	    for (; klass; klass = RCLASS_SUPER(klass)) {
+(gdb) 
+970	        if ((me = lookup_method_table(klass, id)) != 0) {
+(gdb) 
+lookup_method_table (id=140079, klass=94240761825240) at vm_method.c:690
+690	    if (rb_id_table_lookup(m_tbl, id, &body)) {
+(gdb) 
+rb_id_table_lookup (tbl=0x55b621bd8910, id=id@entry=140079, valp=valp@entry=0x7ffc8f6584a0) at symbol.h:71
+71	    if (is_notop_id(id)) {
+(gdb) 
+230	    int index = hash_table_index(tbl, key);
+(gdb) 
+0x00007f11d3751146 in hash_table_index (key=<optimized out>, tbl=<optimized out>) at id_table.c:132
+132	    if (tbl->capa > 0) {
+(gdb) 
+0x00007f11d375114c in rb_id_to_serial (id=id@entry=140079) at symbol.h:72
+72		return (rb_id_serial_t)(id >> ID_SCOPE_SHIFT);
+(gdb) 
+229	    id_key_t key = id2key(id);
+(gdb) 
+id2key (id=id@entry=140079) at id_table.c:26
+26	    return rb_id_to_serial(id);
+(gdb) 
+0x00007f11d3751155 in rb_id_to_serial (id=id@entry=140079) at symbol.h:72
+72		return (rb_id_serial_t)(id >> ID_SCOPE_SHIFT);
+(gdb) 
+rb_id_table_lookup (tbl=0x55b621bd8910, id=id@entry=140079, valp=valp@entry=0x7ffc8f6584a0) at id_table.c:230
+230	    int index = hash_table_index(tbl, key);
+(gdb) 
+hash_table_index (key=8754, tbl=<optimized out>) at id_table.c:132
+132	    if (tbl->capa > 0) {
+(gdb) 
+133		int mask = tbl->capa - 1;
+(gdb) 
+134		int ix = key & mask;
+(gdb) 
+136		while (key != ITEM_GET_KEY(tbl, ix)) {
+(gdb) 
+rb_id_table_lookup (tbl=<optimized out>, id=id@entry=140079, valp=valp@entry=0x7ffc8f6584a0) at id_table.c:233
+233	        *valp = tbl->items[index].val;
+(gdb) 
+234		return TRUE;
+(gdb) 
+lookup_method_table (id=140079, klass=94240761825240) at vm_method.c:691
+691		return (rb_method_entry_t *) body;
+(gdb) 
+resolve_refined_method (refinements=8, me=<optimized out>, defined_class_ptr=0x0) at vm_method.c:1256
+1256	        me = search_method_protect(super, me->called_id, defined_class_ptr);
+(gdb) 
+search_method_protect (defined_class_ptr=0x0, id=140079, klass=94240761825240) at vm_method.c:986
+986	    rb_method_entry_t *me = search_method(klass, id, defined_class_ptr);
+(gdb) 
+search_method (defined_class_ptr=0x0, id=140079, klass=94240761825240) at vm_method.c:975
+975	    if (defined_class_ptr) *defined_class_ptr = klass;
+(gdb) 
+search_method_protect (defined_class_ptr=0x0, id=140079, klass=94240761825240) at vm_method.c:988
+988	    if (!UNDEFINED_METHOD_ENTRY_P(me)) {
+```
+
+Single stepping shows the places this goes - it's possible `rb_id_table_lookup`  having an optimized out table is suspicious. 
+
+Detached and re-attached while directory was set and I get a killed process when I attach.
+
+```text
+
+[1] pry(ActiveRecord::Base)> 
+
+
+From: /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/amazing_print-1.3.0/lib/amazing_print/core_ext/class.rb:20 Class#instance_methods:
+
+    18: define_method name do |*args|
+    19:   binding.pry
+ => 20:   methods = original_method.bind(self).call(*args)
+    21:   methods.instance_variable_set(:@__awesome_methods__, self)
+    22:   methods.extend(AwesomeMethodArray)
+    23:   methods
+    24: end
+
+[1] pry(Object)> backtrace
+--> #0  block (2 levels) in Class.block (2 levels) in <class:Class>(*args#Array) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/amazing_print-1.3.0/lib/amazing_print/core_ext/class.rb:20
+    #1  #<Class:ActiveRecord::AttributeMethods>.dangerous_attribute_methods at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activerecord-6.1.3.1/lib/active_record/attribute_methods.rb:35
+    #2  ActiveRecord::AttributeMethods::ClassMethods.dangerous_attribute_method?(name#Symbol) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activerecord-6.1.3.1/lib/active_record/attribute_methods.rb:110
+    #3  ActiveRecord::AttributeMethods::PrimaryKey::ClassMethods.dangerous_attribute_method?(method_name#Symbol) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activerecord-6.1.3.1/lib/active_record/attribute_methods/primary_key.rb:64
+    #4  #<Class:ActiveRecord::Associations::Builder::Association>.build(model#Class, name#Symbol, scope#NilClass, options#Hash, &block#NilClass) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activerecord-6.1.3.1/lib/active_record/associations/builder/association.rb:26
+    #5  ActiveRecord::Associations::ClassMethods.belongs_to(name#Symbol, scope#NilClass, options#Hash) at /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/activerecord-6.1.3.1/lib/active_record/associations.rb:1762
+
+
+[1] pry(Object)> name
+=> "instance_methods"
+
+```
+
+Restepping through on the ruby side - with the breakpoint in define method in amazing print.
+
+I noticed we're wrapping object's methods here. That sounds sneaky and hopefully avoidable. In any case - I can call `Object.public_instance_methods`  after this is defined - it looks like something _else_ is happening to hash _before_ we get to the wrapper that fetches the original method \(the wrapper is hitting a loop that was already there\). As I understand it - the inheritance structure for Hash is Hash -&gt; Object -&gt; BasicObject -&gt; HereBeDragons. I did _not_ see BasicObject ever getting wrapped here.
+
+Tighter loop just breaking on `rb id table lookup` hits two tables with the same key:
+
+```text
+Thread 1 "ruby" hit Breakpoint 1, rb_id_table_lookup (tbl=0x5575b5ac5e90, id=id@entry=140079, valp=valp@entry=0x7ffd664eaa50) at symbol.h:71
+71	    if (is_notop_id(id)) {
+(gdb) c
+Continuing.
+
+Thread 1 "ruby" hit Breakpoint 1, rb_id_table_lookup (tbl=0x5575b470e8c0, id=id@entry=140079, valp=valp@entry=0x7ffd664eaa50) at symbol.h:71
+71	    if (is_notop_id(id)) {
+
+
+
+static inline rb_id_serial_t
+rb_id_to_serial(ID id)
+{
+    if (is_notop_id(id)) {
+	return (rb_id_serial_t)(id >> ID_SCOPE_SHIFT);
+    }
+    else {
+	return (rb_id_serial_t)id;
+    }
+}
+```
+
+`ID SCOPE SHIFT` is `RUBY_ID_SCOPE_SHIFT`  is 4 
+
+```text
+(gdb) s
+0x00007fe274a94155 in rb_id_to_serial (id=id@entry=140079) at symbol.h:72
+72		return (rb_id_serial_t)(id >> ID_SCOPE_SHIFT);
+(gdb) p id
+$23 = 140079
+(gdb) p id >> 4
+$24 = 8754
+```
+
+
+
