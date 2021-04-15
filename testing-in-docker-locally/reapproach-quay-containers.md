@@ -54,3 +54,10 @@ My next step will be to add a single carrierwave test case "it saves profile ima
 
 In the meantime - with just a comment on the profile image attribute in the users factory - I can get the specs to run more or less \(some other attached images fail, a few tests actually act on it, there are other problems\) - but we're looking at a few hundred rather than four thousand failures \(when `create(:user)` fails lots of scenarios go belly up\). 
 
+```text
+Finished in 13 minutes 3 seconds (files took 7.42 seconds to load)
+6030 examples, 965 failures, 28 pending
+```
+
+Apart from carrierwave - the same issue as earlier \(chrome binary not present in the image\) presents - we may want to filter out feature tests and run them separately anyway?
+
