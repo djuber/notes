@@ -24,7 +24,14 @@ I think this might be correct.
 
 Change 1:
 
-make the entrypoint call rspec instead of rails server
+make the entrypoint call rspec instead of rails server - I remember this being a weird decision when I was using docker compose to run the tests because of how the output happened
+
+```text
+
+-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
++CMD ["bundle", "exec", "rspec"]
+ 
+```
 
 
 
