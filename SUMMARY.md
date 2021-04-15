@@ -15,6 +15,7 @@
 * [Bookmarks](bookmarks.md)
 * [User Setup in development](user-setup-in-development.md)
 * [Testing in Docker locally](testing-in-docker-locally/README.md)
+  * [Reapproach quay containers](testing-in-docker-locally/reapproach-quay-containers.md)
   * [Webdriver and chrome headless](testing-in-docker-locally/webdriver-and-chrome-headless.md)
   * [Setting up a local test env with docker](testing-in-docker-locally/with-docker.md)
   * [Traditional CI container setup](testing-in-docker-locally/traditional-ci-container-setup.md)
