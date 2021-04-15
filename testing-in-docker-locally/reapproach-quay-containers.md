@@ -50,3 +50,7 @@ $ docker-compose -f test-compose.yml run rails bundle exec rspec --format=docume
 
 My next step will be to add a single carrierwave test case "it saves profile images" and assert I can do that - and use that as the indicator for testing.
 
+![Two feedback loops - lets move into the small one for now](../.gitbook/assets/image%20%282%29.png)
+
+
+
