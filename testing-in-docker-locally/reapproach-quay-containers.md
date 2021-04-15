@@ -43,5 +43,8 @@ Did some minor surgery on the test compose file and I'm able to get errors runni
 
 Commented out the profile image from the users factory and I'm down to a few hundred failures \(out of 6000\) so \(1\) carrierwave is still an impediment, mostly tied to user factory, \(2\) it's the main problem to solve here.
 
+```text
+$ docker-compose -f test-compose.yml run rails bundle exec rspec --format=documentation
 
+```
 
