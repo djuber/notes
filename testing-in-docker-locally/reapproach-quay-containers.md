@@ -52,5 +52,5 @@ My next step will be to add a single carrierwave test case "it saves profile ima
 
 ![Two feedback loops - lets move into the small one for now](../.gitbook/assets/image%20%282%29.png)
 
-
+In the meantime - with just a comment on the profile image attribute in the users factory - I can get the specs to run more or less \(some other attached images fail, a few tests actually act on it, there are other problems\) - but we're looking at a few hundred rather than four thousand failures \(when `create(:user)` fails lots of scenarios go belly up\). 
 
