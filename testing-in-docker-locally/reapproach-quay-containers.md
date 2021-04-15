@@ -14,3 +14,17 @@ My last series of tests would copy the tree into the image during build \(so any
 
 My problems with port vs expose are still valid \(I think I want to change to expose basically for everything in testing - unless there's value in seeing port 3000 I shouldn't _need_ to stop the local dev env to interact with docker\). 
 
+How do I isolate the "testing" stage in the container file?
+
+```text
+docker build --target="testing" . 
+```
+
+I think this might be correct.
+
+Change 1:
+
+make the entrypoint call rspec instead of rails server
+
+
+
