@@ -61,3 +61,18 @@ Finished in 13 minutes 3 seconds (files took 7.42 seconds to load)
 
 Apart from carrierwave - the same issue as earlier \(chrome binary not present in the image\) presents - we may want to filter out feature tests and run them separately anyway?
 
+```ruby
+  describe "profile_image" do
+    let(:image_path) { Rails.root.join("spec/support/fixtures/images/image1.jpeg") }
+    let(:user) { create(:user) }
+
+    it 'has a profile image' do
+      user.profile_image = Rack::Test::UploadedFile.new(image_path, "image/jpeg")
+      expect(user.valid?).to be true
+    end
+  end
+
+```
+
+This fails \(for the same reason you would expect - the `profile_image` is `#<ProfileImageUploader:0x00007f076ab798f0 @model=#<User id: 13362, apple_created_at: nil, apple_usern...=nil, @cache_id=nil, @identifier=nil, @versions=nil, @versions_to_cache=nil, @versions_to_store=nil>` and that's not valid \(image is nil, so image type is nil\)
+
