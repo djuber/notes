@@ -76,3 +76,7 @@ Apart from carrierwave - the same issue as earlier \(chrome binary not present i
 
 This fails \(for the same reason you would expect - the `profile_image` is `#<ProfileImageUploader:0x00007f076ab798f0 @model=#<User id: 13362, apple_created_at: nil, apple_usern...=nil, @cache_id=nil, @identifier=nil, @versions=nil, @versions_to_cache=nil, @versions_to_store=nil>` and that's not valid \(image is nil, so image type is nil\)
 
+
+
+Suddenly started seeing issues with module autoloading around Notifications \(which makes far less sense as a problem\).
+
