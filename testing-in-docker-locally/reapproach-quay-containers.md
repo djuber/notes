@@ -33,5 +33,7 @@ make the entrypoint call rspec instead of rails server - I remember this being a
  
 ```
 
+Did some minor surgery on the test compose file and I'm able to get errors running tests now successfully
 
+[https://github.com/djuber/forem/tree/djuber/quay-images-for-testing](https://github.com/djuber/forem/tree/djuber/quay-images-for-testing)
 
