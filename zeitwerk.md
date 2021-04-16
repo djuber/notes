@@ -43,5 +43,16 @@ from /opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/activesupport-6.1.3.1/lib/act
 => []                                                 
 ```
 
+Code is working when loaded \(name is not wrong\):
+
+```text
+[2] pry(#<RSpec::ExampleGroups::User::ProfileImage>)> Notifications.constants
+=> []                                                                        
+[3] pry(#<RSpec::ExampleGroups::User::ProfileImage>)> load(Rails.root + "app/workers/notifications/welcome_notification_worker.rb")                                                     
+=> true                                                                                                                            
+[4] pry(#<RSpec::ExampleGroups::User::ProfileImage>)> Notifications.constants
+=> [:WelcomeNotificationWorker]                       
+```
+
 
 
