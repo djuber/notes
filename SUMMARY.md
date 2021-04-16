@@ -23,4 +23,5 @@
 * [Rails runaway process in initialize!](rails-runaway-process-in-initialize/README.md)
   * [Don't fix it](rails-runaway-process-in-initialize/dont-fix-it.md)
   * [fix it?](rails-runaway-process-in-initialize/fix-it.md)
+* [Zeitwerk](zeitwerk.md)
 
