@@ -80,3 +80,13 @@ This fails \(for the same reason you would expect - the `profile_image` is `#<Pr
 
 Suddenly started seeing issues with module autoloading around Notifications \(which makes far less sense as a problem\).
 
+
+
+### Part 2
+
+I had some time to reapproach this today. As an experiment, I first tried changing the volume: to a mount: \(bind mount\) by updating the docker compose file. This seems like it was a dead end \(worthwhile experiment, but possibly unimportant\).
+
+
+
+Second experiment was to change the `Rack::Test::UploadedFile.new` calls in the factories to `File.open()` calls. This appears to have worked \(notably, I don't see a /tmp file created by rack, and _do_ see the file in `public/uploads/users/profile_image/userid` but this feels like I've sidestepped the issue rather than understanding it.
+
