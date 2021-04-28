@@ -35,3 +35,5 @@ bash-5.0$ chromium-browser --help
 
 This puts a damper on running selenium tests :\)
 
+From what I can tell this might be due to my running a debian host \(where user namespace maybe disabled - see `man 7 user_namespaces` for info on what this is\). 
+
