@@ -14,6 +14,7 @@
 * [Travis CI Segfaults](travis-ci-segfaults.md)
 * [Bookmarks](bookmarks.md)
 * [User Setup in development](user-setup-in-development.md)
+* [Chrome in docker](chrome-in-docker.md)
 * [Testing in Docker locally](testing-in-docker-locally/README.md)
   * [Reapproach quay containers](testing-in-docker-locally/reapproach-quay-containers.md)
   * [Webdriver and chrome headless](testing-in-docker-locally/webdriver-and-chrome-headless.md)
