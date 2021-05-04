@@ -6,6 +6,7 @@
 * [User Moderation](user-moderation/README.md)
   * [User Moderation is really just scoring](user-moderation/user-moderation-is-really-just-scoring.md)
 * [Flaky Specs](flaky-specs-1/README.md)
+  * [GithubReadmeTag](flaky-specs-1/githubreadmetag.md)
   * [JS Testing](flaky-specs-1/js-testing.md)
   * [Setup not completed](flaky-specs-1/setup-not-completed.md)
   * [userData is sometimes not loaded](flaky-specs-1/userdata-is-sometimes-not-loaded.md)
