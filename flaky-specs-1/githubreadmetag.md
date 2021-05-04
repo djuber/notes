@@ -47,3 +47,7 @@ rspec ./spec/liquid_tags/github_tag/github_readme_tag_spec.rb:71 # GithubTag::Gi
 
 A dirty solution would be to instantiate an oauth client, call readme, accept that it fails, and then execute the test. A "better" solution might be to have the client class list the known instance methods \(we're using maybe 10\) and pre-define them at load time.
 
+
+
+[https://github.com/djuber/forem/commit/d414f7e55](https://github.com/djuber/forem/commit/d414f7e55) maybe something like this.
+
