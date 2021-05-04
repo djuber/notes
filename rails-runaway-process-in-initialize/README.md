@@ -4,6 +4,12 @@ description: Debugging an issue with the ruby 3 branch
 
 # Rails runaway process in initialize!
 
+This was an in-progress working document while I centered in on the issues with starting rails on the ruby 3 branch. The core issue was [https://bugs.ruby-lang.org/issues/17494\#note-9](https://bugs.ruby-lang.org/issues/17494#note-9) and is still pending \(our move to ruby 3.0 is blocked by this issue with refined method resolution. The patch from Jeremy Evans was effective when tested \(but has not been submitted to ruby-lang for inclusion in 3.0.x yet\).
+
+
+
+
+
 Checked out the citizen428/ruby3 branch
 
 bundle
