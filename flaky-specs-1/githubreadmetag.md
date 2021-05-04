@@ -49,5 +49,5 @@ A dirty solution would be to instantiate an oauth client, call readme, accept th
 
 
 
-[https://github.com/djuber/forem/commit/d414f7e55](https://github.com/djuber/forem/commit/d414f7e55) maybe something like this.
+[https://github.com/djuber/forem/commit/d414f7e55](https://github.com/djuber/forem/commit/d414f7e55) maybe something like this. Or what Rhymes did the first time [https://github.com/forem/forem/commit/3130261384\#diff-058371fd17700cbee2b084681a6515dc723daf206855881cbf8bb44d9774cab7R21-R27](https://github.com/forem/forem/commit/3130261384#diff-058371fd17700cbee2b084681a6515dc723daf206855881cbf8bb44d9774cab7R21-R27) 
 
