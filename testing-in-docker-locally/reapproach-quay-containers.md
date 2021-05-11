@@ -536,3 +536,65 @@ uploader.send(:directory_permissions)
 => 14946                                      
 ```
 
+
+
+
+
+So this is aggravating - FileUtils.cp is getting a valid source, a valid destination, it's creating a new entry \(file\) but nothing is getting put into it
+
+```ruby
+[108] pry(#<CarrierWave::SanitizedFile>):1> FileUtils.cp(path, "/tmp/whynot.jpg", verbose: true)cp /tmp/image120210512-17-v1jenc.jpeg /tmp/whynot.jpg                                           
+=> nil
+[109] pry(#<CarrierWave::SanitizedFile>):1> puts `ls -l /tmp/whynot.jpg`
+-rw------- 1 forem forem 0 May 12 08:30 /tmp/whynot.jpg                 
+=> nil
+[110] pry(#<CarrierWave::SanitizedFile>):1> puts `ls -l #{path}`
+-rw------- 1 forem forem 14946 May 12 07:08 /tmp/image120210512-17-v1jenc.jpeg
+
+# shelling out to system cp of course works correctly
+`cp /tmp/image120210512-17-v1jenc.jpeg /tmp/whatever.jpg`
+
+puts `ls -l /tmp -h`
+total 52K                                                       
+-rw-r--r-- 1 root  root   543 May 11 22:57 core-js-banners
+-rw-r--r-- 1 forem forem    0 May 12 08:28 file.file.jpg
+-rw------- 1 forem forem  15K May 12 07:08 image120210512-17-v1jenc.jpeg
+-rwx------ 1 root  root   757 Oct 27  2020 ks-script-en4f4be7
+drwxr-xr-x 3 root  root  4.0K May 11 22:56 v8-compile-cache-0
+-rw------- 1 forem forem  15K May 12 08:32 whatever.jpg
+-rw------- 1 forem forem    0 May 12 08:30 whynot.jpg
+drwxr-xr-x 2 root  root  4.0K May 11 22:57 yarn--1620734242533-0.1696038809539928
+drwxr-xr-x 2 root  root  4.0K May 11 22:58 yarn--1620734303883-0.5899124078896565
+ 
+
+# I'm not supposed to end up in the stdlib looking at file utilities to call cp:
+
+From: /usr/share/ruby/fileutils.rb:416:
+Owner: #<Class:FileUtils>
+Visibility: public
+Signature: cp(src, dest, preserve:?, noop:?, verbose:?)
+Number of lines: 7
+
+def cp(src, dest, preserve: nil, noop: nil, verbose: nil)
+  fu_output_message "cp#{preserve ? ' -p' : ''} #{[src,dest].flatten.join ' '}" if verbose
+  return if noop
+  fu_each_src_dest(src, dest) do |s, d|
+    copy_file s, d, preserve
+  end
+end
+
+                                                                         
+From: /usr/share/ruby/fileutils.rb:506:
+Owner: #<Class:FileUtils>
+Visibility: public
+Signature: copy_file(src, dest, preserve=?, dereference=?)
+Number of lines: 5
+
+def copy_file(src, dest, preserve = false, dereference = true)
+  ent = Entry_.new(src, nil, dereference)
+  ent.copy_file dest
+  ent.copy_metadata dest if preserve
+end
+
+```
+
