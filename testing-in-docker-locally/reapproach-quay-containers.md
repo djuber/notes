@@ -316,5 +316,7 @@ end
 
 That looks meaningful - I called profile\_image= from a factory, and carrierwave started doing things via a mounter.
 
+{% hint style="info" %}
 Full disclosure - one deadend I did attempt was to update the selection of the storage profile in the carrierwave initializer - fearing that the AWS\_ID being "Optional" would break the test for `present?` and choose the wrong path.
+{% endhint %}
 
