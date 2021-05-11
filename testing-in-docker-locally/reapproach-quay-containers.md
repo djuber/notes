@@ -90,3 +90,58 @@ I had some time to reapproach this today. As an experiment, I first tried changi
 
 Second experiment was to change the `Rack::Test::UploadedFile.new` calls in the factories to `File.open()` calls. This appears to have worked \(notably, I don't see a /tmp file created by rack, and _do_ see the file in `public/uploads/users/profile_image/userid` but this feels like I've sidestepped the issue rather than understanding it.
 
+
+
+### Part 3
+
+I'm going to just throw this week at the problem
+
+I removed the edit to the users factory \(restoring the original rack test uploaded file image\).
+
+User.new\(profile\_image: Rack::Test::UploadedFile\) creates a new tempfile per user \(i.e. I pass in an uploaded file that has a tmpfile already, during processing - before anything goes into the upload directory - another tempfile is created - user model fails validation \(initial error was wrong mime type - but removing the minimagick include from base uploader causes the error to change to "must be at least 1 byte" and the `profile_image` has no associated file:
+
+```ruby
+image_path = Rails.root.join("spec/support/fixtures/images/image1.jpeg")                                                               
+=> #<Pathname:/opt/apps/forem/spec/support/fixtures/images/image1.jpeg>
+
+profile_image = Rack::Test::UploadedFile.new(image_path, "image/jpeg")                                                                           
+=> #<Rack::Test::UploadedFile:0x00007f3528912c88
+ @content_type="image/jpeg",
+ @original_filename="image1.jpeg",
+ @tempfile=#<File:/tmp/image120210511-18-ssk9ua.jpeg>>
+
+user = User.new(
+  name: Faker::Name.name,
+  email: Faker::Internet.email,      
+  username: "User0001",              
+  profile_image: Rack::Test::UploadedFile.new(Rails.root.join("spec/support/fixtures/images/image1.jpeg"), "image/jpeg"),                                   
+  confirmed_at: Time.now,      
+  saw_onboarding: true,        
+  checked_code_of_conduct: true,      
+  registered_at: Time.now)              
+=> #<User id: nil, apple_username: nil, articles_count: 0, badge_achievements_count: 0, blocked_by_count: 0, blocking_others_count: 0, checked_code_of_conduct: true, checked_terms_and_conditions: false, comments_count: 0, config_font: "default", config_navbar: "default", config_theme: "default", created_at: nil, credits_count: 0, display_announcements: true, display_sponsors: true, editor_version: "v1", email: "agustin@skiles-hand.biz", email_badge_notifications: true, email_comment_notifications: true, email_community_mod_newsletter: false, email_connect_messages: true, email_digest_periodic: false, email_follower_notifications: true, email_membership_newsletter: false, email_mention_notifications: true, email_newsletter: false, email_tag_mod_newsletter: false, email_unread_notifications: true, experience_level: nil, export_requested: false, exported_at: nil, facebook_username: nil, feed_fetched_at: "2017-01-01 00:00:00.000000000 -0500", feed_mark_canonical: false, feed_referential_link: true, feed_url: nil, following_orgs_count: 0, following_tags_count: 0, following_users_count: 0, github_repos_updated_at: "2017-01-01 00:00:00.000000000 -0500", github_username: nil, inbox_guidelines: nil, inbox_type: "private", last_article_at: "2017-01-01 00:00:00.000000000 -0500", last_comment_at: "2017-01-01 00:00:00.000000000 -0500", last_followed_at: nil, last_moderation_notification: "2017-01-01 00:00:00.000000000 -0500", last_notification_activity: nil, last_onboarding_page: nil, last_reacted_at: nil, latest_article_updated_at: nil, mobile_comment_notifications: true, mod_roundrobin_notifications: true, monthly_dues: 0, name: "Miss Wilmer Stokes", old_old_username: nil, old_username: nil, onboarding_package_requested: false, organization_info_updated_at: nil, payment_pointer: nil, permit_adjacent_sponsors: true, profile_image: nil, profile_updated_at: "2017-01-01 00:00:00.000000000 -0500", rating_votes_count: 0, reaction_notifications: true, reactions_count: 0, registered: true, registered_at: "2021-05-11 10:51:35.331809736 -0400", reputation_modifier: 1.0, saw_onboarding: true, score: 0, secret: nil, signup_cta_variant: nil, spent_credits_count: 0, stripe_id_code: nil, subscribed_to_user_subscriptions_count: 0, twitter_username: nil, unspent_credits_count: 0, updated_at: nil, username: "User0001", welcome_notifications: true, workshop_expiration: nil>
+
+user.valid?                                                                                                                                                                                                               
+=> false
+user.errors.messages                                      
+=> {:profile_image=>["File size should be greater than 1 Byte"]}      
+
+user.profile_image                                                                                       
+=> #<ProfileImageUploader:0x00007f3524f9ed08
+ @cache_id=nil,
+ @file=nil,
+ @filename=nil,
+ @identifier=nil,
+ @model=
+  #<User id: nil, apple_username: nil, articles_count: 0, badge_achievements_count: 0, blocked_by_count: 0, blocking_others_count: 0, checked_code_of_conduct: true, checked_terms_and_conditions: false, comments_count: 0, config_font: "default", config_navbar: "default", config_theme: "default", created_at: nil, credits_count: 0, display_announcements: true, display_sponsors: true, editor_version: "v1", email: "agustin@skiles-hand.biz", email_badge_notifications: true, email_comment_notifications: true, email_community_mod_newsletter: false, email_connect_messages: true, email_digest_periodic: false, email_follower_notifications: true, email_membership_newsletter: false, email_mention_notifications: true, email_newsletter: false, email_tag_mod_newsletter: false, email_unread_notifications: true, experience_level: nil, export_requested: false, exported_at: nil, facebook_username: nil, feed_fetched_at: "2017-01-01 00:00:00.000000000 -0500", feed_mark_canonical: false, feed_referential_link: true, feed_url: nil, following_orgs_count: 0, following_tags_count: 0, following_users_count: 0, github_repos_updated_at: "2017-01-01 00:00:00.000000000 -0500", github_username: nil, inbox_guidelines: nil, inbox_type: "private", last_article_at: "2017-01-01 00:00:00.000000000 -0500", last_comment_at: "2017-01-01 00:00:00.000000000 -0500", last_followed_at: nil, last_moderation_notification: "2017-01-01 00:00:00.000000000 -0500", last_notification_activity: nil, last_onboarding_page: nil, last_reacted_at: nil, latest_article_updated_at: nil, mobile_comment_notifications: true, mod_roundrobin_notifications: true, monthly_dues: 0, name: "Miss Wilmer Stokes", old_old_username: nil, old_username: nil, onboarding_package_requested: false, organization_info_updated_at: nil, payment_pointer: nil, permit_adjacent_sponsors: true, profile_image: nil, profile_updated_at: "2017-01-01 00:00:00.000000000 -0500", rating_votes_count: 0, reaction_notifications: true, reactions_count: 0, registered: true, registered_at: "2021-05-11 10:51:35.331809736 -0400", reputation_modifier: 1.0, saw_onboarding: true, score: 0, secret: nil, signup_cta_variant: nil, spent_credits_count: 0, stripe_id_code: nil, subscribed_to_user_subscriptions_count: 0, twitter_username: nil, unspent_credits_count: 0, updated_at: nil, username: "user0001", welcome_notifications: true, workshop_expiration: nil>,
+ @mounted_as=:profile_image,
+ @staged=false,
+ @versions=nil,
+ @versions_to_cache=nil,
+ @versions_to_store=nil>
+ 
+ 
+```
+
+
+
