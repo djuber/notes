@@ -543,12 +543,13 @@ uploader.send(:directory_permissions)
 So this is aggravating - FileUtils.cp is getting a valid source, a valid destination, it's creating a new entry \(file\) but nothing is getting put into it
 
 ```ruby
-[108] pry(#<CarrierWave::SanitizedFile>):1> FileUtils.cp(path, "/tmp/whynot.jpg", verbose: true)cp /tmp/image120210512-17-v1jenc.jpeg /tmp/whynot.jpg                                           
-=> nil
-[109] pry(#<CarrierWave::SanitizedFile>):1> puts `ls -l /tmp/whynot.jpg`
+FileUtils.cp(path, "/tmp/whynot.jpg", verbose: true)
+cp /tmp/image120210512-17-v1jenc.jpeg /tmp/whynot.jpg                                           
+# it's a lie, verbose just says what it "intends" to do - not what actually happens
+puts `ls -l /tmp/whynot.jpg`
 -rw------- 1 forem forem 0 May 12 08:30 /tmp/whynot.jpg                 
-=> nil
-[110] pry(#<CarrierWave::SanitizedFile>):1> puts `ls -l #{path}`
+
+puts `ls -l #{path}`
 -rw------- 1 forem forem 14946 May 12 07:08 /tmp/image120210512-17-v1jenc.jpeg
 
 # shelling out to system cp of course works correctly
@@ -597,4 +598,6 @@ def copy_file(src, dest, preserve = false, dereference = true)
 end
 
 ```
+
+So why is the stdlib's `FileUtils.cp` creating an empty file successfully but not copying the data? I do see `Entry_` there and it has a `copy_file` method \(which I assume does something like moving the file content?\). 
 
