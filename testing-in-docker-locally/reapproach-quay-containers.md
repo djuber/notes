@@ -217,3 +217,41 @@ user = User.new(
 
 This doesn't hit the method missing block to puts anything - and trying to use TracePoint didn't log anything until I exited the breakpoint and rspec continued.
 
+
+
+I put a breakpoint in check\_size \(in CarrierWave::Uploader::FileSize - since that's one of the validations that's failing\) and wanted to look at `new_file`and see what was happening.
+
+In the never ending shuffle of content from /tmp to /tmp to public/tmp/ to public/uploads/user/profile\_image it looks like there's also a step through tmp/
+
+```ruby
+[1] pry(#<RSpec::ExampleGroups::User::Profiles>)> 
+
+From: /opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/file_size.rb:31 CarrierWave::Uploader::FileSize#check_size!:
+
+    29: def check_size!(new_file)
+    30:   binding.pry
+ => 31:   size = new_file.size
+    32:   expected_size_range = size_range
+    33:   if expected_size_range.is_a?(::Range)
+    34:     if size < expected_size_range.min
+    35:       raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.min_size_error", :min_size => ActiveSupport::NumberHelper.number_to_human_size(expected_size_range.min))                 
+    36:     elsif size > expected_size_range.max
+    37:       raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.max_size_error", :max_size => ActiveSupport::NumberHelper.number_to_human_size(expected_size_range.max))                 
+    38:     end
+    39:   end
+    40: end
+
+[1] pry(#<ProfileImageUploader>)> new_file
+=> #<CarrierWave::SanitizedFile:0x00007f619c4cf3b0
+ @content=nil,
+ @content_type="image/jpeg",
+ @file="/opt/apps/forem/tmp/1620758519-863715365372413-0001-2311/image1.jpeg",
+ @original_filename=nil>
+ [2] pry(#<ProfileImageUploader>)> new_file.size
+=> 0                                     
+
+# self here - since this is a module - is ProfileImageUploader where original_filename is image1.jpeg and cache_id is the path to the file
+```
+
+Somehow _this_ file is being created, assigned to the upload, but it is empty. Having no content in the created file sure sounds like it could _also_ cause issues with validating the content type is allowed.
+
