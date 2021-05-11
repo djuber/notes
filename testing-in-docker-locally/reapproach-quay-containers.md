@@ -255,3 +255,21 @@ From: /opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrie
 
 Somehow _this_ file is being created, assigned to the upload, but it is empty. Having no content in the created file sure sounds like it could _also_ cause issues with validating the content type is allowed.
 
+
+
+Copying the content of the jpeg from /tmp into the jpeg in tmp/ does cause the test to pass:
+
+```ruby
+File.open(new_file.file, 'wb') do |file|
+  file.write(File.read("/tmp/image120210511-17-z5wwpm.jpeg"))  
+end                                                            
+=> 14946                               
+
+new_file.size
+=> 14946                                       
+.
+
+Finished in 3 minutes 16.1 seconds (files took 2.99 seconds to load)
+1 example, 0 failures
+```
+
