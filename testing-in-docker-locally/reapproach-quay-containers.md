@@ -358,3 +358,53 @@ line 63 is `uploader.cache!(new_file)` which is where we leave this file \(havin
 
 ![](../.gitbook/assets/screenshot-from-2021-05-11-14-58-29.png)
 
+Okay, great - I'm on top of the problem \(I have the input and the object I'm giving the input to, and am able to repeatably create the error condition\):
+
+```ruby
+[8] pry(#<CarrierWave::Mounter>)> new_file
+=> #<Rack::Test::UploadedFile:0x00007fd4c8edf428
+ @content_type="image/jpeg",
+ @original_filename="image1.jpeg",
+ @tempfile=#<File:/tmp/image120210512-17-v1jenc.jpeg>>
+[9] pry(#<CarrierWave::Mounter>)> new_file.size
+=> 14946                
+
+[11] pry(#<CarrierWave::Mounter>)> uploader = blank_uploader
+=> #<ProfileImageUploader:0x00007fd4c97904c8                
+ @cache_id=nil,
+ @file=nil,
+ @filename=nil,
+ @identifier=nil,
+ @model=
+  #<User id: nil, apple_username: nil, articles_count: 0, badge_achievements_count: 0, blocked_by_count: 0, blocking_others_count: 0, checked_code_of_conduct: false, checked_terms_and_conditions: false, comments_count: 0, config_font: "default", config_navbar: "default", config_theme: "default", created_at: nil, credits_count: 0, display_announcements: true, display_sponsors: true, editor_version: "v1", email: "person1@example.com", email_badge_notifications: true, email_comment_notifications: true, email_community_mod_newsletter: false, email_connect_messages: true, email_digest_periodic: false, email_follower_notifications: true, email_membership_newsletter: false, email_mention_notifications: true, email_newsletter: false, email_tag_mod_newsletter: false, email_unread_notifications: true, experience_level: nil, export_requested: false, exported_at: nil, facebook_username: nil, feed_fetched_at: "2017-01-01 16:00:00.000000000 +1100", feed_mark_canonical: false, feed_referential_link: true, feed_url: nil, following_orgs_count: 0, following_tags_count: 0, following_users_count: 0, github_repos_updated_at: "2017-01-01 16:00:00.000000000 +1100", github_username: nil, inbox_guidelines: nil, inbox_type: "private", last_article_at: "2017-01-01 16:00:00.000000000 +1100", last_comment_at: "2017-01-01 16:00:00.000000000 +1100", last_followed_at: nil, last_moderation_notification: "2017-01-01 16:00:00.000000000 +1100", last_notification_activity: nil, last_onboarding_page: nil, last_reacted_at: nil, latest_article_updated_at: nil, mobile_comment_notifications: true, mod_roundrobin_notifications: true, monthly_dues: 0, name: "Elza Huels", old_old_username: nil, old_username: nil, onboarding_package_requested: false, organization_info_updated_at: nil, payment_pointer: nil, permit_adjacent_sponsors: true, profile_image: nil, profile_updated_at: "2017-01-01 16:00:00.000000000 +1100", rating_votes_count: 0, reaction_notifications: true, reactions_count: 0, registered: true, registered_at: nil, reputation_modifier: 1.0, saw_onboarding: true, score: 0, secret: nil, signup_cta_variant: nil, spent_credits_count: 0, stripe_id_code: nil, subscribed_to_user_subscriptions_count: 0, twitter_username: nil, unspent_credits_count: 0, updated_at: nil, username: "username1", welcome_notifications: true, workshop_expiration: nil>,
+ @mounted_as=:profile_image,
+ @staged=false,
+ @versions=nil,
+ @versions_to_cache=nil,
+ @versions_to_store=nil>
+[12] pry(#<CarrierWave::Mounter>)> uploader.cache! new_file                                             
+CarrierWave::IntegrityError: File size should be greater than 1 Byte
+from /opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/file_size.rb:35:in `check_size!'
+[13] pry(#<CarrierWave::Mounter>)> uploader
+=> #<ProfileImageUploader:0x00007fd4c97904c8
+ @cache_id="1620764971-196491613461237-0002-9396",
+ @file=
+  #<CarrierWave::SanitizedFile:0x00007fd4c9809698
+   @content=nil,
+   @content_type="image/jpeg",
+   @file="/opt/apps/forem/tmp/1620764971-196491613461237-0002-9396/image1.jpeg",
+   @original_filename=nil>,
+ @filename="image1.jpeg",
+ @identifier=nil,
+ @model=
+  #<User id: nil, apple_username: nil, articles_count: 0, badge_achievements_count: 0, blocked_by_count: 0, blocking_others_count: 0, checked_code_of_conduct: false, checked_terms_and_conditions: false, comments_count: 0, config_font: "default", config_navbar: "default", config_theme: "default", created_at: nil, credits_count: 0, display_announcements: true, display_sponsors: true, editor_version: "v1", email: "person1@example.com", email_badge_notifications: true, email_comment_notifications: true, email_community_mod_newsletter: false, email_connect_messages: true, email_digest_periodic: false, email_follower_notifications: true, email_membership_newsletter: false, email_mention_notifications: true, email_newsletter: false, email_tag_mod_newsletter: false, email_unread_notifications: true, experience_level: nil, export_requested: false, exported_at: nil, facebook_username: nil, feed_fetched_at: "2017-01-01 16:00:00.000000000 +1100", feed_mark_canonical: false, feed_referential_link: true, feed_url: nil, following_orgs_count: 0, following_tags_count: 0, following_users_count: 0, github_repos_updated_at: "2017-01-01 16:00:00.000000000 +1100", github_username: nil, inbox_guidelines: nil, inbox_type: "private", last_article_at: "2017-01-01 16:00:00.000000000 +1100", last_comment_at: "2017-01-01 16:00:00.000000000 +1100", last_followed_at: nil, last_moderation_notification: "2017-01-01 16:00:00.000000000 +1100", last_notification_activity: nil, last_onboarding_page: nil, last_reacted_at: nil, latest_article_updated_at: nil, mobile_comment_notifications: true, mod_roundrobin_notifications: true, monthly_dues: 0, name: "Elza Huels", old_old_username: nil, old_username: nil, onboarding_package_requested: false, organization_info_updated_at: nil, payment_pointer: nil, permit_adjacent_sponsors: true, profile_image: nil, profile_updated_at: "2017-01-01 16:00:00.000000000 +1100", rating_votes_count: 0, reaction_notifications: true, reactions_count: 0, registered: true, registered_at: nil, reputation_modifier: 1.0, saw_onboarding: true, score: 0, secret: nil, signup_cta_variant: nil, spent_credits_count: 0, stripe_id_code: nil, subscribed_to_user_subscriptions_count: 0, twitter_username: nil, unspent_credits_count: 0, updated_at: nil, username: "username1", welcome_notifications: true, workshop_expiration: nil>,
+ @mounted_as=:profile_image,
+ @original_filename="image1.jpeg",
+ @staged=true,
+ @versions=nil,
+ @versions_to_cache=nil,
+ @versions_to_store=nil>
+[15] pry(#<CarrierWave::Mounter>)> uploader.file.size
+=> 0                               
+```
+
