@@ -183,3 +183,37 @@ user.profile_image
 
 This also worked fine on Debian \(when I built the app container from rails instead of the forem image\) - so I suspect there's something either with /tmp or /opt/apps/forem/ tied to selinux or some other fedora core specific item.
 
+
+
+Let's try to see what the profile image uploader is doing:
+
+```ruby
+
+class Interceptor
+  def initialize(delegate)
+    @delegate = delegate
+  end
+
+  def method_missing(method_name, *args, &block)
+    puts [method_name, args].inspect
+
+    @delegate.send(method_name, args, &block)
+  end
+end
+
+profile_image = Interceptor.new(File.open(image_path))
+
+user = User.new(
+		name: Faker::Name.name,
+		      email: Faker::Internet.email,
+		      username: "User0001",
+		      profile_image: profile_image,
+		      confirmed_at: Time.now,
+		      saw_onboarding: true,
+		      checked_code_of_conduct: true,
+		      registered_at: Time.now)
+
+```
+
+This doesn't hit the method missing block to puts anything - and trying to use TracePoint didn't log anything until I exited the breakpoint and rspec continued.
+
