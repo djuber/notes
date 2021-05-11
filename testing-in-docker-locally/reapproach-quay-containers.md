@@ -356,3 +356,5 @@ We have AR's profile image set calling into the mount's profile image set, calli
 
 line 63 is `uploader.cache!(new_file)` which is where we leave this file \(having allocated a blank uploader?\) - suggesting "no, upload was not a string, it was a File/IO/Stream type object. This might actually be either too late \(we already have new\_file which might be the wrong object\) or too early \(cache! might be the method creating the file in tmp/\) - this is worth putting a breakpoint at line 62 \(uploader has been created, but not called, and new file is still in scope\). For the meantime, I'll leave the breakpoint after in `check_size` in place as well.
 
+![](../.gitbook/assets/screenshot-from-2021-05-11-14-58-29.png)
+
