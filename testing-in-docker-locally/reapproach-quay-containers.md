@@ -408,3 +408,66 @@ from /opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrier
 => 0                               
 ```
 
+So let's take a look inside `cache!` which raises the error:
+
+```ruby
+From: /opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/cache.rb:109: 
+Owner: CarrierWave::Uploader::Cache
+Visibility: public
+Signature: cache!(new_file=?)
+Number of lines: 27
+
+def cache!(new_file = file)
+  new_file = CarrierWave::SanitizedFile.new(new_file)
+  return if new_file.empty?
+
+  raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
+
+  self.cache_id = CarrierWave.generate_cache_id unless cache_id
+
+  @staged = true
+  @filename = new_file.filename
+  self.original_filename = new_file.filename
+
+  begin
+    # first, create a workfile on which we perform processings
+    if move_to_cache
+      @file = new_file.move_to(File.expand_path(workfile_path, root), permissions, directory_permissions)                                  
+    else
+      @file = new_file.copy_to(File.expand_path(workfile_path, root), permissions, directory_permissions)                                  
+    end
+
+    with_callbacks(:cache, @file) do
+      @file = cache_storage.cache!(@file)
+    end
+  ensure
+    FileUtils.rm_rf(workfile_path(''))
+  end
+end
+```
+
+I am going to pretend it's okay to just reuse the current context \(inside the mounter's cache method\) and not set another breakpoint for the moment.
+
+```ruby
+original_file = new_file
+=> #<Rack::Test::UploadedFile:0x00007fd4c8edf428               
+ @content_type="image/jpeg",
+ @original_filename="image1.jpeg",
+ @tempfile=#<File:/tmp/image120210512-17-v1jenc.jpeg>>
+new_file = CarrierWave::SanitizedFile.new(original_file)
+=> #<CarrierWave::SanitizedFile:0x00007fd4c9b2ebe8        
+ @content=nil,
+ @content_type=nil,
+ @file=
+  #<Rack::Test::UploadedFile:0x00007fd4c8edf428
+   @content_type="image/jpeg",
+   @original_filename="image1.jpeg",
+   @tempfile=#<File:/tmp/image120210512-17-v1jenc.jpeg>>,
+ @original_filename=nil>
+new_file.empty?
+=> false
+new_file.size
+=> 14946
+
+```
+
