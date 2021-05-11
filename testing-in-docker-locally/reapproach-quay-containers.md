@@ -601,3 +601,7 @@ end
 
 So why is the stdlib's `FileUtils.cp` creating an empty file successfully but not copying the data? I do see `Entry_` there and it has a `copy_file` method \(which I assume does something like moving the file content?\). 
 
+
+
+I think my next step is to put a breakpoint in FileUtils.copy\_file \(I'll probably open the class and redefine the method to add the breakpoint as part of a unit test setup\). That's for tomorrow.
+
