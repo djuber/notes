@@ -417,6 +417,23 @@ Visibility: public
 Signature: cache!(new_file=?)
 Number of lines: 27
 
+      ##
+      # Caches the given file. Calls process! to trigger any process callbacks.
+      #
+      # By default, cache!() uses copy_to(), which operates by copying the file
+      # to the cache, then deleting the original file.  If move_to_cache() is
+      # overriden to return true, then cache!() uses move_to(), which simply
+      # moves the file to the cache.  Useful for large files.
+      #
+      # === Parameters
+      #
+      # [new_file (File, IOString, Tempfile)] any kind of file object
+      #
+      # === Raises
+      #
+      # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
+      #
+
 def cache!(new_file = file)
   new_file = CarrierWave::SanitizedFile.new(new_file)
   return if new_file.empty?
@@ -469,5 +486,53 @@ new_file.empty?
 new_file.size
 => 14946
 
+new_file.is_path?
+=> false
+# ensure there's no override (see comment)
+uploader.move_to_cache             
+=> false
+
+new_file
+```
+
+I think the place this _might_ be going wrong is in copy\_to:
+
+```text
+          else
+            @file = new_file.copy_to(File.expand_path(workfile_path, root), permissions, directory_permissions)
+```
+
+Since I have this 
+
+```ruby
+uploader.send(:workfile_path)                                        
+=> "/opt/apps/forem/tmp/1620764971-196491613461237-0002-9396/image1.jpeg"
+uploader.file
+=> #<CarrierWave::SanitizedFile:0x00007fd4c9809698
+ @content=nil,
+ @content_type="image/jpeg",
+ @file="/opt/apps/forem/tmp/1620764971-196491613461237-0002-9396/image1.jpeg",
+ @original_filename=nil>
+ 
+File.expand_path(uploader.send(:workfile_path), uploader.send(:root))
+=> "/opt/apps/forem/tmp/1620764971-196491613461237-0002-9396/image1.jpeg"                              
+uploader.send(:permissions)
+=> 420 # 0644 octal                                                        
+uploader.send(:directory_permissions)                                
+=> 493 # 0755 octal
+
+# indeed - this is where it goes wrong
+[41] pry(#<CarrierWave::Mounter>)> copied=  new_file.copy_to("/opt/apps/forem/tmp/image2.jpeg", 420, 493)                                                                                                      
+=> #<CarrierWave::SanitizedFile:0x00007fd4ca04cda0
+ @content=nil,
+ @content_type="image/jpeg",
+ @file="/opt/apps/forem/tmp/image2.jpeg",
+ @original_filename=nil>
+[42] pry(#<CarrierWave::Mounter>)> copied.size
+=> 0                                          
+[43] pry(#<CarrierWave::Mounter>)> copied.read
+=> ""                                         
+[44] pry(#<CarrierWave::Mounter>)> new_file.read.size
+=> 14946                                      
 ```
 
