@@ -273,3 +273,48 @@ Finished in 3 minutes 16.1 seconds (files took 2.99 seconds to load)
 1 example, 0 failures
 ```
 
+Since there's something going wrong _before_ this is happening, let's capture the context and figure out where to look upstream
+
+```ruby
+# raise an error just to get the backtrace - 
+# is there a smarter way to get this from the current execution context?
+
+begin
+  raise StandardError
+rescue StandardError => e  
+  puts e.backtrace         
+  e             
+end  
+(pry):3:in `check_size!'               
+# ... a bunch of lines saying I was in a pry repl when I wrote that code
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/file_size.rb:31:in `check_size!'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/callbacks.rb:14:in `block in with_callbacks'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/callbacks.rb:14:in `each'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/callbacks.rb:14:in `with_callbacks'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/uploader/cache.rb:144:in `cache!'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mounter.rb:63:in `block (2 levels) in cache'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mounter.rb:176:in `handle_error'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mounter.rb:47:in `block in cache'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mounter.rb:46:in `map'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mounter.rb:46:in `cache'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mount.rb:146:in `profile_image='
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/mount.rb:373:in `profile_image='
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/carrierwave-2.2.1/lib/carrierwave/orm/activerecord.rb:75:in `profile_image='
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/attribute_assigner.rb:16:in `public_send'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/attribute_assigner.rb:16:in `block (2 levels) in object'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/attribute_assigner.rb:15:in `each'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/attribute_assigner.rb:15:in `block in object'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/attribute_assigner.rb:14:in `tap'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/attribute_assigner.rb:14:in `object'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/evaluation.rb:13:in `object'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/strategy/create.rb:9:in `result'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/factory.rb:43:in `run'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/factory_runner.rb:29:in `block in run'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/activesupport-6.1.3.2/lib/active_support/notifications.rb:205:in `instrument'
+/opt/apps/forem/vendor/bundle/ruby/2.7.0/gems/factory_bot-6.1.0/lib/factory_bot/factory_runner.rb:28:in `run'
+```
+
+That looks meaningful - I called profile\_image= from a factory, and carrierwave started doing things via a mounter.
+
+Full disclosure - one deadend I did attempt was to update the selection of the storage profile in the carrierwave initializer - fearing that the AWS\_ID being "Optional" would break the test for `present?` and choose the wrong path.
+
