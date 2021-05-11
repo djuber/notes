@@ -320,3 +320,39 @@ That looks meaningful - I called profile\_image= from a factory, and carrierwave
 Full disclosure - one deadend I did attempt was to update the selection of the storage profile in the carrierwave initializer - fearing that the AWS\_ID being "Optional" would break the test for `present?` and choose the wrong path.
 {% endhint %}
 
+So what methods look interesting in this call stack?
+
+We have AR's profile image set calling into the mount's profile image set, calling cache in mount.rb:46 \(def cache is line 43 in that file\): 
+
+```ruby
+    def cache(new_files)
+      return if !new_files.is_a?(Array) && new_files.blank?
+      old_uploaders = uploaders
+      @uploaders = new_files.map do |new_file|
+        handle_error do
+          if new_file.is_a?(String)
+            if (uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file })
+              uploader.staged = true
+              uploader
+            else
+              begin
+                uploader = blank_uploader
+                uploader.retrieve_from_cache!(new_file)
+                uploader
+              rescue CarrierWave::InvalidParameter
+                nil
+              end
+            end
+          else
+            uploader = blank_uploader
+            uploader.cache!(new_file)
+            uploader
+          end
+        end
+      end.compact
+    end
+
+```
+
+line 63 is `uploader.cache!(new_file)` which is where we leave this file \(having allocated a blank uploader?\) - suggesting "no, upload was not a string, it was a File/IO/Stream type object. This might actually be either too late \(we already have new\_file which might be the wrong object\) or too early \(cache! might be the method creating the file in tmp/\) - this is worth putting a breakpoint at line 62 \(uploader has been created, but not called, and new file is still in scope\). For the meantime, I'll leave the breakpoint after in `check_size` in place as well.
+
