@@ -271,3 +271,7 @@ Next step would be to get the user creation/setup so I can test login.
 
 On a side note - is there any support in the docker-compose setup to run specs? It looks like we _only_ provision the PracticalDeveloper\_development database, and probably would expect a test db as well \(in which case maybe this needs to be setup in either a second db instance or additional configuration of the existing setup\).
 
+
+
+[https://github.com/forem/forem/issues/4955\#issuecomment-839880675](https://github.com/forem/forem/issues/4955#issuecomment-839880675) seems like I'm still not able to get a working local setup - fortunately it's a fun and new problem I guess.
+
