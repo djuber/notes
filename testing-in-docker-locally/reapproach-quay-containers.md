@@ -740,6 +740,8 @@ so `Entry_` objects expose `stat` which basically reflects the stat from the uni
 
 Both entries are owned by forem \(current user\) and both are 0x600 \(read-write user only\).
 
+`stat.mode` appears to be the input to `creat` - see `man creat(2)` or `man open(2)`
+
 The primary distinction between this call and the preceding one is that /opt/apps/forem/tmp is on the mounted volume, while /tmp is inside the container. The dest file is _created_ by File.open but copy\_stream does not move any bytes to the target.
 
 Let's open a new file in /tmp/whatever.jpg and observe if the issue is cross-filesystem cross-device copying \(there was a note about that in [https://bugs.ruby-lang.org/issues/13867](https://bugs.ruby-lang.org/issues/13867) that might come into play in a minute\).
