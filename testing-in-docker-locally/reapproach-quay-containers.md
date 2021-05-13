@@ -874,3 +874,14 @@ Adding insult to injury - if I open the original file and copy from it \(rather 
 => 14946               
 ```
 
+### Summary of where I think I am
+
+* this worked fine in a debian container \(where the source was copied rather than mounted\)
+* copying file to tmp works
+* copy file from tmp fails
+* position does not seek \(we basically didn't read at all from the open file\)
+* copying file to ultimate target works.
+* copying to another file in tmp works, but copying from _that_ file also fails to copy into the dest
+
+
+
