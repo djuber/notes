@@ -885,5 +885,5 @@ Adding insult to injury - if I open the original file and copy from it \(rather 
 * copying file to ultimate target works.
 * copying to another file in tmp works, but copying from _that_ file also fails to copy into the dest
 
-
+Only "visible" difference is the original file was 0100644 and the tmp file is 0100600 - but we're the correct user and should be able to read \(in fact, we can read, just not copy stream\).
 
