@@ -1,7 +1,5 @@
 # Reading List
 
-Reading List
-
 {% embed url="https://www.tomdalling.com/blog/mentoring/write-detailed-rspec-example-descriptions/" %}
 
 
