@@ -28,4 +28,5 @@
   * [fix it?](rails-runaway-process-in-initialize/fix-it.md)
 * [Zeitwerk](zeitwerk.md)
 * [Parallelize Cypress](parallelize-cypress.md)
+* [Reading List](reading-list.md)
 
