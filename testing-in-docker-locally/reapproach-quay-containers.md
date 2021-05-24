@@ -605,3 +605,295 @@ So why is the stdlib's `FileUtils.cp` creating an empty file successfully but no
 
 I think my next step is to put a breakpoint in FileUtils.copy\_file \(I'll probably open the class and redefine the method to add the breakpoint as part of a unit test setup\). That's for tomorrow.
 
+
+
+### tomorrow
+
+Is it tomorrow already? Well time to get to work.
+
+```ruby
+# added to the start of spec/models/user_spec.rb
+
+module FileUtils
+  def self.copy_file(src, dest, preserve = false, dereference=true)
+    ent = Entry_.new(src, nil, dereference)
+    binding.pry
+    ent.copy_file dest
+    ent.copy_metadata dest if preserve
+  end
+end
+```
+
+We'll hit this twice, once for the downloaded file being copied to /tmp and a second time for the /tmp file being copied to /opt/apps/forem/tmp/ the first pass is normal
+
+```ruby
+[8] pry(FileUtils)> ent.copy_file dest
+=> 14946                              
+
+[9] pry(FileUtils)> puts `ls -l #{ent.path}`
+-rw-r--r-- 1 forem forem 14946 Mar 23 17:01 /opt/apps/forem/spec/support/fixtures/images/image1.jpeg
+=> nil
+[10] pry(FileUtils)> puts `ls -lh #{dest}`-rw------- 1 forem forem 15K May 13 16:54 /tmp/image120210513-17-1sgrdmh.jpeg
+=> nil
+```
+
+We resume and wait for the second pass \(it's basically immediate\)
+
+```ruby
+From: /opt/apps/forem/spec/models/user_spec.rb:7 FileUtils.copy_file:
+
+    4: def self.copy_file(src, dest, preserve = false, dereference=true)
+    5:   ent = Entry_.new(src, nil, dereference)
+    6:   binding.pry
+ => 7:   ent.copy_file dest
+    8:   ent.copy_metadata dest if preserve
+    9: end
+
+[1] pry(FileUtils)> ent
+=> #<FileUtils::Entry_ /tmp/image120210513-17-1sgrdmh.jpeg>
+[2] pry(FileUtils)> puts `ls -lh #{dest}`
+ls: cannot access '/opt/apps/forem/tmp/1620917799-429616350791124-0001-1815/image1.jpeg': No such file or directory
+=> nil
+[3] pry(FileUtils)> puts `ls -lh #{src}`  
+-rw------- 1 forem forem 15K May 13 16:56 /tmp/image120210513-17-1sgrdmh.jpeg
+=> nil
+[4] pry(FileUtils)> ent.copy_file dest
+=> 0
+[5] pry(FileUtils)> ent
+=> #<FileUtils::Entry_ /tmp/image120210513-17-1sgrdmh.jpeg>
+[6] pry(FileUtils)> puts `ls -lh #{dest}`                                                               
+-rw------- 1 forem forem 0 May 13 16:57 /opt/apps/forem/tmp/1620917799-429616350791124-0001-1815/image1.jpeg
+=> nil
+[7] pry(FileUtils)> ent.copy_file dest
+=> 0                                  
+[8] pry(FileUtils)> ent.copy_file dest
+=> 0                
+```
+
+This is where things go wrong. We have what looks like the same setup - a src file, a dest path, which we open for writing, and a call to IO.copy\_stream
+
+```ruby
+show-method ent.copy_file
+                                              
+From: /usr/share/ruby/fileutils.rb:1413:
+Owner: FileUtils::Entry_
+Visibility: public
+Signature: copy_file(dest)
+Number of lines: 7
+
+def copy_file(dest)
+  File.open(path()) do |s|
+    File.open(dest, 'wb', s.stat.mode) do |f|
+      IO.copy_stream(s, f)
+    end
+  end
+end
+```
+
+so `Entry_` objects expose `stat` which basically reflects the stat from the unix filesystem
+
+```ruby
+[14] pry(FileUtils)> f = File.open(ent.path)
+=> #<File:/tmp/image120210513-17-1sgrdmh.jpeg>
+
+[15] pry(FileUtils)> f.stat.mode
+=> 33152
+
+[16] pry(FileUtils)> fd = File.open(dest, 'wb', f.stat.mode)
+=> #<File:/opt/apps/forem/tmp/1620917799-429616350791124-0001-1815/image1.jpeg>
+
+[17] pry(FileUtils)> IO.copy_stream(f, fd)
+=> 0
+
+ f.stat
+=> #<File::Stat
+ dev=0x68,
+ ino=17969135,
+ mode=0100600 (file rw-------),
+ nlink=1,
+ uid=1000 (forem),
+ gid=1000 (forem),
+ rdev=0x0 (0, 0),
+ size=14946,
+ blksize=4096,
+ blocks=32,
+ atime=2021-05-13 16:56:37.056857169 +0200 (1620917797),
+ mtime=2021-05-13 16:56:37.056857169 +0200 (1620917797),
+ ctime=2021-05-13 16:56:37.056857169 +0200 (1620917797)>
+ 
+ fd.stat                       
+=> #<File::Stat                                    
+ dev=0xfe00,
+ ino=4468933,
+ mode=0100600 (file rw-------),
+ nlink=1,
+ uid=1000 (forem),
+ gid=1000 (forem),
+ rdev=0x0 (0, 0),
+ size=0,
+ blksize=4096,
+ blocks=0,
+ atime=2021-05-13 16:57:07.369100161 +0200 (1620917827),
+ mtime=2021-05-13 17:00:36.430670776 +0200 (1620918036),
+ ctime=2021-05-13 17:00:36.430670776 +0200 (1620918036)>
+```
+
+Both entries are owned by forem \(current user\) and both are 0x600 \(read-write user only\).
+
+`stat.mode` appears to be the input to `creat` - see `man creat(2)` or `man open(2)`
+
+The primary distinction between this call and the preceding one is that /opt/apps/forem/tmp is on the mounted volume, while /tmp is inside the container. The dest file is _created_ by File.open but copy\_stream does not move any bytes to the target.
+
+Let's open a new file in /tmp/whatever.jpg and observe if the issue is cross-filesystem cross-device copying \(there was a note about that in [https://bugs.ruby-lang.org/issues/13867](https://bugs.ruby-lang.org/issues/13867) that might come into play in a minute\).
+
+```ruby
+[26] pry(FileUtils)> ftmp = File.open("/tmp/whatever.jpg", "wb", f.stat.mode)
+=> #<File:/tmp/whatever.jpg>                                                 
+[27] pry(FileUtils)> IO.copy_stream(f, ftmp)
+=> 0
+```
+
+"Huh." it looks like maybe the mode is the issue? In any case, it doesn't look like the issue is crossing into a mounted volume if writing to tmp also fails the same way \(weird\).
+
+[https://ruby-doc.org/core-2.7.2/IO.html\#method-c-copy\_stream](https://ruby-doc.org/core-2.7.2/IO.html#method-c-copy_stream) is where we are - it's a c function - good luck in there!
+
+```ruby
+[75] pry(FileUtils)> orig="/opt/apps/forem/spec/support/fixtures/images/image1.jpeg"                   
+=> "/opt/apps/forem/spec/support/fixtures/images/image1.jpeg"                       
+[76] pry(FileUtils)> forig = File.open(orig)                                                            
+=> #<File:/opt/apps/forem/spec/support/fixtures/images/image1.jpeg>
+
+forig.stat
+=> #<File::Stat                
+ dev=0xfe00,
+ ino=4064314,
+ mode=0100644 (file rw-r--r--),
+ nlink=1,
+ uid=1000 (forem),
+ gid=1000 (forem),
+ rdev=0x0 (0, 0),
+ size=14946,
+ blksize=4096,
+ blocks=32,
+ atime=2021-05-13 16:54:17.383673726 +0200 (1620917657),
+ mtime=2021-03-23 17:01:14.933220555 +0100 (1616515274),
+ ctime=2021-04-12 21:52:50.837852041 +0200 (1618257170)>
+[79] pry(FileUtils)> ftarget = "/tmp/whynot.jpeg"                                                       
+=> "/tmp/whynot.jpeg"     
+
+# this is a mistake - 81 passes a path and not a file to the copy_stream call:                       
+[80] pry(FileUtils)> File.open(ftarget, 'wb', forig.stat.mode)
+=> #<File:/tmp/whynot.jpeg>                                   
+[81] pry(FileUtils)> IO.copy_stream(forig, ftarget)
+=> 14946
+
+# so we open a file like we should have
+[84] pry(FileUtils)> ftargetf = File.open(ftarget, 'wb', forig.stat.mode)
+=> #<File:/tmp/whynot.jpeg>            
+# and copy stream                                  
+[85] pry(FileUtils)> IO.copy_stream(forig, ftargetf)
+=> 0                                                
+
+# give up and reopen
+[88] pry(FileUtils)> forig.close       
+=> nil                
+[91] pry(FileUtils)> forig = File.open(orig)                                            
+=> #<File:/opt/apps/forem/spec/support/fixtures/images/image1.jpeg>
+[92] pry(FileUtils)> IO.copy_stream(forig, ftargetf)
+=> 14946                                            
+
+# we have seek'd to the end:
+[93] pry(FileUtils)> forig.pos
+=> 14946                      
+# read does nothing at EOS so no bytes copied
+[94] pry(FileUtils)> IO.copy_stream(forig, ftargetf)
+=> 0                       
+# lets set pos back to the beginning        
+[95] pry(FileUtils)> forig.rewind
+=> 0                             
+[96] pry(FileUtils)> forig.pos
+=> 0                          
+[97] pry(FileUtils)> IO.copy_stream(forig, ftargetf)
+=> 14946                        
+
+
+```
+
+I still don't understand how we get into this situation - we have an entry and a src, are we passing an open \(and read\) file during the call, but only when we copy into the mounted volume? that seems like it's a different way of getting 0 bytes copied
+
+```ruby
+[106] pry(FileUtils)> fd = File.open(fd, 'wb', f.stat.mode)                            
+=> #<File:/opt/apps/forem/tmp/1620917799-429616350791124-0001-1815/image1.jpeg>        
+[107] pry(FileUtils)> fd.stat
+=> #<File::Stat
+ dev=0xfe00,
+ ino=4468933,
+ mode=0100600 (file rw-------),
+ nlink=1,
+ uid=1000 (forem),
+ gid=1000 (forem),
+ rdev=0x0 (0, 0),
+ size=0,
+ blksize=4096,
+ blocks=0,
+ atime=2021-05-13 16:57:07.369100161 +0200 (1620917827),
+ mtime=2021-05-13 18:15:48.3869598 +0200 (1620922548),
+ ctime=2021-05-13 18:15:48.3869598 +0200 (1620922548)>
+[108] pry(FileUtils)> fd.size                             
+=> 0                                                      
+[109] pry(FileUtils)> f.size
+=> 14946                    
+[110] pry(FileUtils)> f.pos
+=> 0                       
+[111] pry(FileUtils)> IO.copy_stream(f, fd)
+=> 0                                       
+[112] pry(FileUtils)> f.pos
+=> 0                       
+[113] pry(FileUtils)> f.read ; nil
+=> nil                            
+[114] pry(FileUtils)> f.pos
+=> 14946                   
+[115] pry(FileUtils)> f.rewind
+=> 0                          
+[116] pry(FileUtils)> IO.copy_stream(f, fd)
+=> 0                                       
+```
+
+rewinding and retrying does _not_ fix it here \(the way we actually failed during execution\).
+
+Adding insult to injury - if I open the original file and copy from it \(rather than the temp file\) it just works
+
+```ruby
+[121] pry(FileUtils)> IO.copy_stream(f, fd.path)  
+=> 0                                              
+[122] pry(FileUtils)> forig
+=> #<File:/opt/apps/forem/spec/support/fixtures/images/image1.jpeg>
+[123] pry(FileUtils)> forig.pos                           
+=> 14946                                                  
+[124] pry(FileUtils)> forig.rewind
+=> 0                              
+[125] pry(FileUtils)> IO.copy_stream(forig, fd)
+=> 14946               
+```
+
+### Summary of where I think I am
+
+* this worked fine in a debian container \(where the source was copied rather than mounted\)
+* copying file to tmp works
+* copy file from tmp fails
+* position does not seek \(we basically didn't read at all from the open file\)
+* copying file to ultimate target works.
+* copying to another file in tmp works, but copying from _that_ file also fails to copy into the dest
+
+Only "visible" difference is the original file was 0100644 and the tmp file is 0100600 - but we're the correct user and should be able to read \(in fact, we can read, just not copy stream\).
+
+
+
+## fix?
+
+I ended up changing the docker-compose file I'm working with to mount /tmp as tmpfs rather than using the /tmp from the overlay filesystem. This appears to have fixed the issues for me \(I now see all but the system tests requiring chrome building with no failures\).
+
+So that's good enough for a 0 level approach - next is to figure out selenium + chromedriver + webdrivers gem + rspec with docker \(molly had a branch with this early on that I might revisit - I remember a lot of quirks around allowed sites and webmock/vcr interacting differently at the end so sessions weren't getting removed\). I suspect we can run selenium/system specs in a separate container \(using `--tag=js` to filter them\).
+
+Second thing I am not doing is using knapsack \(but the whole spec suite takes 12 minutes in docker locally so not sure how much that matters\).
+
