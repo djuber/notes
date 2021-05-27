@@ -48,6 +48,10 @@ sidekiq_1        | /opt/apps/forem/app/models/article.rb:382:in `update_score'
 
 ![schema.rb changes](../.gitbook/assets/schema.png)
 
+{% hint style="info" %}
+this has been resolved by a configuration that keeps the schema alphabetized
+{% endhint %}
+
 ## Using the console
 
 As a backed engineer I spend a fair amount of time in the rails console, so getting one up and running makes sense. The docker-compose file sets up the environment for locally testing the web-app or running background jobs, but doesn't provide the interactive environment you get from the repl. In a "normal" or hosted rails environment, I would call `bundle exec rails console` to start pry or irb in the project, but see weirdness 2 above - bundle ran inside the containers and generated extensions for a slightly different linux than the one I'm running \(wrong glibc version was compiled against\). To work around this - I'll start a shell in the rails container and run a console there \(this is a layer of indirection you don't experience with a native execution\)
@@ -266,4 +270,8 @@ I don't know what or why - I ended up deleting the containers \(I basically remo
 Next step would be to get the user creation/setup so I can test login.
 
 On a side note - is there any support in the docker-compose setup to run specs? It looks like we _only_ provision the PracticalDeveloper\_development database, and probably would expect a test db as well \(in which case maybe this needs to be setup in either a second db instance or additional configuration of the existing setup\).
+
+
+
+[https://github.com/forem/forem/issues/4955\#issuecomment-839880675](https://github.com/forem/forem/issues/4955#issuecomment-839880675) seems like I'm still not able to get a working local setup - fortunately it's a fun and new problem I guess.
 
