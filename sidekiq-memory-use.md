@@ -30,3 +30,45 @@ What's next?
 
 
 
+## Is there a job responsible?
+
+Rhymes suggested running the scheduled jobs one by one to see if there's a link between growth over time and some particular job \(by disabling all scheduled jobs but one, one by one\).
+
+I'm more inclined to run the same jobs 1000 times in a row repeatedly to track that...
+
+
+
+```ruby
+schedule = YAML.load(File.open("config/schedule.yml"))
+
+schedule.map {|j| j.second.slice("class", "args") }=> [{"class"=>"Feeds::ImportArticlesWorker"},                      
+ {"class"=>"Metrics::RecordBackgroundQueueStatsWorker"},
+ {"class"=>"Metrics::RecordDailyUsageWorker"},
+ {"class"=>"Metrics::RecordDailyNotificationsWorker"},
+ {"class"=>"Metrics::RecordDataCountsWorker"},
+ {"class"=>"Metrics::CheckDataUpdateScriptStatuses"},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_yearly_club", ""]},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_beloved_comment", ""]},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_four_week_streak", ""]},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_eight_week_streak", ""]},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_sixteen_week_streak", ""]},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_tag", ""]},
+ {"class"=>"BadgeAchievements::BadgeAwardWorker", "args"=>["", "award_contributor_from_github", ""]},
+ {"class"=>"HtmlVariants::RemoveOldDataWorker"},
+ {"class"=>"Tags::ResaveSupportedTagsWorker"},
+ {"class"=>"Listings::ExpireOldListingsWorker"},
+ {"class"=>"Broadcasts::SendWelcomeNotificationsWorker"},
+ {"class"=>"SitemapRefreshWorker"},
+ {"class"=>"BustCachePathWorker", "args"=>["/feed.xml"]},
+ {"class"=>"BustCachePathWorker", "args"=>["/badge"]},
+ {"class"=>"BustCachePathWorker", "args"=>["/"]},
+ {"class"=>"Emails::EnqueueDigestWorker"},
+ {"class"=>"Notifications::RemoveOldNotificationsWorker"},
+ {"class"=>"Credits::SyncCounterCache"},
+ {"class"=>"Podcasts::EnqueueGetEpisodesWorker"},
+ {"class"=>"GithubRepos::UpdateLatestWorker"},
+ {"class"=>"PushNotifications::CleanupWorker"}]
+```
+
+The badge award worker takes 3 positional args usernames, badge\_slug, and message, so that's why passing the slug alone requires two empty string args as well.
+
