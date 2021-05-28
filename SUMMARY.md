@@ -30,4 +30,5 @@
 * [Parallelize Cypress](parallelize-cypress.md)
 * [Reading List](reading-list.md)
 * [Sidekiq Memory Use](sidekiq-memory-use.md)
+* [Buildkite configuration](buildkite-configuration.md)
 
