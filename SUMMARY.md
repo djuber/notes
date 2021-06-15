@@ -31,4 +31,5 @@
 * [Reading List](reading-list.md)
 * [Sidekiq Memory Use](sidekiq-memory-use.md)
 * [Buildkite configuration](buildkite-configuration.md)
+* [Dumping heap](dumping-heap.md)
 
