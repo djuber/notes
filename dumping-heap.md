@@ -64,8 +64,6 @@ In a rails console I can dump the heap to an arbitrary file by passing the path 
 
 The heap dump format is what looks like json-lines formatted objects \(one object per line\).
 
-
-
 There are a few `"type": "ROOT"` top level object arrays \(vm, machine context, end proc, global table, global list, finalizers, ...\) followed by every object \(these objects begin with "address" and not "type"\)
 
 
