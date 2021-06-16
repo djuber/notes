@@ -38,7 +38,37 @@ Evaluation of the expression containing the function
 When the function is done executing, GDB will silently stop.
 ```
 
+This is probably something to do with attaching gdb to a sidekiq parent process, so instead I made a worker to run that code inside a sidekiq thread.
+
+```ruby
+require 'objspace'
+
+class HeapDumpWorker
+  include Sidekiq::Worker
+
+  sidekiq_options queue: :medium_priority
+
+  def perform(filename)
+    File.open(filename, 'w') do |f|
+      ObjectSpace.dump_all(output: f, full: true)
+    end
+    puts "wrote it!"
+  end
+end
+
+```
+
+In a rails console I can dump the heap to an arbitrary file by passing the path as the sole job arg.
 
 
 
+The heap dump format is what looks like json-lines formatted objects \(one object per line\).
+
+
+
+There are a few `"type": "ROOT"` top level object arrays \(vm, machine context, end proc, global table, global list, finalizers, ...\) followed by every object \(these objects begin with "address" and not "type"\)
+
+
+
+Moved this discussion \(after a successful use of a sidekiq job to dump memory\) to [https://forem.team/danuber/tracking-down-a-memory-hog-23m5](https://forem.team/danuber/tracking-down-a-memory-hog-23m5) 
 
