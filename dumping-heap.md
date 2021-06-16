@@ -70,5 +70,5 @@ There are a few `"type": "ROOT"` top level object arrays \(vm, machine context, 
 
 
 
-Moved this discussion \(after a successful use of a sidekiq job to dump memory\) to [https://forem.team/danuber/tracking-down-a-memory-hog-23m5](https://forem.team/danuber/tracking-down-a-memory-hog-23m5) 
+Moved this discussion \(after a successful use of a sidekiq job to dump memory\) to [https://forem.team/danuber/tracking-down-a-memory-hog-23m5](https://forem.team/danuber/tracking-down-a-memory-hog-23m5) - the output from reap was super handy in identifying a misconfiguration.
 
