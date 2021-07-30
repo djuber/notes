@@ -20,3 +20,11 @@ Example log [https://api.travis-ci.com/v3/job/528007127/log.txt](https://api.tra
 
 
 
+So what will this look like? Not sure but I'm going to hack at it for a while to see. I know what's roughly going on in our code \(we have modules that define accessors based on database state, and paths in the tests that mutate/reset those accessor bindings, and sometimes, in CI only, hit a place where we have problems resulting in "stack level too deep". While this often represents itself in system tests \(where capybara is viewing a rendered profile partial\) it also happens in model specs \(meaning it's not a front-end issue, definitely something with the class method lookup?\)
+
+I want to get the tests to run in order so that I can then see what's happening when this occurs \(please don't mean I'm attaching a debugger to ruby\). Or to steal @b0rk's graphic from [wizard zines ](https://wizardzines.com/comics/minimal-reproduction/)
+
+![](.gitbook/assets/image%20%283%29.png)
+
+
+
