@@ -26,5 +26,30 @@ I want to get the tests to run in order so that I can then see what's happening 
 
 ![](.gitbook/assets/image%20%283%29.png)
 
+Distill the logs to an action list
+
+Effectively this was just grepping for the `bundle exec rspec` lines that are logged by the test runner \(which are distinct from actually running this as separate process, which is evident when  we check the timing and try to replicate it\)
+
+```text
+
+[0K$ bin/knapsack_pro_rspec
+I, [2021-07-30T14:57:59.658192 #9616]  INFO -- : [knapsack_pro] To retry in development the subset of tests fetched from API queue please run below command on your machine. If you use --order random then remember to add proper --seed 123 that you will find at the end of rspec command.
+I, [2021-07-30T14:57:59.658280 #9616]  INFO -- : [knapsack_pro] bundle exec rspec --format progress  --default-path spec "spec/controllers/concerns/json_api_sort_param_spec.rb"
+[Zonebie] Setting timezone: ZONEBIE_TZ="Marshall Is."
+.....
+```
+
+From this I want to extract just the following 
+
+```text
+bundle exec rspec --format progress  --default-path spec "spec/controllers/concerns/json_api_sort_param_spec.rb"
+```
+
+we can do that all at once with `grep "bundle exec rspec " | cut -f 2 -d \]` \(the cut basically skips forward past the `[knapsack_pro]` log item and captures the rest of the line.
+
+ 
+
+{% file src=".gitbook/assets/tests.txt" caption="extract test list as rspec commands" %}
+
 
 
