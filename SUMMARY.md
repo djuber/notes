@@ -33,4 +33,5 @@
 * [Buildkite configuration](buildkite-configuration.md)
 * [Dumping heap](dumping-heap.md)
 * [Tricking KnapsackPro](tricking-knapsackpro.md)
+* [Debugging Ruby](debugging-ruby.md)
 
