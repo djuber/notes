@@ -53,3 +53,47 @@ we can do that all at once with `grep "bundle exec rspec " | cut -f 2 -d \]` \(t
 
 
 
+Eventually I did something - I'm not sure this was necessary but at the time it made sense. I changed the Client::Connnection class to bypass the normal api behavior in call \(if it's a request to queues/ then return the next set of tests, if it's a request to any other endpoint return an empty body in a 200 response\)
+
+```ruby
+module KnapsackPro
+  module Client
+    class Connection
+      def handle_queue
+        @@step_number ||= 0
+        response = responses[@@step_number] || []
+        @@step_number += 1
+        {"test_files" => response }
+      end
+
+      def responses
+        @@responses ||=
+        begin
+          path = '/home/djuber/Documents/test-lines.txt'
+          file = File.read(path); file.size
+          tests = file.lines.map {|line| line.delete('"').split(' ') }
+          tests.map {|testline| testline.map {|path| {"path" => path} } }
+        end
+      end
+
+      def call
+        if(@action.endpoint_path == '/v1/queues/queue')
+          handle_queue
+        else
+          #send(action.http_method)
+          @response_body = ''
+          @http_response = Net::HTTPResponse.new("1.1", "200", "OK")
+          response_body
+        end
+      end
+
+      def success?
+        return true
+      end
+    end
+  end
+end
+```
+
+I just modified the file in vendor/cache/ruby/2.7.0/gems/knapsack-pro-2.18.2/lib/knapsackpro/client/connection.rb rather than monkey patching this in a rake task \(which would probably be the smarter way to do this in the future if we had something that took log files or a travis url and replayed it locally.
+
