@@ -41,7 +41,7 @@ One thing to factor in is time - since this is not running in parallel from what
 
 it turns out the underlying problem was an interaction between some seed data that's imported during `spec_helper` or `rails_helper` being loaded \(this happens twice, once in the end to end setup, once in the general unit test setup\) from a csv file \(outside of the normal "seed data" format\), and being cleared by one of two tests using a `:truncation` db cleaner strategy. A little looking around led me to find work done last June to introduce db cleaner and use truncation \(instead of transactional guarantees\) due to a system test hanging in a create statement during CI test runs. 
 
-I'm in the process of removing that since it might actually be worse than an occassional hang - I'm also running the import feed spec locally 100 times to observe it completes in the same time consistently without hanging, so far so good, but I think this may only manifest in travis when running the spec suite.
+I'm in the process of removing that since it might actually be worse than an occasional hang - I'm also running the import feed spec locally 100 times to observe it completes in the same time consistently without hanging, so far so good, but I think this may only manifest in travis when running the spec suite.
 
 [https://github.com/forem/forem/pull/13035](https://github.com/forem/forem/pull/13035)
 
