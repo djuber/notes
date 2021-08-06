@@ -97,3 +97,11 @@ end
 
 I just modified the file in vendor/cache/ruby/2.7.0/gems/knapsack-pro-2.18.2/lib/knapsackpro/client/connection.rb rather than monkey patching this in a rake task \(which would probably be the smarter way to do this in the future if we had something that took log files or a travis url and replayed it locally.
 
+
+
+It turns out I find the issue I was looking for - [https://github.com/forem/forem/pull/14433](https://github.com/forem/forem/pull/14433) - this is the "test-lines.txt" file used to drive this \(extracted from the travis log linked above\).
+
+{% file src=".gitbook/assets/test-lines.txt" %}
+
+
+
