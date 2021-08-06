@@ -103,5 +103,5 @@ It turns out I find the issue I was looking for - [https://github.com/forem/fore
 
 {% file src=".gitbook/assets/test-lines.txt" %}
 
-
+I really tried to use the initializer to redefine these methods but it seemed like spring was not re-loading the initializers for me in local testing \(this would likely not be a problem in CI tests but was frustrating locally so I ended up re-pasting the method definitions into the vendor/cache copy of the connection.rb.
 
