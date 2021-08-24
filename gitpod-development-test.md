@@ -46,3 +46,37 @@ Once it loads it appears you've got vscode in a browser \(think github codespace
 
 Not sure why pg\_ctl failed to start \(my assumption is the gitpod code might not be up to date with any other changes - looking into Ben's initial PR to see what he did to wire this up\)
 
+
+
+Ah - there are two open terminals - one named "gp" \(gitpod?\) and the other for `Forem server: bash` 
+
+  The bash terminal was the script starting forem \(including the seed script and db setup\) - the pg\_ctl failed issue appears to be benign as the seed is running correctly
+
+It did take a few minutes for the bookkeeping to be done - I think maybe 20 minutes total before sidekiq and puma started.
+
+Just like docker, after the seeds run - the sidekiq queue has a lot of creation callback work to process - so that's normal - the `gp` terminal changed to `sleep` once port 3000 was live.
+
+In the meantime I was able to install the recommended extensions \(prettier, git, and ruby\) - there were some uninteresting extensions recommended for things like mdx files but I'm not sure what those are.
+
+
+
+Since I never use vs-code I don't know what I'm doing - and the redis backup file dump.rdb is showing in the git unstaged area \(I'm not sure how to ignore it via the ui - the git extensions seem to support diff and commit but not managing the ignore file\) - if we're suggesting or expecting people to use this tool - adding the dump.rdb file to the gitignore would help avoid this.
+
+
+
+Second time around I had a problem where redis complained about huge tables support in the kernel and refused to play nice - and foreman didn't start \(so port 3000 never came up\)
+
+I manually started webpack dev server and rails s in two shells, but the "user login doesn't work because of csrf and the app domain conflict" - white screen after login error \(this happens in a _lot_ of situations like docker and sometimes other proxied connections\). 
+
+```text
+Processing by Devise::SessionsController#create as HTML Parameters: {"utf8"=>"✓", "authenticity_token"=>"[FILTERED]", "user"=>{"email"=>"admin@forem.local", "password"=>"[FILTERED]", "remember_me"=>"1"}, "commit"=>"Continue"} HTTP Origin header (
+https://3000-salmon-koi-ew06insl.ws-us16.gitpod.io
+) didn't match request.base_url (
+https://3000-salmon-koi-ew06insl.ws-us16.gitpod.io
+) Completed 200 OK in 3ms (ActiveRecord: 0.0ms | Allocations: 1935)
+```
+
+![white screen after posting to login - nonsense error X does not match X](.gitbook/assets/screenshot-from-2021-08-24-16-23-41.png)
+
+
+
