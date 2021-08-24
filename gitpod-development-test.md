@@ -40,5 +40,9 @@ I get to "Creating" and pulling container image
 
 ![Creating workspace](.gitbook/assets/screenshot-from-2021-08-24-14-45-13.png)
 
+Once it loads it appears you've got vscode in a browser \(think github codespaces, but 2 years ahead of them\) 
 
+![vscode in the browser](.gitbook/assets/screenshot-from-2021-08-24-14-47-59.png)
+
+Not sure why pg\_ctl failed to start \(my assumption is the gitpod code might not be up to date with any other changes - looking into Ben's initial PR to see what he did to wire this up\)
 
