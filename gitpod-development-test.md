@@ -94,3 +94,5 @@ Since I seem to remember the problem here beeing with appdomain and app protocol
 
 
 
+Preview of forem.dev post [https://forem.dev/djuber/using-gitpod-5ebk-temp-slug-6374097?preview=1a13e7dd684cf51b0a05c729eb7c8c73cc573d30ab1315f5eacf2bf017663d6749beefeb1f5b950b9e8e21e1368a924d35fe7611a735ead795abe137](https://forem.dev/djuber/using-gitpod-5ebk-temp-slug-6374097?preview=1a13e7dd684cf51b0a05c729eb7c8c73cc573d30ab1315f5eacf2bf017663d6749beefeb1f5b950b9e8e21e1368a924d35fe7611a735ead795abe137) in progress
+
