@@ -35,4 +35,5 @@
 * [Tricking KnapsackPro](tricking-knapsackpro.md)
 * [Debugging Ruby](debugging-ruby.md)
 * [Docker development revisited](docker-development-revisited.md)
+* [gitpod development test](gitpod-development-test.md)
 
