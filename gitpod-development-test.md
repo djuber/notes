@@ -78,5 +78,11 @@ https://3000-salmon-koi-ew06insl.ws-us16.gitpod.io
 
 ![white screen after posting to login - nonsense error X does not match X](.gitbook/assets/screenshot-from-2021-08-24-16-23-41.png)
 
+Since I seem to remember the problem here beeing with appdomain and app protocol - I edited those in the .env file to match the sent version in the error - and restarted rails. This permitted me to log in successfully:
+
+![](.gitbook/assets/screenshot-from-2021-08-24-16-33-59.png)
+
+![successful login prompting for accepting terms](.gitbook/assets/screenshot-from-2021-08-24-16-33-49.png)
+
 
 
