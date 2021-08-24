@@ -377,5 +377,51 @@ There are a lot of callbacks on the model creations that enqueued a pile of side
 
 This is even bound to 0.0.0.0 so if you're running docker on a remote host \(I am, in this case\) you'll still be able to use it - I can view the site at http://192.168.0.12:3000 from my desk \(not that address\). 
 
+Well - I _thought_ I could - I get caught out by the byebug allowed networks 
+
+```text
+rails_1      | Processing by RegistrationsController#new as HTML
+rails_1      |   Rendering layout layouts/application.html.erb
+rails_1      |   Rendering devise/registrations/new.html.erb within layouts/application
+rails_1      |   Flipper::Adapters::ActiveRecord::Gate Load (0.3ms)  SELECT "flipper_gates".* FROM "flipper_gates" WHERE "flipper_gates"."feature_key" = $1  [["feature_key", "creator_onboarding"]]
+rails_1      |   ↳ app/services/feature_flag.rb:3:in `enabled?'
+rails_1      |   Rendered devise/shared/_authorization_error.html.erb (Duration: 0.4ms | Allocations: 346)
+
+rails_1      | ActionController::RoutingError (No route matches [GET] "/packs/js/runtime~base-f7d83118743809df6fa5.js"):
+rails_1      |   
+rails_1      | Cannot render console from 192.168.0.2! Allowed networks: 172.25.0.1, 127.0.0.0/127.255.255.255, ::1
+rails_1      |   
+rails_1      | ActionController::RoutingError (No route matches [GET] "/packs/js/base-1f9dae6e77648d77f04d.chunk.js"):
+
+```
+
+Also, letting things run for a while - the push notification worker was raising errors about being unable to connect to redis \(all redis services are configured in the .env file as localhost:6379\)
+
+```text
+sidekiq_1    | 2021-08-24T16:37:46.003Z pid=15 tid=gai3 class=PushNotifications::CleanupWorker jid=516b8f634710e358701f38b1 INFO: start
+sidekiq_1    | 2021-08-24T16:37:46.020Z pid=15 tid=gai3 class=PushNotifications::CleanupWorker jid=516b8f634710e358701f38b1 uniquejobs=server until_and_while_executing=uniquejobs:10fab4fe2bff061db346efdc20c7634c ERROR: Runtime lock failed to execute job, restoring server lock (lock=until_and_while_executing queue=low_priority class=PushNotifications::CleanupWorker jid=516b8f634710e358701f38b1 lock_digest=uniquejobs:10fab4fe2bff061db346efdc20c7634c:RUN)
+sidekiq_1    | 2021-08-24T16:37:46.022Z pid=15 tid=gai3 class=PushNotifications::CleanupWorker jid=516b8f634710e358701f38b1 elapsed=0.02 INFO: fail
+sidekiq_1    | 2021-08-24T16:37:46.022Z pid=15 tid=gai3 WARN: {"context":"Job raised exception","job":{"retry":10,"queue":"low_priority","lock":"until_and_while_executing","args":[],"class":"PushNotifications::CleanupWorker","jid":"516b8f634710e358701f38b1","created_at":1629822006.8623745,"enqueued_at":1629823066.001091,"error_message":"Error connecting to Redis on localhost:6379 (Errno::EADDRNOTAVAIL)","error_class":"Redis::CannotConnectError","failed_at":1629822553.5581672,"retry_count":4,"retried_at":1629822772.9816122,"lock_timeout":0,"lock_ttl":null,"lock_prefix":"uniquejobs","lock_args":[],"lock_digest":"uniquejobs:10fab4fe2bff061db346efdc20c7634c:RUN"},"jobstr":"{\"retry\":10,\"queue\":\"low_priority\",\"lock\":\"until_and_while_executing\",\"args\":[],\"class\":\"PushNotifications::CleanupWorker\",\"jid\":\"516b8f634710e358701f38b1\",\"created_at\":1629822006.8623745,\"enqueued_at\":1629823066.001091,\"error_message\":\"Error connecting to Redis on localhost:6379 (Errno::EADDRNOTAVAIL)\",\"error_class\":\"Redis::CannotConnectError\",\"failed_at\":1629822553.5581672,\"retry_count\":4,\"retried_at\":1629822772.9816122}"}
+sidekiq_1    | 2021-08-24T16:37:46.022Z pid=15 tid=gai3 WARN: Redis::CannotConnectError: Error connecting to Redis on localhost:6379 (Errno::EADDRNOTAVAIL)
+
+```
+
+The redis status says there were blocked clients - I wonder if the sidekiq process was seen as too chatty and blocked or of if only the redis rpush url was a problem.
+
+```text
+# Clients
+connected_clients:14
+client_recent_max_input_buffer:8
+client_recent_max_output_buffer:0
+blocked_clients:2
+tracking_clients:0
+clients_in_timeout_table:2
+
+```
+
+I'll keep an eye out for these problems as it goes by - I restarted docker-compose to clear the blocks \(I assume\) and observed the bust cache path  worker running successfully after startup.
+
+
+
 
 
