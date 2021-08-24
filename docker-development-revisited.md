@@ -427,5 +427,10 @@ I moved over to the host ip \(this is setup in the "docker" [initializer](https:
 
 
 
-I've removed the manifest.json from public/packs/ to hint to webpacker that maybe it's time to do something extra - there might be a solution where the answer is to precompile assets \(this changes the developer experience for front end changes substantially\).
+I've removed the manifest.json from public/packs/ to hint to webpacker that maybe it's time to do something extra - there might be a solution where the answer is to precompile assets \(this changes the developer experience for front end changes substantially\). Yes, removing the manifest and restarting seems to have helped - I still get routing errors for some of the components but articles are loading now
+
+```text
+rails_1      | ActionController::RoutingError (No route matches [GET] "/packs/js/vendors~Chat~Onboarding~Search~actionsPanel~admin~analyticsArticle~analyticsDashboard~articleForm~ar~414d0373-6242a87222d5db8257ac.chunk.js"):
+
+```
 
