@@ -8,7 +8,7 @@ description: >-
 
 Key points learned: you might see issues with bin/startup - I'm not sure if foreman was even installed? You will have problems with browsing - you'll need to adjust the `APP_DOMAIN` and `APP_PROTOCOL` variables in the .env file to match gitpods environment \(mine was salmon-koi-ew06insl.ws-us16.gitpod.io/ but yours should be unique to you\) or you'll get a white screen due to unhandled CSRF mismatch when logging in.
 
------
+----------------------------------------
 
 
 
