@@ -423,5 +423,5 @@ I'll keep an eye out for these problems as it goes by - I restarted docker-compo
 
 
 
-
+I moved over to the host ip \(this is setup in the "docker" initializer by calling `ip route` and doing some shell scrubbing to get the local network\) and opened a browser - I'm able to log in but most of the webpack resources are giving 404's.
 
