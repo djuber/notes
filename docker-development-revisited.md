@@ -423,5 +423,9 @@ I'll keep an eye out for these problems as it goes by - I restarted docker-compo
 
 
 
-I moved over to the host ip \(this is setup in the "docker" initializer by calling `ip route` and doing some shell scrubbing to get the local network\) and opened a browser - I'm able to log in but most of the webpack resources are giving 404's.
+I moved over to the host ip \(this is setup in the "docker" [initializer](https://github.com/forem/forem/pull/7747/files#diff-fc2c3f13d5883bbaaeb7c95ae09383ad929b267fe9d7cd7f70fbc3b1a4127df3R4) by calling `ip route` and doing some shell scrubbing to get the local network\) and opened a browser - I'm able to log in but most of the webpack resources are giving 404's. This is true even after a restart and it's unclear why - that basically makes the site unworkable - since all the dynamic loading \(like articles on the stories controller?\) isn't happening without the js being available.
+
+
+
+I've removed the manifest.json from public/packs/ to hint to webpacker that maybe it's time to do something extra - there might be a solution where the answer is to precompile assets \(this changes the developer experience for front end changes substantially\).
 
