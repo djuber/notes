@@ -342,5 +342,12 @@ Per pass, in order, one of these will be performed:
 * if `prefix_oli`, then parse\_list, setting `MKD_LIST_ORDERED` option (was this an ordered list item?)
 * otherwise, this is just plain text, call `parse_paragraph`
 
+So, while a careful reading might allow us to guess what's happening, long before  I got this far I had changed to using GDB. [https://gist.github.com/djuber/ef6123d3cf7d1527b5ba92bb6fb2f428](https://gist.github.com/djuber/ef6123d3cf7d1527b5ba92bb6fb2f428#gistcomment-4026787) are my original notes while I hunted this down from the outside (just find names that looked like that had to do with html or code blocks, set breakpoints, and print the struct members to see what was happening). Informatively, I did see the behavior described in parse block by setting a watch on the output buffer size (if the output buffer changed, I know we'd just parsed some chunk).&#x20;
 
+#### Reasoning about the rules
 
+Having described the parse\_block loop, we can discuss the meaning (to us, for this use case) of the rules.&#x20;
+
+* if we want to embed html, it must begin on the first character of the line. Unlike prefix quote or a few other recognizers, we're going to assume it's html _only_ when the first character on the line is a `<` open angle bracket.
+* it seems like we also need to be aware of when html blocks _end_, as well as when the parser observes they _begin_.
+* the behavior of the passes for the  input (after the liquid tag has been parsed and replaced with the preview content) is something like "recognize the p tag at the beginning of the first line of `parsed_liquid.render`, including the html comment, scanning forward until we find the closing tag. Unfortuntely, the closing tag is `<`/`p>`  which happens _in_ the comment. The next line after the `/p`  starts with four spaces indentation, so we start a code tag, and the line after that is interpreted as a paragraph
