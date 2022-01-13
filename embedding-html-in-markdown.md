@@ -62,6 +62,8 @@ After that code block another line is added with what was intended to be an html
 
 So something is going wrong. But what?
 
+### Tracing the Code along its path
+
 #### ArticlesController#preview
 
 Let's go back to the controller snippet and try to simulate this.\
@@ -138,7 +140,7 @@ end
 
 ```
 
-
+Note, we render twice, once before interpreting liquid tags, `render(escaped_content)`, and once after `render(parsed_liquid.render).`
 
 {% hint style="info" %}
 Show method does a few things under the hood - it uses `method(:finalize).source_location` from the ruby instance to find where the code for this selector lives, in my case it returns a pair of file and line number `["forem/app/services/markdown_processor/parser.rb", 18]`. Pry then grabs the content from the file on disk and shows the defining block. If you want to confirm this, just modify the source file after loading the class, you'll be seeing the on disk representation of the code, not necessarily the method body that's running right now. That's something to be aware of if you have a long running console session and have been editing these files. This also has limitations - it's unlikely to work for methods that are implemented in compiled C extensions (we'll get to that in a moment) and it may give less than stellar results if the method was defined with metaprogramming (by `define_method`, for example).
@@ -197,3 +199,116 @@ Now is about the time I do a little searching, and I come up with this great art
 
 #### Markdown#render
 
+It's about to get a little hairy.&#x20;
+
+First pass (markdown render escaped content) just does link->link expansion - given an unadorned link, it generates an A tag with the link target as the content)
+
+```ruby
+ markdown.render(@content)
+=> "<p>{% embed <a href=\"http://localhost:3000/torpdarlene/comment/c\">http://localhost:3000/torpdarlene/comment/c</a> %}</p>\n"
+```
+
+`sanitize_rendered_markdown` does nothing important here, since there's nothing to sanitize, so build up the liquid template parser, and render it (basically, change the embed to the rendered comment template in the views/ directory)
+
+```ruby
+[19] pry(#<MarkdownProcessor::Parser>):1> Liquid::Template.parse(@content).render
+  Comment Load (1.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."id_code" = $1 LIMIT $2  [["id_code", "c"], ["LIMIT", 1]]
+  User Load (0.9ms)  SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2  [["id", 4], ["LIMIT", 1]]
+  Rendered comments/_comment_date.erb (Duration: 0.7ms | Allocations: 184)
+  Rendered comments/_liquid.html.erb (Duration: 5.0ms | Allocations: 1097)
+=> "<!-- BEGIN app/views/comments/_liquid.html.erb --><div class=\"liquid-comment\">\n    <div class=\"details\">\n      <a href=\"/torpdarlene\">\n        <img class=\"profile-pic\" src=\"/uploads/user/profile_image/4/96272310-dc87-4f6a-a5d5-b937810e99f3.png\" alt=\"torpdarlene profile image\" />\n      </a>\n      <a href=\"/torpdarlene\">\n        <span class=\"comment-username\">Darlene Torp</span>\n      </a>\n      <span class=\"color-base-30 px-2 m:pl-0\" role=\"presentation\">&bull;</span>\n\n<a href=\"http://localhost:3000/torpdarlene/comment/c\" class=\"comment-date crayons-link crayons-link--secondary fs-s\">\n  <time datetime=\"2022-01-11T20:32:35Z\">\n    Jan 11\n  </time>\n\n</a>\n\n    </div>\n    <div class=\"body\">\n      <p>Keffiyeh portland locavore lomo readymade waistcoat. Tofu pork belly farm-to-table. Schlitz paleo letterpress 8-bit helvetica austin cardigan gluten-free.</p>\n\n\n    </div>\n</div>\n<!-- END app/views/comments/_liquid.html.erb -->"
+```
+
+We see the console output that the comment, it's author/user were loaded from the db, and two templates were rendered (the date partial is embedded in the comment partial).
+
+This stage's output looks right - after substituting the embed we get a liquid comment div, more or less what we expect from the liquid parser. At this point, nothing has been changed that we didn't want.
+
+This is the input to the second pass of render:
+
+```ruby
+markdown.render parsed_liquid.render
+=> "<p><!-- BEGIN app/views/comments/_liquid.html.erb --><div class=\"liquid-comment\">\n    <div class=\"details\">\n      <a href=\"/torpdarlene\">\n        <img class=\"profile-pic\" src=\"/uploads/user/profile_image/4/96272310-dc87-4f6a-a5d5-b937810e99f3.png\" alt=\"torpdarlene profile image\" />\n      </a>\n      <a href=\"/torpdarlene\">\n        <span class=\"comment-username\">Darlene Torp</span>\n      </a>\n      <span class=\"color-base-30 px-2 m:pl-0\" role=\"presentation\">&bull;</span>\n\n<a href=\"http://localhost:3000/torpdarlene/comment/c\" class=\"comment-date crayons-link crayons-link--secondary fs-s\">\n  <time datetime=\"2022-01-11T20:32:35Z\">\n    Jan 11\n  </time>\n\n</a>\n\n    </div>\n    <div class=\"body\">\n      <p>Keffiyeh portland locavore lomo readymade waistcoat. Tofu pork belly farm-to-table. Schlitz paleo letterpress 8-bit helvetica austin cardigan gluten-free.</p>\n<div class=\"highlight\"><pre class=\"highlight plaintext\"><code>&lt;/div&gt;\n</code></pre></div>\n<p></div><br>\n&lt;!-- END app/views/comments/_liquid.html.erb --&gt;</p></p>\n"
+```
+
+So we're at the last line of _our_ code before we change what we think we want into what we don't want...
+
+#### Redcarpet::Markdown#render
+
+The Markdown class is defined in [lib/redcarpet.rb](https://github.com/vmg/redcarpet/blob/master/lib/redcarpet.rb#L7) - as stub to add an attr\_reader for the renderer. Most of the functionality is defined in the extension
+
+```ruby
+[3] pry(#<MarkdownProcessor::Parser>)> show-method markdown
+
+From: /home/djuber/src/forem/vendor/cache/ruby/3.0.0/gems/redcarpet-3.5.1/lib/redcarpet.rb:7
+Class name: Redcarpet::Markdown
+Number of lines: 3
+
+class Markdown
+  attr_reader :renderer
+end
+[4] pry(#<MarkdownProcessor::Parser>)> cd markdown
+[5] pry(#<Redcarpet::Markdown>):1> show-source
+You're inside an object, whose class is defined by means of the C Ruby API.
+Pry cannot display the information for this class.
+However, you can view monkey-patches applied to this class.
+.Just execute the same command with the '--all' switch.
+```
+
+So we're at a limit of what ruby introspection can give us. But, where does _render_ get defined? While we ponder that we can try to build a smaller test case. Since the problem behavior is "we get a code block when we didn't want one" or "we left the html processing too early", we can try to make a string that should give all html, but instead gives a mix of code and html.
+
+I'm of course cheating _a little_ here, I know what the end result will be so I can isolate this a little better. In markdown, lines that start with four spaces indentation (or more) are assumed to be code snippets (this is in distinction to the other convention  of fenced code blocks using \`\`\` or \~\~\~ characters to start code blocks).&#x20;
+
+```ruby
+[27] pry(#<Redcarpet::Markdown>):1> render "<p>Text</p><p>Text 2</p>"
+=> "<p>Text</p><p>Text 2</p>\n"
+[28] pry(#<Redcarpet::Markdown>):1> render "<p>Text</p>\n\n<p>Text 2</p>"
+=> "<p>Text</p>\n\n<p>Text 2</p>\n"
+
+# a space before the html puts us in "paragraph mode" - wrapping the line in a <p> tag
+[29] pry(#<Redcarpet::Markdown>):1> render "<p>Text</p>\n\n <p>Text 2</p>"
+=> "<p>Text</p>\n\n<p><p>Text 2</p></p>\n"
+# four spaces at the beginning of a line put us in code tag mode:
+[30] pry(#<Redcarpet::Markdown>):1> render "<p>Text</p>\n\n    <p>Text 2</p>"
+=> "<p>Text</p>\n<div class=\"highlight\"><pre class=\"highlight plaintext\"><code>&lt;p&gt;Text 2&lt;/p&gt;\n</code></pre></div>"
+
+# four spaces _between_ tags, but not in line-initial position, is fine:
+[31] pry(#<Redcarpet::Markdown>):1> render "<p>Text</p>    <p>Text 2</p>"
+=> "<p>Text</p>    <p>Text 2</p>\n"
+```
+
+So we're looking for a situation where what _might_ be html gets interpreted instead as a code block (and sanitized for display).
+
+#### Redcarpet internals
+
+So, where is the class defined? [https://github.com/vmg/redcarpet/blob/main/ext/redcarpet/rc\_markdown.c#L24-L27](https://github.com/vmg/redcarpet/blob/main/ext/redcarpet/rc\_markdown.c#L24-L27) in the "rc\_markdown" file, we see VALUE (ruby object's C represenation, everything C passes back or receives from ruby will be of type VALUE).
+
+```c
+
+VALUE rb_mRedcarpet;
+VALUE rb_cMarkdown;
+VALUE rb_cRenderHTML_TOC;
+
+extern VALUE rb_cRenderBase;
+```
+
+The convention here is `_` is a :: scope resolution, a c prefix marks a class, an m prefix marks a module... The markdown extensions (in our Constants::Redcarpet::CONFIG hash) are a map of symbol keys to booleans, the code loads those in `rb_redcarpet_md_flags`
+
+```c
+	unsigned int extensions = 0;
+
+	Check_Type(hash, T_HASH);
+
+	/**
+	 * Markdown extensions -- all disabled by default
+	 */
+	if (rb_hash_lookup(hash, CSTR2SYM("no_intra_emphasis")) == Qtrue)
+		extensions |= MKDEXT_NO_INTRA_EMPHASIS;
+
+	if (rb_hash_lookup(hash, CSTR2SYM("tables")) == Qtrue)
+		extensions |= MKDEXT_TABLES;
+
+```
+
+the `rb_redcarpet_md__new` method returns a VALUE (an instance of Redcarpet::Markdown, or a subclass?), and wraps the underlying [Sundown](https://github.com/vmg/sundown)  library that redcarpet builds on, you see names like `sd_markdown` which grew out of the original library (same author). `rc_markdown.c` has `rb_redcarpet_md_render` which is the ruby facing `Redcarpet::Markdown#render` method I was looking for.&#x20;
+
+This looks like normal glue code (hint, this is not the interesting part, it's the bridge between ruby and the C guts where the parsing actually happens), there's some type coercion, precondition checks (input text was a `T_STRING` __ value), pulls the `@renderer` instance variable into the `rb_rndr` variable, sets up the output buffer (where are we sending the data, in our case a string like object to be returned later), then, following the comment "render the magic" we call `sd_markdown_render` (the actual work starts here), and then we'll build a return value from the output buffer by encoding as a ruby string type, release the allocated output buffer, check if the renderer responds to "postprocess", pass the pre-return string `text` to `rb_render.postprocess(text)` (the `rb_funcall` line)  and finally answer `text` back to the caller (in ruby). If you've written C extensions in Ruby, or Python, very little should be surprising in this file, and `sd_markdown_render` is our _real_ entry point.
