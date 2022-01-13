@@ -11,7 +11,7 @@
   * [Setup not completed](flaky-specs-1/setup-not-completed.md)
   * [userData is sometimes not loaded](flaky-specs-1/userdata-is-sometimes-not-loaded.md)
   * [Tracking down spec failures](flaky-specs-1/tracking-down-spec-failures.md)
-  * [Flaky Specs \#1](flaky-specs-1/flaky-specs.md)
+  * [Flaky Specs #1](flaky-specs-1/flaky-specs.md)
 * [Travis CI Segfaults](travis-ci-segfaults.md)
 * [Bookmarks](bookmarks.md)
 * [User Setup in development](user-setup-in-development.md)
@@ -36,4 +36,4 @@
 * [Debugging Ruby](debugging-ruby.md)
 * [Docker development revisited](docker-development-revisited.md)
 * [gitpod development test](gitpod-development-test.md)
-
+* [Embedding HTML in Markdown](embedding-html-in-markdown.md)
