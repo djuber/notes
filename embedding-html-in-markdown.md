@@ -177,7 +177,7 @@ Here's the method we're looking at (the result is rendered html, and has the unw
     end
 ```
 
-So we encounter a few new co-conspirators in our crime story, Redcarpet::Markdown and [Redcarpet::Render::HTMLRouge](https://github.com/forem/forem/blob/main/app/lib/redcarpet/render/html\_rouge.rb), Redcarpet comes from a gem, the Rouge renderer has a plugin module for Redcarpet that's included in the custom class (Forem's code, linked) as well as noticing we have a [config constant](https://github.com/forem/forem/blob/main/app/lib/constants/redcarpet.rb) defined for Redcarpet options. Like the preview code, we see a few "pre-wash" methods called to sanitize or transform input to the state we need before rendering, and the main-even here is `markdown.render(escaped_content)`. We'll be passing the renderer to the Markdown instance, presumable it will use the renderer to render, and will concern itself with parsing rather than presentation. Let's just assume those two always travel together, and we can see we set hard wrap true, filter html false, and no link attributes in the renderer. The renderer appears to mainly be concerned with rules for showing links, formatting headings so they have linkable anchors,  and formatting code blocks to permit highlighting using a capitalized hint language like "C" or "Ruby" rather than "c" or "ruby".  It includes Rouge and inherits from [Redcarpet::Render::HTML](https://rubydoc.info/gems/redcarpet/Redcarpet/Render/HTML) - which is where initialization is defined (we call new and pass it args, but don't define initialize, so we're only extending behavior). It's almost correct to call this a plain HTML object (we could swap out the renderer to experiment, but that's a bit further off course than I'm going here).
+So we encounter a few new co-conspirators in our crime story, Redcarpet::Markdown and [Redcarpet::Render::HTMLRouge](https://github.com/forem/forem/blob/main/app/lib/redcarpet/render/html\_rouge.rb), Redcarpet comes from a gem, the Rouge code syntax highlighting gem has a plugin module for Redcarpet that's included in the custom class (Forem's code, linked) as well as noticing we have a [config constant](https://github.com/forem/forem/blob/main/app/lib/constants/redcarpet.rb) defined for Redcarpet options. Like the preview code, we see a few "pre-wash" methods called to sanitize or transform input to the state we need before rendering, and the main-even here is `markdown.render(escaped_content)`. We'll be passing the renderer to the Markdown instance, presumable it will use the renderer to render, and will concern itself with parsing rather than presentation. Let's just assume those two always travel together, and we can see we set hard wrap true, filter html false, and no link attributes in the renderer. The renderer appears to mainly be concerned with rules for showing links, formatting headings so they have linkable anchors,  and formatting code blocks to permit highlighting using a capitalized hint language like "C" or "Ruby" rather than "c" or "ruby".  It includes Rouge and inherits from [Redcarpet::Render::HTML](https://rubydoc.info/gems/redcarpet/Redcarpet/Render/HTML) - which is where initialization is defined (we call new and pass it args, but don't define initialize, so we're only extending behavior). It's almost correct to call this a plain HTML object (we could swap out the renderer to experiment, but that's a bit further off course than I'm going here).
 
 Since the input `@content` string is so short, I'll skip over the `catch_xss_attempts`, `convert_code_tags_to_triple_backticks` and `escape_liquid_tags_in_codeblock` methods, which leave the content unchanged. It's safe, for this limited situation, to assume this holds, and jump into the render method.
 
@@ -326,4 +326,21 @@ The important call (most of this is scanning the document for special cases, ref
 This is the dispatch table, so it importantly includes the tests to determine which case we're in
 
 {% embed url="https://github.com/vmg/redcarpet/blob/master/ext/redcarpet/markdown.c#L2448-L2507" %}
+
+The function acts as a large loop, handling the next processable unit of text, until the input has been fully consumed. Each of the dispatched functions will advance the offset pointer `beg` - which marks the beginning of the unprocessed text.&#x20;
+
+Per pass, in order, one of these will be performed:
+
+* `is_atxheader` - true when the line starts with some number (1-6) of `#` characters - it recognizes from h1 to h6, followed by a space (so seven hash marks in a row should not be marked as `<h6>#</h6>`, but would fall through to the next case.
+* Line starts with a '<' character, an html rendering callback exists, conditionally `parse_html`, treating as success if an html block was parsed.
+* `is_empty` - if the line is empty, skip it.
+* `is_hrule` - may consist of up to three initial spaces, then either \* or - or \_ characters, all the way to the end of the line, at least three (but four or more are recognized).
+* attempt to parse a fenced code block in `parse_fencecode` like parse\_htmlblock, treating as success if one was found and handled
+* if `prefix_quote`, call `parse_blockquote` - prefix quote checks up to three space characters, followed by a '>' character, followed by a space.&#x20;
+* if `prefix_code`, `parse_blockcode` prefix code checks if there are 4 spaces (or more) at the beginning of the line. This expansion is controlled by setting the `MKDEXT_DISABLE_INDENTED_CODE` flag in the options.
+* if `prefix_uli`, then `parse_list` (is this an unorderd list item (ul)?)
+* if `prefix_oli`, then parse\_list, setting `MKD_LIST_ORDERED` option (was this an ordered list item?)
+* otherwise, this is just plain text, call `parse_paragraph`
+
+
 
