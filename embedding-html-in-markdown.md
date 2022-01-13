@@ -280,7 +280,7 @@ So we're looking for a situation where what _might_ be html gets interpreted ins
 
 #### Redcarpet internals
 
-So, where is the class defined? [https://github.com/vmg/redcarpet/blob/main/ext/redcarpet/rc\_markdown.c#L24-L27](https://github.com/vmg/redcarpet/blob/main/ext/redcarpet/rc\_markdown.c#L24-L27) in the "rc\_markdown" file, we see VALUE (ruby object's C represenation, everything C passes back or receives from ruby will be of type VALUE).
+So, where is the class defined? Let's go to the source in the [rc\_markdown.c](https://github.com/vmg/redcarpet/blob/master/ext/redcarpet/rc\_markdown.c#L24-L27) file, we see VALUE (ruby object's C represenation, everything C passes back or receives from ruby will be of type VALUE).
 
 ```c
 
@@ -309,6 +309,21 @@ The convention here is `_` is a :: scope resolution, a c prefix marks a class, a
 
 ```
 
-the `rb_redcarpet_md__new` method returns a VALUE (an instance of Redcarpet::Markdown, or a subclass?), and wraps the underlying [Sundown](https://github.com/vmg/sundown)  library that redcarpet builds on, you see names like `sd_markdown` which grew out of the original library (same author). `rc_markdown.c` has `rb_redcarpet_md_render` which is the ruby facing `Redcarpet::Markdown#render` method I was looking for.&#x20;
+the `rb_redcarpet_md__new` method returns a VALUE (an instance of Redcarpet::Markdown, or a subclass?), and wraps the underlying [Sundown](https://github.com/vmg/sundown)  library that redcarpet builds on, you see names like `sd_markdown` which grew out of the original library (same author). `rc_markdown.c` has [`rb_redcarpet_md_render`](https://github.com/vmg/redcarpet/blob/master/ext/redcarpet/rc\_markdown.c#L132-L171) which is the ruby facing `Redcarpet::Markdown#render` method I was looking for.&#x20;
 
 This looks like normal glue code (hint, this is not the interesting part, it's the bridge between ruby and the C guts where the parsing actually happens), there's some type coercion, precondition checks (input text was a `T_STRING` __ value), pulls the `@renderer` instance variable into the `rb_rndr` variable, sets up the output buffer (where are we sending the data, in our case a string like object to be returned later), then, following the comment "render the magic" we call `sd_markdown_render` (the actual work starts here), and then we'll build a return value from the output buffer by encoding as a ruby string type, release the allocated output buffer, check if the renderer responds to "postprocess", pass the pre-return string `text` to `rb_render.postprocess(text)` (the `rb_funcall` line)  and finally answer `text` back to the caller (in ruby). If you've written C extensions in Ruby, or Python, very little should be surprising in this file, and `sd_markdown_render` is our _real_ entry point.
+
+#### sd\_markdown\_render
+
+This was lifted from the prior "sundown" markdown library.
+
+{% embed url="https://github.com/vmg/redcarpet/blob/master/ext/redcarpet/markdown.c#L2827-L2929" %}
+
+The important call (most of this is scanning the document for special cases, references, headers and footnotes) is `parse_block(ob, md, text->data, text->size)` which has the dispatch table to determine what to do with the input. The "return" value from this void function is parsed markdown in the ob buffer.
+
+#### parse\_block
+
+This is the dispatch table, so it importantly includes the tests to determine which case we're in
+
+{% embed url="https://github.com/vmg/redcarpet/blob/master/ext/redcarpet/markdown.c#L2448-L2507" %}
+
