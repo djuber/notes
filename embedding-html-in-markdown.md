@@ -350,4 +350,8 @@ Having described the parse\_block loop, we can discuss the meaning (to us, for t
 
 * if we want to embed html, it must begin on the first character of the line. Unlike prefix quote or a few other recognizers, we're going to assume it's html _only_ when the first character on the line is a `<` open angle bracket.
 * it seems like we also need to be aware of when html blocks _end_, as well as when the parser observes they _begin_.
-* the behavior of the passes for the  input (after the liquid tag has been parsed and replaced with the preview content) is something like "recognize the p tag at the beginning of the first line of `parsed_liquid.render`, including the html comment, scanning forward until we find the closing tag. Unfortuntely, the closing tag is `<`/`p>`  which happens _in_ the comment. The next line after the `/p`  starts with four spaces indentation, so we start a code tag, and the line after that is interpreted as a paragraph
+* the behavior of the passes for the  input (after the liquid tag has been parsed and replaced with the preview content) is something like "recognize the p tag at the beginning of the first line of `parsed_liquid.render`, including the html comment, scanning forward until we find the closing tag. Unfortuntely, the closing tag is `<`/`p>`  which happens _in_ the comment. The next line after the `/p`  starts with four spaces indentation, so we start a code tag, and the line after that is interpreted as a paragraph (and sanitized for html).
+
+I'll ignore the consequences of generating nested paragraph tags (you shouldn't mix "flow" and "content" tags, a p tag puts you in phrasing content mode)[ https://html.spec.whatwg.org/#phrasing-content-2 \
+](https://html.spec.whatwg.org/#phrasing-content-2)\
+The practical consequences are we probably don't want to expand \*indented\* html in the liquid tags, before the next stage. &#x20;
