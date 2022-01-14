@@ -355,3 +355,35 @@ Having described the parse\_block loop, we can discuss the meaning (to us, for t
 I'll ignore the consequences of generating nested paragraph tags (you shouldn't mix "flow" and "content" tags, a p tag puts you in phrasing content mode)[ https://html.spec.whatwg.org/#phrasing-content-2 \
 ](https://html.spec.whatwg.org/#phrasing-content-2)\
 The practical consequences are we probably don't want to expand \*indented\* html in the liquid tags, before the next stage. &#x20;
+
+
+
+### Solution?
+
+I was tracking down where the BEGIN and END template marker comments get added.&#x20;
+
+[https://github.com/rails/rails/blob/v6.1.4.4/actionview/lib/action\_view/template/handlers/erb.rb#L53-L56](https://github.com/rails/rails/blob/v6.1.4.4/actionview/lib/action\_view/template/handlers/erb.rb#L53-L56) this conditional in action view's template handler for erb says "if annotate rendered view with filenames and this is html, then add html comment". That's exactly what's creating the \<p> tag in the markdown -- the liquid tag processor adds this as the first line, the markdown parser prepends a p tag to the comment since it's a special case, the closing p tag in the comment body causes the parser to exit html block mode and go back to the decision process in parse\_block() which finds  4 characters indentation&#x20;
+
+
+
+To test, setting the variable false, and calling Liquid::Template.parse gives no comment, and MarkdownProcessor::Parser#finalize doesn't insert a code block or render the comment as text.
+
+```
+ActionView::Base.annotate_rendered_view_with_filenames = false 
+```
+
+Coming full circle, we enable this option locally in development and test, but it's off by default, and not enabled in production, which is why Arit could not replicate this in canary or other production environments.
+
+Assuming we like the template comments (I find them useful) - can we toggle it off in the MarkdownProcessor? Something like this to execute the rendering in an annotation free environment?
+
+```ruby
+def without_annotations 
+  if block_given?
+    original = ActionView::Base.annotate_rendered_view_with_filenames
+    ActionView::Base.annotate_rendered_view_with_filenames = false
+    yield
+  ensure
+   ActionView::Base.annotate_rendered_view_with_filenames = original
+  end
+end
+```
